@@ -1,5 +1,5 @@
 # diogopaixao-67.github.io
-<!DOCTYPE html>
+#<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
