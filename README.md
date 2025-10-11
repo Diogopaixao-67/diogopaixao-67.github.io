@@ -481,9 +481,9 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
  <!-- RIGHT -->
   <aside>
    
-    <img src="HTML/Playmat.jpg"/>
-        <div style="font-weight:800">Diogo paixão</div>
-        <div class="muted" style="margin-top:4px"><b>Cargo: Fundador & <b>CEO</b></div></b>
+   
+        <div style="font-weight:800"> Eu Sou Diogo paixão</div>
+        <div class="muted" style="margin-top:4px"><b>Cargo: Fundador & <b>CEO</b></b>
         <style>
             b{color:Blue;}
         </style>
