@@ -482,8 +482,8 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
   <aside>
    
    
-        <div style="font-weight:800"> Eu Sou Diogo paixão</div>
-        <div class="muted" style="margin-top:4px"><b>Cargo: Fundador & <b>CEO</b></b>
+        <div style="font-weight:800"Diogo paixão</div>
+        <div class="muted" style="margin-top:4px"><b>Cargo: Fundador & <b>CEO</b></b></div>
         <style>
             b{color:Blue;}
         </style>
@@ -492,3 +492,10 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
         <div style="margin-top:8px;display:flex;gap:8px">
             <style>  
 </style>
+  <h2>Sobre o Playmates</h2>
+  <p>
+    O Playmates foi criado por <strong>Diogo Paixão</strong> aos 17 anos e lançado em 2025.  
+    É uma plataforma pioneira em Angola que transforma votos em oportunidades financeiras.  
+    Já alcançou mais de 20 escolas do ensino médio, permitindo que estudantes ganhem recompensas de forma confiável e segura.  
+    É mais que uma disputa, é um caminho de empreendedorismo para jovens angolanos. Estimula liderança, comunicação e captação de apoios nas comunidades escolares.
+  </p>
