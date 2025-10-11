@@ -482,7 +482,7 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
   <aside>
    
    
-        <div style="font-weight:800"Diogo paixão</div>
+        <div style="font-weight:800">Diogo paixão</div>
         <div class="muted" style="margin-top:4px"><b>Cargo: Fundador & <b>CEO</b></b></div>
         <style>
             b{color:Blue;}
