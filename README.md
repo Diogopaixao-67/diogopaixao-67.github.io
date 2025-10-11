@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="pt">
 <head>
 <meta charset="UTF-8">
@@ -492,5 +492,3 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
         <div style="margin-top:8px;display:flex;gap:8px">
             <style>  
 </style>
-</body>
-</html>
