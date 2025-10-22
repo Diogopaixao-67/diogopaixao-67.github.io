@@ -265,6 +265,309 @@ img {
   🎯  Playmates
   <div id="ranking"></div>
   <button class="results-btn" onclick="openResults()">📊 Resultados</button>
+  <!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Pedidos</title>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: "Poppins", sans-serif;
+    margin: 0;
+    background: #f3f6f9;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  .card {
+    background: #fff;
+    width: 100%;
+    max-width: 430px;
+    border-radius: 16px;
+    box-shadow: 0 5px 18px rgba(0,0,0,0.1);
+    padding: 20px;
+  }
+  h3 {
+    margin-top: 0;
+    color: #333;
+    text-align: center;
+  }
+  .form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  input {
+    padding: 10px;
+    font-size: 16px;
+    border: 1.5px solid #ccc;
+    border-radius: 8px;
+    width: 100%;
+    outline: none;
+    transition: border 0.3s;
+  }
+  input:focus {
+    border-color: #4CAF50;
+  }
+  .pack-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .pack-option {
+    padding: 10px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s;
+  }
+  .pack-option:hover {
+    border-color: #4CAF50;
+  }
+  .pack-option.selected {
+    background: Orange;
+    color: #fff;
+    border-color: #00F8FF;
+  }
+  .btn {
+    background: Orange;
+    color: #fff;
+    border: none;
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  .btn:hover {
+    background: #43a047;
+  }
+  .simulator {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #e8f5e9;
+    padding: 10px 14px;
+    border-radius: 10px;
+  }
+  .sim-number {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2e7d32;
+    cursor: pointer;
+  }
+  .muted {
+    font-size: 12px;
+    color: #666;
+  }
+  #adminPanel {
+    display: none;
+    background: #ffffff;
+    border-radius: 12px;
+    margin-top: 20px;
+    padding: 15px;
+    box-shadow: 0 5px 18px rgba(0,0,0,0.1);
+  }
+  .pedido-card {
+    background: #f9f9f9;
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    border-left: 4px solid #4CAF50;
+    position: relative;
+  }
+  .pedido-card h4 {
+    margin: 0;
+    color: #333;
+  }
+  .pedido-card small {
+    color: #666;
+  }
+  .delete-btn {
+    position: absolute;
+    right: 10px;
+    top: 8px;
+    background: none;
+    border: none;
+    color: #d32f2f;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  .close-admin {
+    background: #d32f2f;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  .close-admin:hover {
+    background: #b71c1c;
+  }
+  @media (max-width: 480px) {
+    .card {
+      padding: 16px;
+    }
+    input, .btn, .pack-option {
+      font-size: 15px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h3>Enviar Pedido de Participação</h3>
+  <div class="form-row">
+    <input id="inputName" type="text" placeholder="Nome completo" />
+    <input id="inputWhats" type="tel" placeholder="WhatsApp (ex: 941530467)" />
+  </div>
+  <div style="margin-top:8px">
+    <div class="pack-choices">
+      <div class="pack-option selected" data-pack="Começar gratuito 20S e ganhar 450kz">1. Começar gratuito → Win 450kz</div>
+      <div class="pack-option" data-pack="Começar 500 e ganhar 2000">2. Começar com 500kz → Win 2000</div>
+    </div>
+  </div>
+  <div style="margin-top:12px;display:flex;gap:8px">
+    <button id="sendRequestBtn" class="btn">Enviar Pedido</button>
+  </div>
+  <div class="simulator" style="margin-top:12px">
+    <div>
+      <div class="muted">Pedidos totais</div>
+      <div id="simNumber" class="sim-number">0</div>
+    </div>
+    <div class="muted">Clique no número para ver (senha A3)</div>
+  </div>
+</div>
+
+<!-- Painel Admin -->
+<div id="adminPanel">
+  <h3>📋 Lista de Pedidos</h3>
+  <div id="listaPedidos"></div>
+  <button class="close-admin" id="closeAdminBtn">Fechar Painel</button>
+</div>
+
+<script>
+  const inputName = document.getElementById("inputName");
+  const inputWhats = document.getElementById("inputWhats");
+  const sendRequestBtn = document.getElementById("sendRequestBtn");
+  const simNumber = document.getElementById("simNumber");
+  const packOptions = document.querySelectorAll(".pack-option");
+  const adminPanel = document.getElementById("adminPanel");
+  const listaPedidos = document.getElementById("listaPedidos");
+  const closeAdminBtn = document.getElementById("closeAdminBtn");
+
+  // Recuperar pedidos anteriores
+  let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
+  simNumber.textContent = pedidos.length;
+
+  // Seleção de pacotes
+  packOptions.forEach(opt => {
+    opt.addEventListener("click", () => {
+      packOptions.forEach(o => o.classList.remove("selected"));
+      opt.classList.add("selected");
+    });
+  });
+
+  // Enviar pedido
+  sendRequestBtn.addEventListener("click", () => {
+    const nome = inputName.value.trim();
+    const whats = inputWhats.value.trim();
+    const pack = document.querySelector(".pack-option.selected").dataset.pack;
+
+    if (!nome || !whats) {
+      alert("Por favor, preencha todos os campos.");
+      return;
+    }
+
+    if (pedidos.some(p => p.nome.toLowerCase() === nome.toLowerCase())) {
+      alert("Este nome já enviou um pedido!");
+      return;
+    }
+
+    const novoPedido = {
+      nome,
+      whats,
+      pack,
+      hora: new Date().toLocaleString()
+    };
+
+    pedidos.push(novoPedido);
+    localStorage.setItem("pedidos", JSON.stringify(pedidos));
+
+    simNumber.textContent = pedidos.length;
+
+    inputName.value = "";
+    inputWhats.value = "";
+
+    alert("✅ Pedido enviado com sucesso!");
+  });
+
+  // Mostrar painel admin (senha A3)
+  simNumber.addEventListener("click", () => {
+    const senha = prompt("Digite a senha de acesso:");
+    if (senha === "A3") {
+      atualizarLista();
+      adminPanel.style.display = "block";
+      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+    } else if (senha) {
+      alert("Senha incorreta!");
+    }
+  });
+
+  // Fechar painel admin
+  closeAdminBtn.addEventListener("click", () => {
+    adminPanel.style.display = "none";
+  });
+
+  // Atualizar lista visual dos pedidos
+  function atualizarLista() {
+    listaPedidos.innerHTML = "";
+    if (pedidos.length === 0) {
+      listaPedidos.innerHTML = "<p style='color:#777;text-align:center;'>Nenhum pedido registrado.</p>";
+      return;
+    }
+
+    pedidos.forEach((p, index) => {
+      const card = document.createElement("div");
+      card.classList.add("pedido-card");
+      card.innerHTML = `
+        <button class="delete-btn" title="Eliminar" data-index="${index}">❌</button>
+        <h4>${p.nome}</h4>
+        <small>📱 ${p.whats}</small><br>
+        <small>🎁 ${p.pack}</small><br>
+        <small>🕒 ${p.hora}</small>
+      `;
+      listaPedidos.appendChild(card);
+    });
+
+    // Botões de eliminar
+    document.querySelectorAll(".delete-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const idx = btn.getAttribute("data-index");
+        if (confirm(`Deseja eliminar o pedido de "${pedidos[idx].nome}"?`)) {
+          pedidos.splice(idx, 1);
+          localStorage.setItem("pedidos", JSON.stringify(pedidos));
+          simNumber.textContent = pedidos.length;
+          atualizarLista();
+        }
+      });
+    });
+  }
+</script>
+
+</body>
+</html>
+
 </header>
 
 <div id="contestants"></div>
