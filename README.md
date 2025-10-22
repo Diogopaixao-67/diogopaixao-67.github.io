@@ -265,7 +265,7 @@ img {
   🎯  Playmates
   <div id="ranking"></div>
   <button class="results-btn" onclick="openResults()">📊 Resultados</button>
-  <!DOCTYPE html>
+  
 <html lang="pt">
 <head>
 <meta charset="UTF-8">
@@ -445,7 +445,7 @@ img {
       <div class="muted">Pedidos totais</div>
       <div id="simNumber" class="sim-number">0</div>
     </div>
-    <div class="muted">Clique no número para ver (senha A3)</div>
+    <div class="muted">Clique no número para ver </div>
   </div>
 </div>
 
