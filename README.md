@@ -781,6 +781,9 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
 
 </script>
 
+   <img src="HTML/IMG-20251022-WA0007.jpg">
+  
+
  <!-- RIGHT -->
   <aside>
    
