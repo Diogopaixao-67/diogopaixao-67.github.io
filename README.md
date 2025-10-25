@@ -791,6 +791,11 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Foto em Círculo (clicável — zoom)</title>
+  <!-- botão circular que contém a imagem -->
+<button class="avatar-btn" id="avatarBtn" aria-haspopup="dialog" aria-label="Abrir foto ampliada">
+  <img id="avatarImg" class="avatar" src="Imagens/IMG-20251022-WA0007.jpg" alt="Foto do usuário" draggable="false">
+</button>
+
   <style>
     :root{
       --thumb-size: 180px; /* tamanho padrão do círculo (pode ajustar) */
