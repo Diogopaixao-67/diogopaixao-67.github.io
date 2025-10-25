@@ -789,18 +789,9 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
            <!-- RIGHT -->
   <aside>
     <div class="card profile">
-            <img src="HTML/Playmat.jpg">
+            <img src="<img src="Imagens/IMG-20251022-WA0007.jpg">">
   
-        <div style="font-weight:500">Diogo paixão</div>
-        <div class="muted" style="margin-top:4px"><b>Cargo: Fundador & <b>CEO</b></b></div>
-        <style>
-            b{color:Blue;}
-        </style>
-        <div style="margin-top:8px;font-size:14px">Eu faço 25$ por mês na internet aqui em Angola .</div>
-        <a id="waBtn" class="" href="https://wa.me/244941530467" target="_blank" style="display:inline-block;margin-top:8px;background:#25D366;color:#fff;padding:8px 10px;border-radius:8px;text-decoration:none;font-weight:700">Iniciar WhatsApp — 941530467</a>
-        <div style="margin-top:8px;display:flex;gap:8px">
-            <style>  
-</style>
+        
   <h2>Sobre o Playmates</h2>
 
   <p>
