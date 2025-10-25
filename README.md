@@ -1018,7 +1018,7 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
   </script>
 </body>
 </html>
-
+<img src=" Imagens/IMG-20251022-WA0007.jpg">
   <h2>Sobre o Playmates</h2>
 
   <p>
