@@ -781,15 +781,17 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
 
 </script>
 
-   <img src="Imagens/IMG-20251022-WA0007.jpg">
+   
   
 
- <!-- RIGHT -->
+ 
+   
+           <!-- RIGHT -->
   <aside>
-   
-   
+    <div class="card profile">
+            <img src="HTML/Playmat.jpg">
+  
         <div style="font-weight:500">Diogo paixão</div>
-        <img src="Imagens/IMG-20251022-WA0007.jpg">
         <div class="muted" style="margin-top:4px"><b>Cargo: Fundador & <b>CEO</b></b></div>
         <style>
             b{color:Blue;}
