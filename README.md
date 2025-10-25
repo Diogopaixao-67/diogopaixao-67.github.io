@@ -785,7 +785,7 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
   
 
  
-   <!doctype html>
+   
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
@@ -930,7 +930,8 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
   <!-- overlay / lightbox -->
   <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="lightbox" id="lightbox">
-      <img id="lightboxImg" src="" alt="Foto ampliada">
+      <img id="lightboxImg" src=" IMG-20251022-WA0007.jpg">
+  
     </div>
     <button class="close-btn" id="closeBtn" aria-label="Fechar (Esc)">Fechar ✕</button>
   </div>
