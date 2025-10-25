@@ -787,8 +787,8 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
  
    
            <!-- RIGHT -->
-  <aside>
-    <div class="card profile">
+  
+   
             <img src="<img src="Imagens/IMG-20251022-WA0007.jpg">">
   
         
