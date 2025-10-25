@@ -915,21 +915,7 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
   </style>
 </head>
 <body>
-  <div class="wrap">
-
-    <!-- botão circular que contém a imagem -->
-    <button class="avatar-btn" id="avatarBtn" aria-haspopup="dialog" aria-label="Abrir foto ampliada">
-      <!-- Imagens/IMG-20251022-WA0007.jpg -->
-      <img id="Imagens/IMG-20251022-WA0007.jpg">
   
-    </button>
-
-    <p class="meta">Dica: use imagens quadradas (ex: 800×800) para melhor resultado.</p>
-  </div>
-
-  <!-- overlay / lightbox -->
-  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="lightbox" id="Imagens/IMG-20251022-WA0007.jpg">
       <img src=" Imagens/IMG-20251022-WA0007.jpg">
   
     </div>
