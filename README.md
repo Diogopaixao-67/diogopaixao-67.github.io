@@ -785,6 +785,170 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
   
  
  
+<html lang="pt">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Foto em círculo — Zoom CSS-only</title>
+<style>
+  :root{
+    --thumb-size: 180px;      /* tamanho do círculo na página */
+    --zoom-max: 90vw;        /* largura máxima do zoom (responsivo) */
+    --zoom-max-h: 90vh;      /* altura máxima do zoom */
+    --bg-overlay: rgba(0,0,0,0.6);
+    --transition: 400ms cubic-bezier(.2,.9,.3,1);
+  }
+
+  /* reset simples */
+  *{box-sizing:border-box;margin:0;padding:0}
+
+  body{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background: linear-gradient(180deg,#fff,#f3f7fb);
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+    padding:2rem;
+  }
+
+  .wrap{
+    text-align:center;
+  }
+
+  /* checkbox escondido (hack) */
+  #zoomToggle{position:absolute;left:-9999px;opacity:0;}
+
+  /* estilo do rótulo que contém a imagem (clicável) */
+  label.photo-label{
+    display:inline-block;
+    cursor:pointer;
+    user-select:none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .photo{
+    width:var(--thumb-size);
+    height:var(--thumb-size);
+    border-radius:50%;
+    overflow:hidden;
+    display:block;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    transition: transform var(--transition), box-shadow var(--transition);
+    transform-origin:center center;
+  }
+
+  .photo img{
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:cover; /* garante que a foto preencha o círculo sem distorcer */
+    -webkit-user-drag:none;
+  }
+
+  /* pequena dica de clique */
+  .hint{
+    margin-top:.6rem;
+    font-size:.9rem;
+    color:#555;
+  }
+
+  /* quando o checkbox está checked -> ativar overlay e ampliar a foto */
+  #zoomToggle:checked ~ .overlay{
+    pointer-events:auto;
+    opacity:1;
+    visibility:visible;
+  }
+
+  /* overlay full-screen */
+  .overlay{
+    position:fixed;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0.55));
+    opacity:0;
+    visibility:hidden;
+    transition:opacity var(--transition);
+    z-index:90;
+    padding:2vh;
+    pointer-events:none; /* bloqueado até checked */
+  }
+
+  /* versão ampliada da imagem */
+  #zoomToggle:checked ~ .overlay .photo{
+    width: min(var(--zoom-max), 1200px);
+    height: min(var(--zoom-max-h), 1200px);
+    border-radius: 12px; /* muda de círculo para cartão arredondado quando em zoom */
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    transition: all var(--transition);
+    transform: translateY(0);
+  }
+
+  /* fechar ao clicar no fundo: fazemos um label que liga ao checkbox (mesmo for) */
+  .overlay .close-area{
+    position:absolute;
+    inset:0;
+  }
+
+  /* botão visível de fechar (opcional) */
+  .close-btn{
+    position:fixed;
+    top:18px;
+    right:18px;
+    z-index:110;
+    font-size:20px;
+    background: rgba(255,255,255,0.95);
+    border-radius:10px;
+    padding:6px 10px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.15);
+    cursor:pointer;
+  }
+
+  /* media queries para ajustar o tamanho do thumb em telas pequenas */
+  @media (max-width:420px){
+    :root{--thumb-size:140px}
+    .hint{font-size:.85rem}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- input checkbox (controla o estado: normal / zoom) -->
+    <input type="checkbox" id="zoomToggle" aria-hidden="true">
+
+    <!-- rótulo que exibe o círculo (clicar alterna o checkbox) -->
+    <label for="zoomToggle" class="photo-label" aria-hidden="false" aria-controls="zoomToggle" title="Clique para ampliar">
+      <div class="photo" role="img" aria-label="Minhas fotos">
+        <!-- <-- Substitua o src abaixo pelo caminho da sua imagem.
+             Exemplo: src="./IMG-20251022-WA0007.jpg" ou o caminho no GitHub sem espaços. -->
+        <img src="./Imagens/IMG-20251022-WA0007.jpg" alt="Foto dentro do círculo">
+      </div>
+    </label>
+
+    <div class="hint">Clique na foto para ampliar — clique novamente para fechar</div>
+
+    <!-- overlay (aparece quando #zoomToggle está checked) -->
+    <div class="overlay" aria-hidden="true">
+      <!-- área de fundo (clicar fecha porque é um label ligado ao mesmo input) -->
+      <label for="zoomToggle" class="close-area" title="Fechar"></label>
+
+      <!-- versão ampliada (mantemos a mesma estrutura .photo com a mesma <img>) -->
+      <div style="z-index:100;position:relative;">
+        <div class="photo" role="img" aria-label="Foto ampliada">
+          <!-- a mesma imagem: é carregada duas vezes pelo browser, evita-se JS. -->
+          <img src="./Imagens/IMG-20251022-WA0007.jpg" alt="Foto ampliada">
+        </div>
+      </div>
+
+      <!-- botão visível de fechar (opcional): também é um label que desmarca o checkbox -->
+      <label for="zoomToggle" class="close-btn" aria-hidden="false" title="Fechar">✕</label>
+    </div>
+  </div>
+</body>
+</html>
+
    
 
       
