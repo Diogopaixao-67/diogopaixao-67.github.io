@@ -785,13 +785,239 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
   
 
  
-   
-           <!-- RIGHT -->
+   <!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Foto em Círculo (clicável — zoom)</title>
+  <style>
+    :root{
+      --thumb-size: 180px; /* tamanho padrão do círculo (pode ajustar) */
+      --thumb-gap: 16px;
+      --bg: #0f172a;
+      --overlay-bg: rgba(0,0,0,0.75);
+      --accent: #10b981;
+    }
+
+    /* Reset simples */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+
+
+    /* Layout responsivo de exemplo */
+    .wrap{
+      display:flex;
+      gap:var(--thumb-gap);
+      align-items:center;
+      flex-direction:column;
+      max-width:900px;
+      width:100%;
+    }
+
+    h1{font-size:1.1rem;margin:0 0 12px}
+    p{margin:0 0 18px;opacity:0.85}
+
+    /* Botão circular com imagem dentro */
+    .avatar-btn{
+      width:var(--thumb-size);
+      height:var(--thumb-size);
+      border-radius:50%;
+      padding:4px;
+      display:inline-grid;
+      place-items:center;
+      background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));
+      border:2px solid rgba(255,255,255,0.06);
+      box-shadow: 0 6px 18px rgba(2,6,23,0.6), inset 0 -6px 12px rgba(0,0,0,0.3);
+      cursor:pointer;
+      transition:transform 220ms ease, box-shadow 220ms ease;
+      outline:none;
+    }
+    .avatar-btn:focus{box-shadow:0 0 0 4px rgba(16,185,129,0.12)}
+    .avatar-btn:hover{transform:translateY(-4px) scale(1.02)}
+
+    .avatar{
+      width:calc(100% - 8px);
+      height:calc(100% - 8px);
+      border-radius:50%;
+      object-fit:cover;
+      display:block;
+      user-select:none;
+      -webkit-user-drag:none;
+      transform-origin:center center;
+      transition:transform 280ms cubic-bezier(.2,.8,.3,1);
+      box-shadow:0 6px 14px rgba(2,6,23,0.5);
+    }
+
+    /* Overlay (lightbox) */
+    .overlay{
+      position:fixed;
+      inset:0;
+      display:none; /* mostra quando aberto */
+      align-items:center;
+      justify-content:center;
+      background:var(--overlay-bg);
+      z-index:9999;
+      padding:24px;
+      backdrop-filter:blur(6px) saturate(120%);
+    }
+    .overlay.open{display:flex}
+
+    .lightbox{
+      max-width:90vw;
+      max-height:90vh;
+      border-radius:12px;
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transform:scale(0.96);
+      opacity:0;
+      transition:transform 300ms cubic-bezier(.15,.9,.25,1), opacity 260ms ease;
+      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.15));
+    }
+    .overlay.open .lightbox{transform:scale(1);opacity:1}
+
+    .lightbox img{
+      width:auto;
+      height:auto;
+      max-width:100%;
+      max-height:100%;
+      display:block;
+      object-fit:contain;
+    }
+
+    /* close button */
+    .close-btn{
+      position:fixed;
+      right:20px;
+      top:20px;
+      background:rgba(0,0,0,0.35);
+      border:1px solid rgba(255,255,255,0.06);
+      color:#fff;
+      padding:8px 10px;
+      border-radius:10px;
+      cursor:pointer;
+      z-index:10010;
+      backdrop-filter:blur(4px);
+    }
+
+    /* Responsividade: ajusta tamanho do círculo em telas pequenas */
+    @media (max-width:480px){
+      :root{--thumb-size:120px}
+    }
+    @media (min-width:900px){
+      :root{--thumb-size:220px}
+    }
+
+    /* Pequena legenda / instruções */
+    .meta{font-size:0.86rem;opacity:0.9}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- botão circular que contém a imagem -->
+    <button class="avatar-btn" id="avatarBtn" aria-haspopup="dialog" aria-label="Abrir foto ampliada">
+      <!-- Coloque aqui o caminho da imagem -->
+      <img id="IMG-20251022-WA0007.jpg">
   
-   
-            <img src="Imagens/IMG-20251022-WA0007.jpg">
-  
-        
+    </button>
+
+    <p class="meta">Dica: use imagens quadradas (ex: 800×800) para melhor resultado.</p>
+  </div>
+
+  <!-- overlay / lightbox -->
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="lightbox" id="lightbox">
+      <img id="lightboxImg" src="" alt="Foto ampliada">
+    </div>
+    <button class="close-btn" id="closeBtn" aria-label="Fechar (Esc)">Fechar ✕</button>
+  </div>
+
+  <script>
+    (function(){
+      const avatarBtn = document.getElementById('avatarBtn');
+      const avatarImg = document.getElementById('avatarImg');
+      const overlay = document.getElementById('overlay');
+      const lightboxImg = document.getElementById('lightboxImg');
+      const closeBtn = document.getElementById('closeBtn');
+
+      // URL da imagem a ser mostrada no lightbox (pode apontar para versão maior)
+      // Se quiser usar uma versão maior diferente, troque aqui.
+      function largeSrcOf(s){
+        // Se sua imagem tiver uma convenção de "-thumb", adapte aqui.
+        return s;
+      }
+
+      // Abre a overlay com transições suaves
+      function open(){
+        lightboxImg.src = largeSrcOf(avatarImg.src);
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+        // foco no botão fechar para acessibilidade
+        closeBtn.focus();
+        // desabilita scroll do body
+        document.documentElement.style.overflow = 'hidden';
+      }
+
+      function close(){
+        overlay.classList.remove('open');
+        overlay.setAttribute('aria-hidden','true');
+        // restaura scroll
+        document.documentElement.style.overflow = '';
+        avatarBtn.focus();
+        // limpa src depois de fechar para economizar memória
+        setTimeout(()=>{ if(!overlay.classList.contains('open')) lightboxImg.src=''; }, 300);
+      }
+
+      avatarBtn.addEventListener('click', open);
+      // também abrir se pressionarem Enter / Space
+      avatarBtn.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+      });
+
+      // fechar ao clicar fora da imagem (no overlay)
+      overlay.addEventListener('click', (e)=>{
+        if(e.target === overlay) close();
+      });
+
+      closeBtn.addEventListener('click', close);
+
+      // tecla Esc fecha
+      document.addEventListener('keydown', (e)=>{
+        if(e.key === 'Escape' && overlay.classList.contains('open')) close();
+      });
+
+      // Evitar arrastar a imagem
+      avatarImg.addEventListener('dragstart', e => e.preventDefault());
+
+      // Suporte básico a zoom com roda do mouse quando aberto
+      overlay.addEventListener('wheel', (e)=>{
+        if(!overlay.classList.contains('open')) return;
+        e.preventDefault();
+        const img = lightboxImg;
+        const cur = img.style.transform ? Number(img.style.transform.replace(/scale\(|\)/g,'')) : 1;
+        let next = cur - e.deltaY * 0.001; // sensibilidade
+        next = Math.min(Math.max(next, 0.6), 3);
+        img.style.transform = `scale(${next})`;
+      }, { passive:false });
+
+      // Reset transform quando abrir/fechar
+      overlay.addEventListener('transitionend', ()=>{
+        if(!overlay.classList.contains('open')){
+          lightboxImg.style.transform = '';
+        }
+      });
+
+      // --- Sugestão prática: se hospedar no GitHub, coloque a imagem na pasta /assets ou /images
+      // e troque o src por: src="/assets/minha-foto.jpg" ou caminho relativo.
+
+    })();
+  </script>
+</body>
+</html>
+
   <h2>Sobre o Playmates</h2>
 
   <p>
