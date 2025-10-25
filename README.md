@@ -781,7 +781,7 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
 
 </script>
 
-   <img src="HTML/IMG-20251022-WA0007.jpg">
+   <img src="Imagens/IMG-20251022-WA0007.jpg">
   
 
  <!-- RIGHT -->
@@ -801,7 +801,7 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
   <h2>Sobre o Playmates</h2>
   
    <img src="HTML/IMG-20251022-WA0007.jpg">
-  
+  <img src="Imagens/IMG-20251022-WA0007.jpg1">
   <p>
     O Playmates foi criado por <strong>Diogo Paixão</strong> aos 17 anos e lançado em 2025.  
     É uma plataforma pioneira em Angola que transforma votos em oportunidades financeiras.  
