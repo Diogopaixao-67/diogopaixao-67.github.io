@@ -428,7 +428,7 @@ img {
 <div class="card">
   <h3>Enviar Pedido de Participação</h3>
   <div class="form-row">
-    <input id="inputName" type="text" placeholder=<b>"Nome completo" </b>/>
+    <input id="inputName" type="text" placeholder="Nome completo" />
     <input id="inputWhats" type="tel" placeholder="WhatsApp (ex: 941530467)" />
   </div>
   <div style="margin-top:8px">
