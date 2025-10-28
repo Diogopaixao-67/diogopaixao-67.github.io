@@ -960,3 +960,239 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
     Já alcançou mais de 20 escolas do ensino médio, permitindo que estudantes ganhem recompensas de forma confiável e segura.  
     É mais que uma disputa, é um caminho de empreendedorismo para jovens angolanos. Estimula liderança, comunicação e captação de apoios nas comunidades escolares.
   </p>
+  
+<html lang="pt">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ranking - Plataforma</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#071028;
+      --muted:rgba(255,255,255,0.06);
+      --accent:#06b6d4;
+      --accent-2:#7c3aed;
+      --glass: rgba(255,255,255,0.03);
+      --text:#e6eef8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+   
+          margin:0; padding:18px; font-family:Inter, system-ui, Arial, sans-serif;
+    background: linear-gradient(180deg,#eef6ff 0%, #fbfdff 100%);
+    color:#0b1220;
+    }
+
+    .card{
+      width:100%;
+      max-width:860px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:14px;
+      padding:18px;
+      border:1px solid var(--glass);
+    }
+
+    .header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+    .icon{font-size:22px;display:inline-grid;place-items:center;width:46px;height:46px;border-radius:10px;background:linear-gradient(180deg,var(--accent-2),#5b21b6);box-shadow:0 8px 24px rgba(124,58,237,0.14)}
+    .title{display:flex;flex-direction:column}
+    .title h3{margin:0;font-size:18px}
+    .title small{opacity:0.75}
+
+    .controls{margin-left:auto;display:flex;gap:8px;align-items:center}
+    .pwd-btn{background:transparent;border:1px dashed var(--muted);padding:8px 12px;border-radius:10px;color:var(--text);cursor:pointer;font-weight:600}
+    .pwd-btn:hover{border-style:solid}
+    .edit-indicator{padding:6px 10px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#0ea5a2);font-weight:700}
+
+    .list{display:grid;grid-template-columns:1fr;gap:12px;margin-top:8px}
+    .row{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.007));border:1px solid rgba(255,255,255,0.02)}
+
+    .photo{width:60px;height:60px;border-radius:50%;overflow:hidden;flex-shrink:0;cursor:pointer;border:2px solid var(--accent-2);transition:transform .2s}
+    .photo img{width:100%;height:100%;object-fit:cover}
+    .photo:hover{transform:scale(1.05)}
+
+    .place{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;font-weight:800;font-size:18px}
+    .place.gold{background:linear-gradient(180deg,#ffd54a,#f59e0b);color:#10221a}
+    .place.silver{background:linear-gradient(180deg,#e6e6e6,#9ca3af);color:#071224}
+    .place.bronze{background:linear-gradient(180deg,#f3cc9a,#c084fc);color:#071224}
+
+    .info{flex:1;display:flex;flex-direction:column}
+    .name{font-weight:700}
+    .school{opacity:0.8;font-size:13px}
+    .score{min-width:86px;text-align:right;font-weight:800}
+
+    .edit-mode{margin-top:12px;padding:12px;border-radius:10px;border:1px dashed var(--muted);background:linear-gradient(180deg, rgba(124,58,237,0.04), rgba(6,182,212,0.03));display:flex;flex-direction:column;gap:8px}
+    .edit-row{display:flex;gap:8px;align-items:center}
+    input[type=text], input[type=number]{flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--text)}
+    .save-btn{padding:10px 14px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--accent),#0ea5a2);cursor:pointer;color:#042022;font-weight:800}
+    .cancel-btn{padding:10px 14px;border-radius:10px;border:0;background:transparent;color:var(--text);cursor:pointer}
+
+    .pwd-overlay{position:fixed;inset:0;display:grid;place-items:center;background:rgba(0,0,0,0.8);visibility:hidden;opacity:0;transition:opacity .2s ease,visibility .2s;z-index:999}
+    .pwd-overlay.show{visibility:visible;opacity:1}
+
+    /* Zoom circular */
+    .zoom-box{
+      position:relative;
+      border-radius:50%;
+      overflow:hidden;
+      width:300px;
+      height:300px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(255,255,255,0.05);
+      box-shadow:0 0 30px rgba(0,0,0,0.7)
+    }
+    .zoom-box img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      border-radius:50%;
+    }
+    .close-btn{
+      position:absolute;
+      top:-10px;
+      right:-10px;
+      background:#ff4444;
+      color:white;
+      border:none;
+      border-radius:50%;
+      width:32px;
+      height:32px;
+      font-size:18px;
+      font-weight:bold;
+      cursor:pointer;
+      box-shadow:0 2px 6px rgba(0,0,0,0.3)
+    }
+
+    @media (max-width:560px){
+      .row{padding:10px}
+      .photo{width:50px;height:50px}
+      .zoom-box{width:220px;height:220px}
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+ 
+      <div class="title">
+        <h3>Ranking Oficial</h3>
+<mark>Aqui você encontra os alunos de diferentes escolas que estão no ranking atualizado de hoje considerados os populares do momento no <b>Playmates</b></mark>
+    <div class="list" id="rankingList">
+      <div class="row">
+        <div class="place gold">1</div>
+        <div class="photo" onclick="showZoom('HTML/IMG-20251022-WA0007.jpg')">
+          <img src="HTML/IMG-20251022-WA0007.jpg">
+        </div>
+        <div class="info">
+          <div class="name">Diogo paixao</div>
+          <div class="school">Escola Central</div>
+        </div>
+        <div class="score">985</div>
+      </div>
+
+      <div class="row">
+        <div class="place silver">2</div>
+        <div class="photo" onclick="showZoom('HTML/IMG-20251022-WA0008.jpg')">
+          <img src="HTML/IMG-20251022-WA0008.jpg">
+        </div>
+        <div class="info">
+          <div class="name">Bruno Costa</div>
+          <div class="school">Colégio São José</div>
+        </div>
+        <div class="score">942</div>
+      </div>
+
+      <div class="row">
+        <div class="place bronze">3</div>
+        <div class="photo" onclick="showZoom('HTML/IMG-20251022-WA0009.jpg')">
+          <img src="HTML/IMG-20251022-WA0009.jpg">
+        </div>
+        <div class="info">
+          <div class="name">Carla Silva</div>
+          <div class="school">Liceu Sul</div>
+        </div>
+        <div class="score">912</div>
+      </div>
+    </div>
+
+    <div id="editPanel" class="edit-mode" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <strong>Modo de edição</strong>
+        <div>
+          <button id="saveAll" class="save-btn">Guardar</button>
+          <button id="cancelEdit" class="cancel-btn">Cancelar</button>
+        </div>
+      </div>
+      <div id="editRows"></div>
+    </div>
+  </div>
+
+  <!-- Zoom -->
+  <div class="pwd-overlay" id="zoomOverlay">
+    <div class="zoom-box" id="zoomBox"></div>
+  </div>
+
+  <!-- Senha -->
+  <div class="pwd-overlay" id="pwdOverlay">
+    <div class="zoom-box" style="background:#07162a;padding:20px;border-radius:12px;max-width:400px;width:auto;height:auto">
+      <h3>Senha de edição</h3>
+      <input id="pwdInput" type="password" placeholder="Senha" style="width:100%;padding:10px;border-radius:8px;margin:10px 0;background:transparent;color:var(--text)">
+      <div id="pwdMsg" style="color:#fca5a5;height:18px"></div>
+      <button id="pwdSubmit" class="save-btn">Confirmar</button>
+    </div>
+  </div>
+
+  <script>
+    const PASS='AX';
+    const editPanel=document.getElementById('editPanel');
+    const editBadge=document.getElementById('editBadge');
+    const pwdOverlay=document.getElementById('pwdOverlay');
+    const pwdInput=document.getElementById('pwdInput');
+    const pwdSubmit=document.getElementById('pwdSubmit');
+    const pwdMsg=document.getElementById('pwdMsg');
+
+    document.getElementById('openPwd').onclick=()=>{
+      pwdOverlay.classList.add('show');
+      pwdInput.value='';
+      pwdMsg.textContent='';
+    };
+
+    pwdSubmit.onclick=()=>{
+      if(pwdInput.value===PASS){
+        pwdOverlay.classList.remove('show');
+        enterEdit();
+      } else {
+        pwdMsg.textContent='Senha incorreta';
+      }
+    };
+
+    function enterEdit(){
+      editPanel.style.display='block';
+      editBadge.style.display='block';
+    }
+
+    document.getElementById('cancelEdit').onclick=()=>{
+      editPanel.style.display='none';
+      editBadge.style.display='none';
+    };
+
+    // Zoom circular com botão X
+    const zoomOverlay=document.getElementById('zoomOverlay');
+    const zoomBox=document.getElementById('zoomBox');
+    function showZoom(src){
+      zoomOverlay.classList.add('show');
+      zoomBox.innerHTML=`
+        <button class='close-btn' id='closeZoom'>×</button>
+        <img src='${src}' alt='Foto'>
+      `;
+      document.getElementById('closeZoom').onclick=()=>zoomOverlay.classList.remove('show');
+      zoomOverlay.onclick=(e)=>{if(e.target===zoomOverlay)zoomOverlay.classList.remove('show');};
+    }
+  </script>
+</body>
+</html>
+
