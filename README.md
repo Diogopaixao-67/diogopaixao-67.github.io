@@ -1193,6 +1193,5 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
       zoomOverlay.onclick=(e)=>{if(e.target===zoomOverlay)zoomOverlay.classList.remove('show');};
     }
   </script>
-</body>
-</html>
+
 
