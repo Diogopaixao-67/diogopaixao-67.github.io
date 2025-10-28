@@ -1538,8 +1538,320 @@ Storage keys:
     }
   });
 
-  // session loader
+    // session loader
   function loadSession(){
     accounts = load('pm_accounts') || [];
-    topados = load('pm_topados') || {}
+    topados = load('pm_topados') || {};
+    sessionPhone = load('pm_session') || sessionPhone;
+    currentUser = accounts.find(a=>a.phone === sessionPhone) || null;
+    if(currentUser){
+      authArea.style.display = 'none';
+      loggedArea.style.display = 'block';
+      leftAvatar.querySelector('img').src = currentUser.photo || placeholderDataUrl(currentUser.name);
+      leftName.textContent = currentUser.name;
+      leftSchool.textContent = currentUser.school || '—';
+      leftPhone.textContent = currentUser.phone;
+      leftPoints.textContent = (currentUser.points||0).toFixed(1);
+      renderCounts();
+      renderNotifList();
+      renderPostsFeed();
+      renderSMSFeed();
+    } else {
+      authArea.style.display = 'block';
+      loggedArea.style.display = 'none';
+    }
+  }
+  loadSession();
+
+  // edit & logout
+  btnEditProfile.addEventListener('click', async ()=>{
+    if(!currentUser) return;
+    const newName = prompt('Nome completo', currentUser.name);
+    const newPhone = prompt('Telemóvel', currentUser.phone);
+    const newSchool = prompt('Escola', currentUser.school);
+    if(!newName || !newPhone) return;
+    // if phone changed, ensure uniqueness
+    if(newPhone !== currentUser.phone && accounts.some(a=>a.phone === newPhone)) return alert('Telemóvel em uso');
+    // handle optionally new photo
+    const f = confirm('Quer alterar a foto? OK para escolher ficheiro local (em seguida). Cancel para manter.');
+    if(f){
+      // create an <input type=file> dynamically to choose
+      const input = document.createElement('input'); input.type='file'; input.accept='image/*';
+      input.onchange = async (e)=> {
+        if(input.files && input.files[0]) currentUser.photo = await fileToDataUrl(input.files[0]);
+        finalizeEdit();
+      };
+      input.click();
+    } else finalizeEdit();
+
+    function finalizeEdit(){
+      const oldPhone = currentUser.phone;
+      currentUser.name = newName; currentUser.phone = newPhone; currentUser.school = newSchool;
+      // update topados keys and notifications if phone changed
+      if(oldPhone !== newPhone){
+        const newTop = {};
+        Object.entries(topados).forEach(([viewer, targets])=>{
+          const v = viewer === oldPhone ? newPhone : viewer;
+          newTop[v] = (targets || []).map(t => t === oldPhone ? newPhone : t);
+        });
+        topados = newTop;
+        // update references in accounts notifications/smsReceived
+        accounts.forEach(a=>{
+          if(a.notifications) a.notifications = a.notifications.map(n => typeof n === 'object' ? n : n);
+          if(a.smsReceived) a.smsReceived = a.smsReceived.map(s => ({...s, to: s.to === oldPhone ? newPhone : s.to, from: s.from === oldPhone ? newPhone : s.from}));
+        });
+        if(sessionPhone === oldPhone) sessionPhone = newPhone;
+      }
+      save('pm_topados', topados);
+      save('pm_accounts', accounts);
+      save('pm_session', sessionPhone);
+      alert('Perfil atualizado');
+      loadSession();
+    }
+  });
+
+  btnLogout.addEventListener('click', ()=>{
+    sessionPhone = null; currentUser = null; save('pm_session', null);
+    loadSession();
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+
+  // render counts
+  function renderCounts(){ accounts = load('pm_accounts') || []; profilesCount.textContent = accounts.length; }
+
+  // search
+  btnSearch.addEventListener('click', ()=> doSearch(searchInput.value));
+  searchInput.addEventListener('keydown', e=>{ if(e.key === 'Enter') doSearch(searchInput.value) });
+  quickSearch.addEventListener('input', ()=> quickSearchUsers(quickSearch.value));
+
+  function doSearch(q){
+    resultsBox.innerHTML = '';
+    const s = (q||'').trim().toLowerCase();
+    if(!s) { resultsBox.innerHTML = '<div class="tiny">Digite algo para pesquisar</div>'; return; }
+    const found = accounts.filter(a => a.name.toLowerCase().includes(s));
+    if(found.length === 0){ resultsBox.innerHTML = '<div class="tiny">Nenhum resultado</div>'; return; }
+    found.forEach(acc => {
+      const r = document.createElement('div'); r.className = 'result';
+      r.innerHTML = `
+        <div class="mini"><img src="${acc.photo}" alt="${escapeHtml(acc.name)}"/></div>
+        <div class="rinfo">
+          <div style="font-weight:700">${escapeHtml(acc.name)}</div>
+          <div class="small">${escapeHtml(acc.school||'—')}</div>
+          <div style="margin-top:6px"><span class="badge">Pontos: ${(acc.points||0).toFixed(1)}</span> <span class="badge">Progresso: ${acc.progressPercent||0}%</span></div>
+        </div>
+      `;
+      r.addEventListener('click', ()=> openViewPanel(acc.phone));
+      resultsBox.appendChild(r);
+    });
+  }
+
+  function quickSearchUsers(q){
+    quickResults.innerHTML = '';
+    const s = (q||'').trim().toLowerCase();
+    if(!s) return;
+    const list = accounts.filter(a => a.name.toLowerCase().includes(s) && a.phone !== sessionPhone);
+    quickResults.innerHTML = list.map(u=>`<div class="result" style="padding:8px"><div class="mini"><img src="${u.photo}"></div><div style="flex:1;margin-left:8px"><strong>${u.name}</strong><div class="small">${u.school}</div></div><div style="margin-left:8px"><button onclick="openFromQuick('${u.phone}')">Ver</button></div></div>`).join('');
+  }
+  window.openFromQuick = (phone) => openViewPanel(phone);
+
+  // open view panel for a target
+  function openViewPanel(phone){
+    const acc = accounts.find(a=>a.phone===phone);
+    if(!acc) return;
+    currentViewAccount = acc;
+    viewMini.src = acc.photo || placeholderDataUrl(acc.name);
+    viewName.textContent = acc.name;
+    viewSchool.textContent = acc.school || '—';
+    viewPoints.textContent = (acc.points||0).toFixed(1);
+    viewProgress.style.width = (acc.progressPercent||0) + '%';
+    viewPercent.textContent = (acc.progressPercent||0) + '%';
+    viewPanel.style.display = 'block';
+    // disable Topar if not logged or own profile
+    if(!currentUser) { btnTopar.disabled = true; btnTopar.innerText = 'Login para Topar'; }
+    else if(currentUser.phone === acc.phone) { btnTopar.disabled = true; btnTopar.innerText = 'É você'; }
+    else { btnTopar.disabled = false; btnTopar.innerHTML = '<i data-feather=\"thumbs-up\"></i> Topar'; lucide.replace(); }
+  }
+
+  // Topar logic
+  btnTopar.addEventListener('click', ()=>{
+    if(!currentUser) return alert('Faça login para Topar');
+    const viewer = currentUser.phone;
+    const target = currentViewAccount && currentViewAccount.phone;
+    if(!target) return;
+    topados = load('pm_topados') || {};
+    const vList = topados[viewer] || [];
+    if(vList.includes(target)) return alert('Já topaste este perfil');
+    vList.push(target); topados[viewer] = vList; save('pm_topados', topados);
+    const targ = accounts.find(a=>a.phone === target);
+    if(!targ) return;
+    targ.points = (Number(targ.points) || 0) + 0.5;
+    targ.progressPercent = Math.min(100, (targ.progressPercent||0) + 1);
+    const notifText = `${currentUser.name} ${currentUser.school} ${currentUser.phone} está te ajudando a ganhar dinheiro.`;
+    targ.notifications = targ.notifications || []; targ.notifications.unshift(notifText);
+    save('pm_accounts', accounts);
+    // update UI
+    viewProgress.style.width = (targ.progressPercent) + '%';
+    viewPercent.textContent = targ.progressPercent + '%';
+    viewPoints.textContent = targ.points.toFixed(1);
+    alert('Topado! O dono do perfil será notificado.');
+    if(sessionPhone === targ.phone) renderNotifList();
+  });
+
+  // send SMS to viewed profile (quick)
+  btnSendSMS.addEventListener('click', ()=> {
+    if(!currentUser) return alert('Login necessário');
+    const target = currentViewAccount && currentViewAccount.phone;
+    if(!target) return alert('Nenhum perfil selecionado');
+    const text = prompt('Escreva SMS (max 130 chars):');
+    if(!text) return;
+    if(text.length > 130) return alert('Máx 130 caracteres');
+    const targ = accounts.find(a=>a.phone === target);
+    if(!targ) return;
+    const sms = {from: currentUser.phone, to: target, text, time: Date.now()};
+    targ.smsReceived = targ.smsReceived || []; targ.smsReceived.unshift(sms);
+    save('pm_accounts', accounts);
+    alert('SMS enviado (guardado localmente por 3h).');
+    if(sessionPhone === targ.phone) renderSMSFeed();
+  });
+
+  // Posts: publish and cleanup expired
+  btnPost.addEventListener('click', async ()=>{
+    if(!currentUser) return alert('Faça login para publicar');
+    const text = postText.value.trim();
+    const f = postImg.files[0];
+    if(!text && !f) return alert('Escreva algo ou selecione imagem');
+    let imgData = null;
+    if(f) imgData = await fileToDataUrl(f);
+    const post = {text, img: imgData, time: Date.now()};
+    const me = accounts.find(a=>a.phone === currentUser.phone);
+    me.posts = me.posts || []; me.posts.unshift(post);
+    save('pm_accounts', accounts);
+    postText.value = ''; postImg.value = '';
+    renderPostsFeed();
+  });
+  btnClearPosts.addEventListener('click', ()=> { cleanupPosts(); renderPostsFeed(); alert('Postagens expiradas removidas.'); });
+
+  function renderPostsFeed(){
+    const me = accounts.find(a => a.phone === sessionPhone);
+    postsFeed.innerHTML = '';
+    if(!me || !me.posts || me.posts.length === 0) { postsFeed.innerHTML = '<div class="tiny">Sem postagens recentes.</div>'; return; }
+    const now = Date.now();
+    // filter valid only
+    me.posts = (me.posts||[]).filter(p => now - p.time < EXPIRE_MS);
+    save('pm_accounts', accounts);
+    postsFeed.innerHTML = me.posts.map(p => `
+      <div class="post">
+        ${p.img ? `<img src="${p.img}" alt="post">` : ''}
+        <div class="meta">
+          <div style="font-weight:700">${escapeHtml(currentUser.name)}</div>
+          <div class="small">${escapeHtml(p.text || '')}</div>
+          <div class="tiny" style="margin-top:6px">Expira em até 3h</div>
+        </div>
+      </div>
+    `).join('');
+  }
+  function cleanupPosts(){
+    const now = Date.now();
+    accounts.forEach(a => { if(a.posts) a.posts = a.posts.filter(p => now - p.time < EXPIRE_MS); });
+    save('pm_accounts', accounts);
+  }
+
+  // SMS global send
+  btnSendSMSGlobal.addEventListener('click', ()=>{
+    if(!currentUser) return alert('Login necessário');
+    const to = smsTo.value.trim(), text = smsText.value.trim();
+    if(!to || !text) return alert('Preencha número e mensagem');
+    if(text.length > 130) return alert('Máx 130 caracteres');
+    const targ = accounts.find(a => a.phone === to);
+    if(!targ) return alert('Usuário destino não encontrado');
+    const sms = {from: currentUser.phone, to, text, time: Date.now()};
+    targ.smsReceived = targ.smsReceived || []; targ.smsReceived.unshift(sms);
+    save('pm_accounts', accounts);
+    smsTo.value=''; smsText.value='';
+    renderSMSFeed();
+    alert('SMS enviado (expires em 3h)');
+  });
+  btnClearSMS.addEventListener('click', ()=> { cleanupSMS(); renderSMSFeed(); alert('SMS expirados limpos'); });
+
+  function renderSMSFeed(){
+    const me = accounts.find(a => a.phone === sessionPhone);
+    smsFeed.innerHTML = '';
+    if(!me || !me.smsReceived || me.smsReceived.length === 0) { smsFeed.innerHTML = '<div class="tiny">Sem SMS recentes.</div>'; return; }
+    const now = Date.now();
+    me.smsReceived = me.smsReceived.filter(s => now - s.time < EXPIRE_MS);
+    save('pm_accounts', accounts);
+    smsFeed.innerHTML = me.smsReceived.map(s => `<div class="post"><div class="meta"><div class="small">De: ${s.from}</div><div>${escapeHtml(s.text)}</div><div class="tiny">Recebido há ${(Math.round((now - s.time)/60000))} min</div></div></div>`).join('');
+  }
+  function cleanupSMS(){
+    const now = Date.now();
+    accounts.forEach(a => { if(a.smsReceived) a.smsReceived = a.smsReceived.filter(s => now - s.time < EXPIRE_MS); });
+    save('pm_accounts', accounts);
+  }
+
+  // Notificações
+  function renderNotifList(){
+    notifList.innerHTML = '';
+    const me = accounts.find(a => a.phone === sessionPhone);
+    if(!me || !me.notifications || me.notifications.length === 0) { notifList.innerHTML = '<div class="tiny">Sem notificações.</div>'; notifCount.textContent=''; return; }
+    notifCount.textContent = `(${me.notifications.length})`;
+    notifList.innerHTML = me.notifications.map(n => `<div class="notify">${escapeHtml(n)}</div>`).join('');
+  }
+
+  // Tabs switching
+  tabs.forEach(t => t.addEventListener('click', ()=>{
+    tabs.forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    const key = t.dataset.tab;
+    tabContainers.forEach(c => { c.style.display = (c.dataset.content === key) ? (key==='perfil' ? 'block' : '') : 'none'; });
+    if(key === 'notifs') renderNotifList();
+  }));
+
+  // utility: file -> dataURL
+  function fileToDataUrl(file){
+    return new Promise((res,rej) => {
+      const fr = new FileReader();
+      fr.onload = ()=> res(fr.result);
+      fr.onerror = rej;
+      fr.readAsDataURL(file);
+    });
+  }
+  function placeholderDataUrl(text){
+    const t = (text||'P').charAt(0).toUpperCase();
+    const bg = '#fff7ed';
+    const fg = '#ff7b00';
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='100%' height='100%' fill='${bg}' rx='30'/><text x='50%' y='52%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='180' fill='${fg}'>${t}</text></svg>`;
+    return 'data:image/svg+xml;base64,' + btoa(svg);
+  }
+
+  function escapeHtml(s){ return (s+'').replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+
+  // initial render
+  renderCounts();
+
+  // expose some helpers for debugging (optional)
+  window._pm = {
+    accounts: () => load('pm_accounts'),
+    topados: () => load('pm_topados'),
+    session: () => load('pm_session')
+  };
+
+  // keep UI reactive when storage changed elsewhere
+  window.addEventListener('storage', ()=> { accounts = load('pm_accounts') || []; renderCounts(); loadSession(); });
+
+  // small helper functions for global onclick from generated HTML (safe)
+  window.openProfileByPhone = (phone) => {
+    if(!phone) return;
+    openViewPanel(phone);
+    // switch to Pesquisa tab programmatically
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelector('.tab[data-tab="pesquisa"]').classList.add('active');
+    tabContainers.forEach(c => c.style.display = (c.dataset.content === 'pesquisa') ? '' : 'none');
+  };
+
+})();
+
+</script>
+</body>
+</html>
+
 
