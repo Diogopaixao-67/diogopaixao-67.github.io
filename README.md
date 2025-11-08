@@ -1516,6 +1516,8 @@ Storage keys:
     let photoData = placeholderDataUrl(name);
     if(regPhoto.files && regPhoto.files[0]){ try { photoData = await fileToDataUrl(regPhoto.files[0]); } catch(e){} }
     const welcomeMsg = "Olá eu sou Diogo paixão CEO & fundador do Playmates espero que tenhas uma ótima experiência juvenil na plataforma e consigas fazer dinheiro online.";
+
+    
     const newAcc = {name, pass, phone, school: school||'—', photo: photoData, points:0, progressPercent:0, failedAttempts:0, locked:false, notifications:[welcomeMsg], posts:[], smsReceived:[]};
     accounts.push(newAcc);
     save('pm_accounts', accounts);
@@ -1525,7 +1527,468 @@ Storage keys:
     alert('Conta criada. Bem-vindo(a)!');
     loadSession();
   });
+</script>
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Playmates — Feed</title>
+<style>
+  body {
+    background: #f0f2f5;
+    font-family: "Segoe UI", sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  header {
+    background: #ff7e15;
+    color: white;
+    text-align: center;
+    padding: 12px;
+    font-size: 1.5em;
+    font-weight: bold;
+  }
+  #stats {
+    background: white;
+    text-align: center;
+    padding: 10px 5px;
+    font-size: 15px;
+    color: #333;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-around;
+  }
+  #filters {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+  }
+  #filters button {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  #filters button.active {
+    background: #ff7e15;
+    color: white;
+    border-color: #ff7e15;
+  }
+  main {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 10px;
+  }
+  .post {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 12px;
+    padding: 10px;
+  }
+  .author {
+    font-weight: bold;
+    color: #1877f2;
+    margin-bottom: 5px;
+  }
+  .text {
+    margin: 6px 0;
+    white-space: pre-wrap;
+  }
+  .media {
+    width: 100%;
+    border-radius: 10px;
+    margin-top: 8px;
+    cursor: pointer;
+  }
+  .reactions {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .reaction-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+  }
+  .views {
+    font-size: 13px;
+    color: #555;
+    margin-top: 5px;
+  }
+  .comments {
+    border-top: 1px solid #ddd;
+    margin-top: 8px;
+    padding-top: 6px;
+  }
+  .comment {
+    background: #f5f6f7;
+    border-radius: 8px;
+    padding: 6px 8px;
+    margin-top: 5px;
+  }
+  .comment strong {
+    color: #1877f2;
+  }
+  .reply {
+    margin-left: 20px;
+    background: #e9ebee;
+  }
+  .comment-input {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .comment-input input {
+    flex: 1;
+    padding: 6px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+  .comment-input button {
+    background: #1877f2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .reply-btn {
+    background: none;
+    border: none;
+    color: #1877f2;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 0;
+  }
+  #postBtn {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    background: #1877f2;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 55px;
+    height: 55px;
+    font-size: 28px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    z-index: 99;
+  }
+  #resetBtn {
+    background: transparent;
+    color: #666;
+    border: none;
+    font-size: 13px;
+    opacity: 0.5;
+    cursor: pointer;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+  }
+  #resetBtn:hover { color: red; opacity: 1; }
+  #overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+  }
+  #overlay img, #overlay video {
+    max-width: 95%;
+    max-height: 90%;
+    border-radius: 10px;
+  }
+  #closeOverlay {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 28px;
+    color: white;
+    cursor: pointer;
+    background: rgba(0,0,0,0.4);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    line-height: 38px;
+  }
+  #postArea {
+    background: white;
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    position: fixed;
+    bottom: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 500px;
+    display: none;
+    z-index: 10;
+  }
+  textarea {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    resize: none;
+    padding: 8px;
+    font-size: 15px;
+  }
+  input[type=file] { margin-top: 6px; }
+  #submitPost {
+    margin-top: 6px;
+    background: #1877f2;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
 
+<header>Feed — Playmates</header>
+<button id="resetBtn">⟳</button>
+
+<div id="stats">
+  <div>👁️ Visualizações: <span id="totalViews">0</span></div>
+  <div>📝 Postagens: <span id="totalPosts">0</span></div>
+</div>
+
+<div id="filters">
+  <button class="active" data-filter="all">📰 Todos</button>
+  <button data-filter="image">🖼️ Imagens</button>
+  <button data-filter="video">📹 Vídeos</button>
+</div>
+
+<main id="feed"></main>
+
+<div id="overlay"><span id="closeOverlay">❌</span></div>
+
+<div id="postArea">
+  <textarea id="postText" placeholder="O que está pensando, Playmate?" rows="3"></textarea>
+  <input type="file" id="mediaInput" accept="image/*,video/*">
+  <button id="submitPost">Postar</button>
+</div>
+
+<button id="postBtn">＋</button>
+
+<script>
+const feed = document.getElementById('feed');
+const postBtn = document.getElementById('postBtn');
+const resetBtn = document.getElementById('resetBtn');
+const overlay = document.getElementById('overlay');
+const postArea = document.getElementById('postArea');
+const submitPost = document.getElementById('submitPost');
+const postText = document.getElementById('postText');
+const mediaInput = document.getElementById('mediaInput');
+const totalViews = document.getElementById('totalViews');
+const totalPosts = document.getElementById('totalPosts');
+const filters = document.querySelectorAll('#filters button');
+const user = "Playmate";
+
+let selectedMedia = null;
+let currentFilter = "all";
+
+function updateStats() {
+  const posts = JSON.parse(localStorage.getItem('posts')) || [];
+  let totalV = posts.reduce((sum,p)=>sum+(p.views||0),0);
+  if(totalV > 1000000) totalV = 1000000;
+  totalViews.textContent = totalV.toLocaleString();
+  totalPosts.textContent = posts.length;
+}
+
+function loadPosts() {
+  const posts = JSON.parse(localStorage.getItem('posts')) || [];
+  feed.innerHTML = "";
+  posts.sort((a,b)=>b.id - a.id);
+  posts.forEach(p => {
+    if(currentFilter==="all" || p.type===currentFilter) addPostToDOM(p);
+  });
+  updateStats();
+}
+loadPosts();
+
+function renderComments(list, parentEl, post) {
+  parentEl.innerHTML = list.map((c, idx) => `
+    <div class="comment ${c.parentId ? 'reply' : ''}">
+      <strong>${c.author}:</strong> ${c.text}
+      <div><button class="reply-btn" data-index="${idx}">Responder</button></div>
+      <div class="replies"></div>
+    </div>
+  `).join('');
+
+  list.forEach((c, i)=>{
+    const commentEl = parentEl.children[i];
+    const replyBtn = commentEl.querySelector('.reply-btn');
+    const repliesEl = commentEl.querySelector('.replies');
+    if(c.replies && c.replies.length){
+      renderComments(c.replies, repliesEl, post);
+    }
+    replyBtn.onclick = ()=>{
+      if(commentEl.querySelector('.comment-input')) return;
+      const replyBox = document.createElement('div');
+      replyBox.className = "comment-input";
+      replyBox.innerHTML = `<input type="text" placeholder="Responda a ${c.author}..."><button>Enviar</button>`;
+      commentEl.appendChild(replyBox);
+      const input = replyBox.querySelector('input');
+      replyBox.querySelector('button').onclick = ()=>{
+        const text = input.value.trim();
+        if(!text) return;
+        if(!c.replies) c.replies=[];
+        c.replies.push({author:user,text,parentId:c.id});
+        updatePost(post);
+      };
+    };
+  });
+}
+
+function addPostToDOM(post) {
+  const div = document.createElement('div');
+  div.className = "post";
+  div.innerHTML = `
+    <div class="author">${post.author}</div>
+    <div class="text">${post.text}</div>
+    ${post.media ? 
+      (post.type === 'image'
+        ? `<img src="${post.media}" class="media" alt="imagem">`
+        : `<video src="${post.media}" class="media" controls></video>`) 
+      : ""}
+    <div class="views">👁️ ${Math.min(post.views || 0,1000000)} visualizações</div>
+    <div class="reactions">
+      ${['😍','😂','👍','😡','❤️'].map(e=>`<button class="reaction-btn" data-emoji="${e}">${e} <span>${post.reactions[e]||0}</span></button>`).join('')}
+    </div>
+    <div class="comments">
+      <div class="comment-list"></div>
+      <div class="comment-input">
+        <input type="text" placeholder="Escreva um comentário...">
+        <button>Comentar</button>
+      </div>
+    </div>
+  `;
+  feed.appendChild(div);
+
+  const listEl = div.querySelector('.comment-list');
+  renderComments(post.comments||[], listEl, post);
+
+  const mediaEl = div.querySelector('.media');
+  if (mediaEl) {
+    if (post.type === 'video') mediaEl.addEventListener('play', () => increaseViews(post));
+    else mediaEl.onclick = () => { showMedia(post); increaseViews(post); };
+  }
+
+  div.querySelectorAll('.reaction-btn').forEach(btn=>{
+    btn.onclick=()=>{
+      const now = Date.now();
+      const last = localStorage.getItem(`react_${post.id}`)||0;
+      if(now - last < 30000){alert("Espere 30s para reagir novamente.");return;}
+      const emoji = btn.dataset.emoji;
+      post.reactions[emoji] = (post.reactions[emoji]||0)+1;
+      localStorage.setItem(`react_${post.id}`,now);
+      updatePost(post);
+    };
+  });
+
+  const commentBtn = div.querySelector('.comment-input button');
+  const commentInput = div.querySelector('.comment-input input');
+  commentBtn.onclick = ()=>{
+    const text = commentInput.value.trim();
+    if(!text) return;
+    if(!post.comments) post.comments=[];
+    post.comments.push({id:Date.now(),author:user,text,replies:[]});
+    updatePost(post);
+  };
+}
+
+function showMedia(post) {
+  overlay.style.display = "flex";
+  overlay.innerHTML = `<span id="closeOverlay">❌</span>` + 
+    (post.type === 'image' ? `<img src="${post.media}">` : `<video src="${post.media}" controls autoplay></video>`);
+  document.getElementById('closeOverlay').onclick = ()=> overlay.style.display="none";
+}
+
+function increaseViews(post) {
+  post.views = Math.min((post.views||0)+1,1000000);
+  updatePost(post);
+}
+
+function updatePost(p) {
+  let posts = JSON.parse(localStorage.getItem('posts')) || [];
+  posts = posts.map(x=>x.id===p.id?p:x);
+  localStorage.setItem('posts',JSON.stringify(posts));
+  loadPosts();
+}
+
+filters.forEach(btn=>{
+  btn.onclick = ()=>{
+    filters.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    loadPosts();
+  };
+});
+
+postBtn.onclick = ()=>{
+  const senha = prompt("Senha para postar:");
+  if(senha!=="LEX"){alert("Senha incorreta!");return;}
+  postArea.style.display = "block";
+};
+
+submitPost.onclick = ()=>{
+  const text = postText.value.trim();
+  if(!text && !selectedMedia){alert("Escreva algo ou envie mídia!");return;}
+  const reader = new FileReader();
+  const savePost = (mediaData,type)=>{
+    const post = {
+      id: Date.now(),
+      author: user,
+      text,
+      media: mediaData || null,
+      type: type || null,
+      reactions: {},
+      views: 0,
+      comments: []
+    };
+    const posts = JSON.parse(localStorage.getItem('posts')) || [];
+    posts.unshift(post);
+    localStorage.setItem('posts', JSON.stringify(posts));
+    loadPosts();
+    postText.value="";
+    mediaInput.value="";
+    selectedMedia=null;
+    postArea.style.display="none";
+  };
+  if(selectedMedia){
+    reader.onload=e=>savePost(e.target.result, selectedMedia.type.startsWith('video')?'video':'image');
+    reader.readAsDataURL(selectedMedia);
+  } else savePost();
+};
+
+mediaInput.onchange = e => selectedMedia = e.target.files[0];
+
+resetBtn.onclick = ()=>{
+  const senha = prompt("Senha para resetar:");
+  if(senha!=="LEX"){alert("Senha incorreta!");return;}
+  if(confirm("Apagar tudo?")){
+    localStorage.removeItem('posts');
+    feed.innerHTML="";
+    updateStats();
+  }
+};
+</script>
+</body>
+</html>
+
+<script>
   // login
   loginSubmit.addEventListener('click', ()=>{
     const phone = loginPhone.value.trim(), pass = loginPass.value;
