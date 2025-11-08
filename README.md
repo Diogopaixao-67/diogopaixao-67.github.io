@@ -1525,6 +1525,31 @@ Storage keys:
       save('pm_accounts', accounts);
     }
   });
+    // auto login
+    sessionPhone = phone; save('pm_session', sessionPhone);
+    renderCounts();
+    alert('Conta criada. Bem-vindo(a)!');
+    loadSession();
+  });
+
+  // login
+  loginSubmit.addEventListener('click', ()=>{
+    const phone = loginPhone.value.trim(), pass = loginPass.value;
+    const acc = accounts.find(a=>a.phone===phone);
+    if(!acc) return alert('Conta não encontrada');
+    if(acc.locked) return alert('Conta bloqueada por demasiadas tentativas.');
+    if(acc.pass === pass){
+      acc.failedAttempts = 0; save('pm_accounts',accounts);
+      sessionPhone = acc.phone; save('pm_session',sessionPhone);
+      alert(`Bem-vindo(a), ${acc.name}`);
+      loadSession();
+    } else {
+      acc.failedAttempts = (acc.failedAttempts||0) + 1;
+      if(acc.failedAttempts >= 3){ acc.locked = true; alert('Senha incorreta — conta bloqueada.'); }
+      else alert(`Senha incorreta. Tentativas: ${acc.failedAttempts}/3`);
+      save('pm_accounts', accounts);
+    }
+  });
 
     // session loader
   function loadSession(){
