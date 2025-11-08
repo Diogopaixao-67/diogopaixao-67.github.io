@@ -1200,6 +1200,352 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
       zoomOverlay.onclick=(e)=>{if(e.target===zoomOverlay)zoomOverlay.classList.remove('show');};
     }
   </script>
+  </html>
 
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Playmates — Plataforma</title>
+<!-- Lucide icons CDN -->
+<link rel="preload" href="https://unpkg.com/lucide@0.263.0/dist/lucide.min.js" as="script">
+<style>
+  :root{
+    --bg:#f6f7fb; --card:#ffffff; --muted:#6b7280; --accent:#ff7b00; --accent-2:#ff9a3d;
+    --glass: rgba(255,255,255,0.8);
+  }
+  *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;margin:0;padding:0}
+  body{background:var(--bg);color:#0b1222;min-height:100vh;padding:14px}
+  .app{max-width:980px;margin:0 auto}
+  header{display:flex;gap:12px;align-items:center;padding:16px;border-radius:14px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;box-shadow:0 8px 30px rgba(255,123,0,0.12)}
+  header h1{font-size:20px}
+  .top-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
+  button{background:var(--accent);color:#fff;border:0;padding:10px 12px;border-radius:10px;font-weight:700;display:inline-flex;gap:8px;align-items:center;cursor:pointer}
+  button.ghost{background:transparent;color:var(--accent);border:1px solid rgba(0,0,0,0.06)}
+  main{display:grid;grid-template-columns:1fr;gap:12px;margin-top:14px}
+  @media(min-width:920px){ main{grid-template-columns:340px 1fr} }
+  .card{background:var(--card);border-radius:12px;padding:12px;box-shadow:0 6px 20px rgba(16,24,40,0.04) }
+  /* big counter */
+  .counter-box{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px;border-radius:12px;background:linear-gradient(180deg,#fff,#fff);text-align:center}
+  .counter-box h2{font-size:20px;color:var(--accent);margin-bottom:6px}
+  .counter-box p{color:var(--muted);font-size:13px}
+  /* profile */
+  .profile-top{display:flex;gap:12px;align-items:center}
+  .avatar{width:88px;height:88px;border-radius:999px;overflow:hidden;flex:0 0 88px;background:#f3f5f8;border:3px solid rgba(255,123,0,0.12)}
+  .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+  .pinfo h2{font-size:16px;margin-bottom:4px}
+  .small{color:var(--muted);font-size:13px}
+  .tabs{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .tab{padding:8px 10px;border-radius:10px;cursor:pointer;font-weight:600;color:var(--muted);background:transparent}
+  .tab.active{background:linear-gradient(90deg,rgba(255,123,0,0.12),rgba(255,154,61,0.06));color:var(--accent)}
+  /* search */
+  .searchbar{display:flex;gap:8px;align-items:center}
+  .searchbar input{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(11,18,34,0.06);background:transparent}
+  .results{margin-top:12px;display:grid;gap:8px}
+  .result{display:flex;gap:10px;align-items:center;padding:10px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfcff);cursor:pointer}
+  .result .mini{width:56px;height:56px;border-radius:999px;overflow:hidden;background:#f2f6ff;flex:0 0 56px}
+  .result .mini img{width:100%;height:100%;object-fit:cover}
+  .rinfo{flex:1}
+  .badge{font-size:12px;padding:6px 8px;border-radius:999px;background:rgba(11,18,34,0.04);color:var(--muted);display:inline-block}
+  /* view panel */
+  .view-panel{margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfcff)}
+  .progress-wrap{height:12px;background:rgba(11,18,34,0.06);border-radius:10px;overflow:hidden}
+  .progress{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width 1s ease}
+  .notify-list{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+  .notify{padding:10px;border-radius:10px;background:linear-gradient(90deg,rgba(255,123,0,0.08),rgba(255,154,61,0.04));font-size:13px}
+  /* forms */
+  label{display:block;font-size:13px;margin-bottom:6px;color:var(--muted)}
+  input[type="text"],input[type="password"],input[type="tel"],select,textarea{padding:10px;border-radius:10px;border:1px solid rgba(11,18,34,0.06);width:100%;display:block}
+  input[type="file"]{padding:6px}
+  textarea{min-height:80px;resize:vertical}
+  .muted-small{font-size:12px;color:var(--muted);margin-top:6px}
+  /* post list */
+  .post{display:flex;gap:10px;align-items:flex-start;padding:10px;border-radius:10px;background:#fff}
+  .post img{width:86px;height:86px;border-radius:10px;object-fit:cover}
+  .post .meta{flex:1}
+  /* small */
+  .row{display:flex;gap:8px;align-items:center}
+  .tiny{font-size:12px;color:var(--muted)}
+  .center{display:flex;align-items:center;justify-content:center}
+</style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>Playmates</h1>
+      <div class="top-actions">
+        <button id="btnOpenAuth"><i data-feather="log-in"></i> Entrar / Cadastrar</button>
+        <button id="btnDemo" class="ghost"><i data-feather="user"></i> Conta Demo</button>
+      </div>
+    </header>
+
+    <main>
+      <!-- left column -->
+      <div class="card" id="leftCol">
+        <div id="authArea">
+          <h3>Bem-vindo ao Playmates</h3>
+          <div class="muted-small">Faça login ou crie conta — fotos guardadas localmente no seu navegador.</div>
+          <div style="height:10px"></div>
+
+          <div id="loginForm">
+            <label>Telemóvel</label>
+            <input id="loginPhone" type="tel" placeholder="ex: 922000000" />
+            <label>Senha</label>
+            <input id="loginPass" type="password" placeholder="Senha" />
+            <div class="row" style="margin-top:10px">
+              <button id="loginSubmit"><i data-feather="log-in"></i> Entrar</button>
+              <button id="showRegister" class="ghost"><i data-feather="user-plus"></i> Criar conta</button>
+            </div>
+            <div class="muted-small" style="margin-top:8px">Se errar 3 vezes a conta fica bloqueada.</div>
+          </div>
+
+          <div id="registerForm" style="display:none">
+            <label>Nome completo</label>
+            <input id="regName" type="text" placeholder="Nome completo" />
+            <label>Senha</label>
+            <input id="regPass" type="password" placeholder="Senha" />
+            <label>Telemóvel</label>
+            <input id="regPhone" type="tel" placeholder="ex: 922000000" />
+            <label>Nome da escola</label>
+            <input id="regSchool" type="text" placeholder="Escola" />
+            <label>Foto (upload)</label>
+            <input id="regPhoto" type="file" accept="image/*" />
+            <div class="row" style="margin-top:10px">
+              <button id="regSubmit"><i data-feather="check-circle"></i> Criar conta</button>
+              <button id="regCancel" class="ghost"><i data-feather="chevrons-left"></i> Voltar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- when logged -->
+        <div id="loggedArea" style="display:none">
+          <div class="profile-top">
+            <div class="avatar" id="leftAvatar"><img src="" alt="avatar"/></div>
+            <div class="pinfo">
+              <h2 id="leftName">—</h2>
+              <div class="small" id="leftSchool">—</div>
+              <div class="small" id="leftPhone">—</div>
+              <div style="height:8px"></div>
+              <div class="row">
+                <button id="btnEditProfile" class="ghost"><i data-feather="edit-3"></i> Editar</button>
+                <button id="btnLogout" class="ghost"><i data-feather="log-out"></i> Sair</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="height:12px"></div>
+          <div class="tabs">
+            <div class="tab active" data-tab="perfil"><i data-feather="user"></i> Perfil</div>
+            <div class="tab" data-tab="pesquisa"><i data-feather="search"></i> Pesquisa</div>
+            <div class="tab" data-tab="notifs"><i data-feather="bell"></i> Notificações <span id="notifCount" class="tiny"></span></div>
+            <div class="tab" data-tab="jogos"><i data-feather="gamepad"></i> Jogos</div>
+          </div>
+
+          <div id="tabContainers">
+            <div data-content="perfil" class="view-panel" style="display:block">
+              <div class="counter-box card">
+                <h2 id="profilesCount">0</h2>
+                <p>Perfis registados no Playmates</p>
+              </div>
+              <div style="height:10px"></div>
+              <div class="small">Pontos</div>
+              <div style="font-weight:800;font-size:20px" id="leftPoints">0</div>
+              <div class="muted-small">Notificações aparecem nesta aba quando outros te Topam ou te enviam SMS.</div>
+            </div>
+
+            <div data-content="pesquisa" style="display:none">
+              <div class="searchbar">
+                <input id="searchInput" placeholder="Pesquisar por nome (Enter)" />
+                <button id="btnSearch" class="ghost"><i data-feather="search"></i> Pesquisar</button>
+              </div>
+              <div class="results card" id="results"></div>
+
+              <div id="viewPanel" style="display:none" class="card view-panel">
+                <div style="display:flex;gap:12px;align-items:center">
+                  <div class="mini" style="width:72px;height:72px;border-radius:999px;overflow:hidden"><img id="viewMini" src="" style="width:100%;height:100%;object-fit:cover" /></div>
+                  <div style="flex:1">
+                    <div id="viewName" style="font-weight:700"></div>
+                    <div class="small" id="viewSchool"></div>
+                    <div class="small">Pontos: <span id="viewPoints"></span></div>
+                    <div style="height:8px"></div>
+                    <div class="row">
+                      <button id="btnTopar"><i data-feather="thumbs-up"></i> Topar</button>
+                      <button id="btnSendSMS" class="ghost"><i data-feather="message-circle"></i> Enviar SMS</button>
+                    </div>
+                  </div>
+                </div>
+                <div style="margin-top:12px">
+                  <div class="progress-wrap"><div class="progress" id="viewProgress"></div></div>
+                  <div class="tiny muted-small" id="viewProgressText" style="margin-top:6px">Progresso: <span id="viewPercent">0%</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div data-content="notifs" style="display:none" class="view-panel">
+              <div class="small">Notificações recentes</div>
+              <div id="notifList" class="notify-list"></div>
+            </div>
+
+            <div data-content="jogos" style="display:none" class="view-panel">
+              <div class="small">Aba Jogos</div>
+              <div style="margin-top:8px">🎮 Espaço reservado — podes colar/implementar aqui o teu jogo mais tarde.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- right column -->
+      <div>
+        <div class="card" id="postsCard">
+          <h3><i data-feather="image"></i> Postagens (3 horas)</h3>
+          <label>Texto (opcional)</label>
+          <textarea id="postText" placeholder="Escreve algo... (max 300)"></textarea>
+          <label>Foto (opcional)</label>
+          <input id="postImg" type="file" accept="image/*" />
+          <div style="height:8px"></div>
+          <div class="row">
+            <button id="btnPost"><i data-feather="upload-cloud"></i> Publicar</button>
+            <button id="btnClearPosts" class="ghost"><i data-feather="trash-2"></i> Limpar expirados</button>
+          </div>
+          <div id="postsFeed" style="margin-top:12px"></div>
+        </div>
+
+        <div class="card" id="smsCard">
+          <h3><i data-feather="send"></i> Enviar SMS (130 chars - 3h)</h3>
+          <label>Para (número)</label>
+          <input id="smsTo" type="tel" placeholder="Número do destinatário" />
+          <label>Mensagem (máx 130)</label>
+          <textarea id="smsText" maxlength="130" placeholder="Mensagem curta..."></textarea>
+          <div style="height:8px"></div>
+          <div class="row">
+            <button id="btnSendSMSGlobal"><i data-feather="send"></i> Enviar</button>
+            <button id="btnClearSMS" class="ghost"><i data-feather="trash"></i> Limpar expirados</button>
+          </div>
+          <div id="smsFeed" style="margin-top:12px"></div>
+        </div>
+
+        <div class="card" id="searchCard">
+          <h3><i data-feather="users"></i> Pesquisar usuários</h3>
+          <label>Pesquisar por nome</label>
+          <input id="quickSearch" placeholder="Digite nome..." />
+          <div id="quickResults" style="margin-top:10px"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Lucide icons -->
+  <script src="https://unpkg.com/lucide@0.263.0/dist/lucide.min.js"></script>
+  <script>lucide.replace()</script>
+
+<script>
+/*
+Playmates consolidated single-file app
+Storage keys:
+ - pm_accounts: array of accounts {name,phone,school,photo,pass,points:Number,progressPercent:int,failedAttempts:int,locked:boolean,notifications:[],posts:[],smsReceived:[]}
+ - pm_topados: object {viewerPhone: [targetPhones...]}
+ - pm_session: phone of logged in user
+*/
+(() => {
+  // storage helpers
+  const load = (k) => { try { return JSON.parse(localStorage.getItem(k) || 'null') } catch(e){ return null } };
+  const save = (k,v) => localStorage.setItem(k, JSON.stringify(v));
+  if(!load('pm_accounts')) save('pm_accounts', []);
+  if(!load('pm_topados')) save('pm_topados', {});
+  if(!load('pm_session')) save('pm_session', null);
+
+  // DOM refs
+  const loginPhone = document.getElementById('loginPhone'), loginPass = document.getElementById('loginPass'), loginSubmit = document.getElementById('loginSubmit');
+  const showRegisterBtn = document.getElementById('showRegister'), regCancel = document.getElementById('regCancel'), regSubmit = document.getElementById('regSubmit');
+  const regName = document.getElementById('regName'), regPass = document.getElementById('regPass'), regPhone = document.getElementById('regPhone'), regSchool = document.getElementById('regSchool'), regPhoto = document.getElementById('regPhoto');
+  const btnOpenAuth = document.getElementById('btnOpenAuth'), btnDemo = document.getElementById('btnDemo');
+  const leftAvatar = document.getElementById('leftAvatar'), leftName = document.getElementById('leftName'), leftSchool = document.getElementById('leftSchool'), leftPhone = document.getElementById('leftPhone'), leftPoints = document.getElementById('leftPoints');
+  const loggedArea = document.getElementById('loggedArea'), authArea = document.getElementById('authArea');
+  const profilesCount = document.getElementById('profilesCount');
+  const tabs = document.querySelectorAll('.tab');
+  const tabContainers = document.querySelectorAll('[data-content]');
+  const searchInput = document.getElementById('searchInput'), btnSearch = document.getElementById('btnSearch');
+  const resultsBox = document.getElementById('results'), viewPanel = document.getElementById('viewPanel');
+  const viewMini = document.getElementById('viewMini'), viewName = document.getElementById('viewName'), viewSchool = document.getElementById('viewSchool'), viewPoints = document.getElementById('viewPoints'), viewProgress = document.getElementById('viewProgress'), viewPercent = document.getElementById('viewPercent');
+  const btnTopar = document.getElementById('btnTopar'), btnSendSMS = document.getElementById('btnSendSMS');
+  const notifList = document.getElementById('notifList'), notifCount = document.getElementById('notifCount');
+  const btnEditProfile = document.getElementById('btnEditProfile'), btnLogout = document.getElementById('btnLogout');
+  const postText = document.getElementById('postText'), postImg = document.getElementById('postImg'), btnPost = document.getElementById('btnPost'), postsFeed = document.getElementById('postsFeed'), btnClearPosts = document.getElementById('btnClearPosts');
+  const smsTo = document.getElementById('smsTo'), smsText = document.getElementById('smsText'), btnSendSMSGlobal = document.getElementById('btnSendSMSGlobal'), smsFeed = document.getElementById('smsFeed'), btnClearSMS = document.getElementById('btnClearSMS');
+  const quickSearch = document.getElementById('quickSearch'), quickResults = document.getElementById('quickResults');
+  const loginForm = document.getElementById('loginForm'), registerForm = document.getElementById('registerForm');
+
+  // state
+  let accounts = load('pm_accounts') || [];
+  let topados = load('pm_topados') || {};
+  let sessionPhone = load('pm_session') || null;
+  let currentViewAccount = null;
+  let currentUser = null;
+  // constants
+  const EXPIRE_MS = 3 * 60 * 60 * 1000; // 3 hours
+
+  // init demo accounts if none
+  if(accounts.length === 0){
+    accounts = [
+      {name:'Ana Silva', phone:'910000001', pass:'1', school:'Escola A', photo: placeholderDataUrl('A'), points:2.5, progressPercent:5, failedAttempts:0, locked:false, notifications:[], posts:[], smsReceived:[]},
+      {name:'Bruno Costa', phone:'910000002', pass:'1', school:'Escola B', photo: placeholderDataUrl('B'), points:1.0, progressPercent:2, failedAttempts:0, locked:false, notifications:[], posts:[], smsReceived:[]}
+    ];
+    save('pm_accounts', accounts);
+  }
+
+  // onboarding: wire events
+  btnOpenAuth.addEventListener('click', ()=> { window.scrollTo({top:0,behavior:'smooth'}); });
+  btnDemo.addEventListener('click', ()=>{
+    if(accounts.some(a=>a.phone==='999999999')) return alert('Demo já existe. Login: 999999999 / demo');
+    accounts.push({name:'Conta Demo',phone:'999999999',pass:'demo',school:'Demo',photo:placeholderDataUrl('D'),points:0,progressPercent:0,failedAttempts:0,locked:false,notifications:[],posts:[],smsReceived:[]});
+    save('pm_accounts',accounts); renderCounts(); alert('Demo criada: 999999999 / demo');
+  });
+
+  // show register form
+  showRegisterBtn.addEventListener('click', ()=>{ loginForm.style.display='none'; registerForm.style.display='block'; });
+  regCancel.addEventListener('click', ()=>{ registerForm.style.display='none'; loginForm.style.display='block'; });
+
+  // register
+  regSubmit.addEventListener('click', async ()=>{
+    const name = regName.value.trim(), pass = regPass.value, phone = regPhone.value.trim(), school = regSchool.value.trim();
+    if(!name || !pass || !phone){ return alert('Preencha nome, senha e telemóvel'); }
+    if(accounts.some(a=>a.phone===phone)) return alert('Já existe conta com esse telemóvel');
+    // photo
+    let photoData = placeholderDataUrl(name);
+    if(regPhoto.files && regPhoto.files[0]){ try { photoData = await fileToDataUrl(regPhoto.files[0]); } catch(e){} }
+    const welcomeMsg = "Olá eu sou Diogo paixão CEO & fundador do Playmates espero que tenhas uma ótima experiência juvenil na plataforma e consigas fazer dinheiro online.";
+    const newAcc = {name, pass, phone, school: school||'—', photo: photoData, points:0, progressPercent:0, failedAttempts:0, locked:false, notifications:[welcomeMsg], posts:[], smsReceived:[]};
+    accounts.push(newAcc);
+    save('pm_accounts', accounts);
+    // auto login
+    sessionPhone = phone; save('pm_session', sessionPhone);
+    renderCounts();
+    alert('Conta criada. Bem-vindo(a)!');
+    loadSession();
+  });
+
+  // login
+  loginSubmit.addEventListener('click', ()=>{
+    const phone = loginPhone.value.trim(), pass = loginPass.value;
+    const acc = accounts.find(a=>a.phone===phone);
+    if(!acc) return alert('Conta não encontrada');
+    if(acc.locked) return alert('Conta bloqueada por demasiadas tentativas.');
+    if(acc.pass === pass){
+      acc.failedAttempts = 0; save('pm_accounts',accounts);
+      sessionPhone = acc.phone; save('pm_session',sessionPhone);
+      alert(`Bem-vindo(a), ${acc.name}`);
+      loadSession();
+    } else {
+      acc.failedAttempts = (acc.failedAttempts||0) + 1;
+      if(acc.failedAttempts >= 3){ acc.locked = true; alert('Senha incorreta — conta bloqueada.'); }
+      else alert(`Senha incorreta. Tentativas: ${acc.failedAttempts}/3`);
+      save('pm_accounts', accounts);
+    }
+  });
+
+  // session loader
+  function loadSession(){
+    accounts = load('pm_accounts') || [];
+    topados = load('pm_topados') || {}
 
   
