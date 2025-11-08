@@ -1841,4 +1841,452 @@ Storage keys:
 </script>
 </body>
 </html>
+   
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Playmates — Início</title>
+<style>
+  :root {
+    --brand:#ff7e15;
+    --blue:#1877f2;
+    --bg:#f0f2f5;
+  }
+  html,body{height:100%;margin:0;}
+  body {
+    font-family: "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, var(--brand), );
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  /* START SCREEN */
+  #startScreen {
+    width:100%;
+    max-width:420px;
+    padding:36px 20px;
+    box-sizing:border-box;
+    text-align:center;
+    color:white;
+  }
+  #startBtn {
+    background: white;
+    color: var(--brand);
+    border: none;
+    border-radius: 50%;
+    width: 84px;
+    height: 84px;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+    transition: transform .14s, box-shadow .14s;
+  }
+  #startBtn:active { transform: scale(.96); box-shadow: 0 3px 10px rgba(0,0,0,0.18); }
+  .start-sub { margin-top:14px; font-size:15px; opacity:.95; }
+
+  @media (max-width:480px){
+    #startScreen{padding:28px 16px;}
+    #startBtn{width:68px;height:68px;font-size:18px;}
+  }
+
+  /* APP / FEED */
+  #app {
+    display:none;
+    width:100%;
+    height:100vh;
+    background: var(--bg);
+    overflow:auto;
+  }
+  header {
+    background: var(--brand);
+    color: white;
+    text-align: center;
+    padding: 12px;
+    font-size: 1.4em;
+    font-weight: bold;
+    position: sticky;
+    top:0;
+    z-index:5;
+  }
+  #stats {
+    background: white;
+    text-align: center;
+    padding: 8px 6px;
+    font-size: 14px;
+    color: #333;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    display: flex;
+    justify-content: space-around;
+  }
+  #filters {
+    display:flex;
+    justify-content:center;
+    gap:8px;
+    padding:8px;
+    background: transparent;
+  }
+  #filters button{
+    background:#fff;border:1px solid #ddd;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:14px;
+  }
+  #filters button.active{ background: var(--brand); color:#fff; border-color:var(--brand); }
+
+  main { max-width:600px; margin:10px auto; padding:0 10px 60px; box-sizing:border-box; }
+  .post{ background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06);margin-bottom:12px;padding:10px; }
+  .author{ font-weight:700;color:var(--blue); margin-bottom:6px; }
+  .text{ margin:6px 0; white-space:pre-wrap; }
+  .media{ width:100%; border-radius:10px; margin-top:8px; cursor:pointer; display:block; max-height:400px; object-fit:cover; }
+  .reactions{ display:flex; gap:6px; margin-top:8px; align-items:center; flex-wrap:wrap; }
+  .reaction-btn{ background:transparent;border:none; cursor:pointer; font-size:18px; padding:4px; }
+  .views{ font-size:13px;color:#555;margin-top:6px; }
+
+  .comments{ border-top:1px solid #eee; margin-top:8px; padding-top:8px; }
+  .comment{ background:#f5f6f7;border-radius:8px;padding:6px 8px;margin-top:6px; }
+  .comment strong{ color:var(--blue); }
+  .reply{ margin-left:18px; background:#e9ebee; }
+  .comment-input{ display:flex; gap:6px; margin-top:8px; }
+  .comment-input input{ flex:1;padding:8px;border-radius:8px;border:1px solid #ccc; font-size:14px; }
+  .comment-input button{ background:var(--blue); color:white;border:none;border-radius:8px;padding:8px 10px; cursor:pointer; }
+
+  #postBtn {
+    position: fixed;
+    bottom: 14px;
+    right: 14px;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 54px;
+    height: 54px;
+    font-size: 26px;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+    z-index: 99;
+  }
+
+  #resetBtn { position: absolute; top:12px; right:12px; background:transparent;border:none;color:#444;opacity:.6; cursor:pointer; font-size:14px; }
+  #overlay { position:fixed; inset:0; background:rgba(0,0,0,.86); display:none; align-items:center; justify-content:center; z-index:1200; padding:20px; box-sizing:border-box; }
+  #overlay img, #overlay video { max-width:100%; max-height:100%; border-radius:10px; }
+  #closeOverlay { position:absolute; top:14px; right:14px; font-size:26px; color:#fff; background:rgba(0,0,0,.35); border-radius:50%; width:40px; height:40px; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+
+  #postArea { display:none; position:fixed; left:50%; transform:translateX(-50%); bottom:82px; width:92%; max-width:520px; background:#fff;padding:12px;border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.12); z-index:110; }
+  textarea{ width:100%; border-radius:8px; border:1px solid #ccc; padding:8px; resize:none; font-size:14px; box-sizing:border-box; }
+  input[type=file]{ margin-top:8px; }
+  #submitPost{ margin-top:8px; background:var(--blue); color:#fff;border:none;padding:8px 12px;border-radius:8px; cursor:pointer; }
+
+  /* small screens padding fix */
+  @media (max-width:480px){
+    main{ padding:0 8px 80px; }
+    #postArea{ bottom:76px; width:95%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- START SCREEN -->
+<div id="startScreen" aria-hidden="false">
+  <button id="startBtn" aria-label="Abrir Playmates">＋</button>
+  <div class="start-sub">Abrir Playmates — Feed</div>
+</div>
+
+<!-- APP -->
+<div id="app" aria-hidden="true">
+  <header>Feed — Playmates
+    <button id="resetBtn" title="Reset">⟳</button>
+  </header>
+
+  <div id="stats">
+    <div>👁️ Visualizações: <span id="totalViews">0</span></div>
+    <div>📝 Postagens: <span id="totalPosts">0</span></div>
+  </div>
+
+  <div id="filters" style="background:transparent;">
+    <button class="active" data-filter="all">📰 Todos</button>
+    <button data-filter="image">🖼️ Imagens</button>
+    <button data-filter="video">📹 Vídeos</button>
+  </div>
+
+  <main id="feed"></main>
+
+  <div id="overlay" role="dialog" aria-hidden="true">
+    <div id="closeOverlay" title="Fechar">✖</div>
+    <div id="overlayContent"></div>
+  </div>
+
+  <div id="postArea">
+    <textarea id="postText" placeholder="O que está pensando, Playmate?" rows="3"></textarea>
+    <input type="file" id="mediaInput" accept="image/*,video/*">
+    <button id="submitPost">Postar</button>
+  </div>
+
+  <button id="postBtn" title="Novo post">＋</button>
+</div>
+
+<script>
+/* ====== UI toggle (start -> app) ====== */
+const startScreen = document.getElementById('startScreen');
+const startBtn = document.getElementById('startBtn');
+const app = document.getElementById('app');
+
+startBtn.addEventListener('click', () => {
+  startScreen.style.display = 'none';
+  app.style.display = 'block';
+  startScreen.setAttribute('aria-hidden','true');
+  app.setAttribute('aria-hidden','false');
+});
+
+/* ====== Feed logic (your provided code, fixed) ====== */
+const feed = document.getElementById('feed');
+const postBtn = document.getElementById('postBtn');
+const resetBtn = document.getElementById('resetBtn');
+const overlay = document.getElementById('overlay');
+const overlayContent = document.getElementById('overlayContent');
+const closeOverlay = document.getElementById('closeOverlay');
+const postArea = document.getElementById('postArea');
+const submitPost = document.getElementById('submitPost');
+const postText = document.getElementById('postText');
+const mediaInput = document.getElementById('mediaInput');
+const totalViews = document.getElementById('totalViews');
+const totalPosts = document.getElementById('totalPosts');
+const filters = document.querySelectorAll('#filters button');
+const user = "Playmate";
+
+let selectedMedia = null;
+let currentFilter = "all";
+
+/* Stats & load */
+function updateStats() {
+  const posts = JSON.parse(localStorage.getItem('posts')) || [];
+  let totalV = posts.reduce((sum,p)=>sum+(p.views||0),0);
+  if(totalV > 1000000) totalV = 1000000;
+  totalViews.textContent = totalV.toLocaleString();
+  totalPosts.textContent = posts.length;
+}
+
+function loadPosts() {
+  const posts = JSON.parse(localStorage.getItem('posts')) || [];
+  feed.innerHTML = "";
+  posts.sort((a,b)=>b.id - a.id);
+  posts.forEach(p => {
+    if(currentFilter==="all" || p.type===currentFilter) addPostToDOM(p);
+  });
+  updateStats();
+}
+loadPosts();
+
+/* Comments rendering (recursive) */
+function renderComments(list, parentEl, post) {
+  parentEl.innerHTML = list.map((c, idx) => `
+    <div class="comment ${c.parentId ? 'reply' : ''}">
+      <strong>${escapeHtml(c.author)}:</strong> ${escapeHtml(c.text)}
+      <div><button class="reply-btn" data-index="${idx}">Responder</button></div>
+      <div class="replies"></div>
+    </div>
+  `).join('');
+
+  list.forEach((c, i)=>{
+    const commentEl = parentEl.children[i];
+    const replyBtn = commentEl.querySelector('.reply-btn');
+    const repliesEl = commentEl.querySelector('.replies');
+    if(c.replies && c.replies.length){
+      renderComments(c.replies, repliesEl, post);
+    }
+    replyBtn.onclick = ()=>{
+      if(commentEl.querySelector('.comment-input')) return;
+      const replyBox = document.createElement('div');
+      replyBox.className = "comment-input";
+      replyBox.innerHTML = `<input type="text" placeholder="Responda a ${escapeHtml(c.author)}..."><button>Enviar</button>`;
+      commentEl.appendChild(replyBox);
+      const input = replyBox.querySelector('input');
+      replyBox.querySelector('button').onclick = ()=>{
+        const text = input.value.trim();
+        if(!text) return;
+        if(!c.replies) c.replies=[];
+        c.replies.push({id:Date.now(),author:user,text,replies:[] , parentId: c.id});
+        updatePost(post);
+      };
+    };
+  });
+}
+
+/* Add a single post to DOM */
+function addPostToDOM(post) {
+  const div = document.createElement('div');
+  div.className = "post";
+  div.innerHTML = `
+    <div class="author">${escapeHtml(post.author)}</div>
+    <div class="text">${escapeHtml(post.text||'')}</div>
+    ${post.media ? 
+      (post.type === 'image'
+        ? `<img src="${post.media}" class="media" alt="imagem">`
+        : `<video src="${post.media}" class="media" controls></video>`) 
+      : ""}
+    <div class="views">👁️ ${Math.min(post.views || 0,1000000).toLocaleString()} visualizações</div>
+    <div class="reactions">
+      ${['😍','😂','👍','😡','❤️'].map(e=>`<button class="reaction-btn" data-emoji="${e}">${e} <span>${post.reactions && post.reactions[e] ? post.reactions[e] : 0}</span></button>`).join('')}
+    </div>
+    <div class="comments">
+      <div class="comment-list"></div>
+      <div class="comment-input">
+        <input type="text" placeholder="Escreva um comentário...">
+        <button>Comentar</button>
+      </div>
+    </div>
+  `;
+  feed.appendChild(div);
+
+  const listEl = div.querySelector('.comment-list');
+  renderComments(post.comments||[], listEl, post);
+
+  const mediaEl = div.querySelector('.media');
+  if (mediaEl) {
+    if (post.type === 'video') mediaEl.addEventListener('play', () => increaseViews(post));
+    else mediaEl.addEventListener('click', () => { showMedia(post); increaseViews(post); });
+  }
+
+  div.querySelectorAll('.reaction-btn').forEach(btn=>{
+    btn.onclick=()=>{
+      const now = Date.now();
+      const last = parseInt(localStorage.getItem(`react_${post.id}`) || '0', 10);
+      if(now - last < 30000){ alert("Espere 30s para reagir novamente."); return; }
+      const emoji = btn.dataset.emoji;
+      post.reactions = post.reactions || {};
+      post.reactions[emoji] = (post.reactions[emoji]||0)+1;
+      localStorage.setItem(`react_${post.id}`, now.toString());
+      updatePost(post);
+    };
+  });
+
+  const commentBtn = div.querySelector('.comment-input button');
+  const commentInput = div.querySelector('.comment-input input');
+  commentBtn.onclick = ()=>{
+    const text = commentInput.value.trim();
+    if(!text) return;
+    post.comments = post.comments || [];
+    post.comments.push({id:Date.now(),author:user,text,replies:[]});
+    updatePost(post);
+  };
+}
+
+/* Show overlay */
+function showMedia(post) {
+  overlayContent.innerHTML = (post.type === 'image' ? `<img src="${post.media}" alt="imagem">` : `<video src="${post.media}" controls autoplay></video>`);
+  overlay.style.display = 'flex';
+  overlay.setAttribute('aria-hidden','false');
+}
+
+/* Increase views */
+function increaseViews(post) {
+  post.views = Math.min((post.views||0)+1,1000000);
+  updatePost(post);
+}
+
+/* Save update single post */
+function updatePost(p) {
+  let posts = JSON.parse(localStorage.getItem('posts')) || [];
+  posts = posts.map(x=>x.id===p.id?p:x);
+  localStorage.setItem('posts',JSON.stringify(posts));
+  loadPosts();
+}
+
+/* Filters */
+filters.forEach(btn=>{
+  btn.onclick = ()=>{
+    filters.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    loadPosts();
+  };
+});
+
+/* New post flow */
+postBtn.onclick = ()=>{
+  const senha = prompt("Senha para postar:");
+  if(senha!=="LEX"){ alert("Senha incorreta!"); return; }
+  postArea.style.display = "block";
+  postText.focus();
+};
+
+submitPost.onclick = ()=>{
+  const text = postText.value.trim();
+  if(!text && !selectedMedia){ alert("Escreva algo ou envie mídia!"); return; }
+  const reader = new FileReader();
+  const savePost = (mediaData, type)=>{
+    const post = {
+      id: Date.now(),
+      author: user,
+      text,
+      media: mediaData || null,
+      type: type || null,
+      reactions: {},
+      views: 0,
+      comments: []
+    };
+    const posts = JSON.parse(localStorage.getItem('posts')) || [];
+    posts.unshift(post);
+    localStorage.setItem('posts', JSON.stringify(posts));
+    loadPosts();
+    postText.value="";
+    mediaInput.value="";
+    selectedMedia=null;
+    postArea.style.display="none";
+  };
+  if(selectedMedia){
+    reader.onload = e => savePost(e.target.result, selectedMedia.type && selectedMedia.type.startsWith('video') ? 'video' : 'image');
+    reader.readAsDataURL(selectedMedia);
+  } else savePost();
+};
+
+mediaInput.onchange = e => { selectedMedia = e.target.files[0] || null; };
+
+/* Reset */
+resetBtn.onclick = ()=>{
+  const senha = prompt("Senha para resetar:");
+  if(senha!=="LEX"){ alert("Senha incorreta!"); return; }
+  if(confirm("Apagar tudo?")){
+    localStorage.removeItem('posts');
+    // remove react timestamps too (optional)
+    Object.keys(localStorage).forEach(k => { if(k.startsWith('react_')) localStorage.removeItem(k); });
+    feed.innerHTML="";
+    updateStats();
+  }
+};
+
+/* Overlay close */
+closeOverlay.onclick = ()=> { overlay.style.display='none'; overlay.setAttribute('aria-hidden','true'); overlayContent.innerHTML=''; };
+overlay.addEventListener('click', (e)=>{ if(e.target === overlay) { overlay.style.display='none'; overlay.setAttribute('aria-hidden','true'); overlayContent.innerHTML=''; } });
+
+/* Utility: escape HTML to avoid XSS when inserting text */
+function escapeHtml(str){
+  if(!str && str !== 0) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/* initial demo posts (optional) - comment out if not wanted */
+if(!localStorage.getItem('posts')){
+  const demo = [{
+    id: Date.now(),
+    author: "Admin",
+    text: "Bem-vindo ao Playmates! Faça seu primeiro post.",
+    media: null,
+    type: null,
+    reactions:{},
+    views:0,
+    comments:[]
+  }];
+  localStorage.setItem('posts', JSON.stringify(demo));
+  loadPosts();
+}
+</script>
+</body>
+</html>
+
              
