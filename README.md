@@ -1407,6 +1407,7 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
     .puzzle-cell{width:80px;height:80px;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.08);font-weight:900;font-size:22px;cursor:pointer}
     .puzzle-cell.empty{background:transparent;box-shadow:none;cursor:default}
   </style>
+  </small>
   <script>
     // ---------- PUZZLE GAME (PLAYHOU) ----------
   const PUZZLE = {size:3, timeLimit:120, board:[], timer:null, running:false, startTs:0};
@@ -1898,6 +1899,8 @@ Storage keys:
   };
 
 })();
+</script>
+  </html>
 
 
 
