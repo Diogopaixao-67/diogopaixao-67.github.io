@@ -1475,7 +1475,7 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
           <div id="quickResults" style="margin-top:10px"></div>
         </div>
       </div>
-    </main>
+    
   </div>
 
   <!-- Lucide icons -->
@@ -1899,9 +1899,7 @@ Storage keys:
 
 })();
 
-</script>
-</body>
-</html>
+
 
   
   
