@@ -1200,6 +1200,8 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
       zoomOverlay.onclick=(e)=>{if(e.target===zoomOverlay)zoomOverlay.classList.remove('show');};
     }
   </script>
+
+  
 <html lang="pt-PT">
 <head>
 <meta charset="utf-8" />
@@ -1429,10 +1431,7 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
   function initAll(){ renderCompetitors(); renderFeed(); renderEvents(); renderFriends(); renderMsgs(); renderRanking(); renderProfile(); renderPuzzleUI(); updatePendingCount(); }
   window.addEventListener('load', ()=>{ initAll(); showSection('home'); });
 
-  </script>
-
-</body>
-</html>
+  
 </div>
             </div>
           </div>
