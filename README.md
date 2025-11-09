@@ -1199,7 +1199,6 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
       zoomOverlay.onclick=(e)=>{if(e.target===zoomOverlay)zoomOverlay.classList.remove('show');};
     }
   </script>
-  <!doctype html>
 <html lang="pt-PT">
 <head>
 <meta charset="utf-8" />
@@ -1386,7 +1385,54 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
 
             <div data-content="jogos" style="display:none" class="view-panel">
               <div class="small">Aba Jogos</div>
-              <div style="margin-top:8px">🎮 Espaço reservado — podes colar/implementar aqui o teu jogo mais tarde.</div>
+              <div style="margin-top:8px">🎮 Espaço reservado — podes colar/    <h2>Jogos - PLAYHOU</h2>
+    <div class="card">
+      <div style="text-align:center;margin-bottom:10px">
+        <div id="puzzleTimer">02:00</div>
+        <div id="puzzleStatus" class="small"></div>
+      </div>
+      <div id="puzzleBoard" class="puzzle-grid"></div>
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:12px">
+        <button class="btn" id="startPuzzleBtn">Iniciar Jogo</button>
+        <button class="btn-outline" id="shuffleBtn">Embaralhar</button>
+      </div>
+      <div style="margin-top:12px">Mostre quem manda nesse game teste o teu <b>QI de 0 á 40%</b>resolvendo o quebra cabeça PLAYHOU: <ul id="puzzleRank"></ul> 
+      <style>
+    
+    /* Puzzle styles */
+    .puzzle-grid{display:grid;grid-template-columns:repeat(3,80px);gap:8px;justify-content:center}
+    .puzzle-cell{width:80px;height:80px;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.08);font-weight:900;font-size:22px;cursor:pointer}
+    .puzzle-cell.empty{background:transparent;box-shadow:none;cursor:default}
+  </style>
+  <script>
+    // ---------- PUZZLE GAME (PLAYHOU) ----------
+  const PUZZLE = {size:3, timeLimit:120, board:[], timer:null, running:false, startTs:0};
+  function genBoard(){ const arr = [...Array(PUZZLE.size*PUZZLE.size).keys()].slice(1); arr.push(''); return arr; }
+  function shuffleBoard(){ const arr = genBoard(); for(let i=arr.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } PUZZLE.board = arr; }
+  function renderPuzzleUI(){ const boardEl = document.getElementById('puzzleBoard'); if(!boardEl) return; boardEl.innerHTML=''; PUZZLE.board.forEach((v,idx)=>{ const cell = document.createElement('div'); cell.className = 'puzzle-cell' + (v === '' ? ' empty':''); cell.textContent = v; if(v !== '') cell.addEventListener('click', ()=> tryMove(idx)); boardEl.appendChild(cell); }); updatePuzzleTimerDisplay(); renderPuzzleRank(); }
+  function tryMove(idx){ if(!PUZZLE.running) return; const emptyIdx = PUZZLE.board.indexOf(''); const sx = Math.floor(emptyIdx / PUZZLE.size), sy = emptyIdx % PUZZLE.size; const tx = Math.floor(idx/PUZZLE.size), ty = idx%PUZZLE.size; const dist = Math.abs(sx-tx)+Math.abs(sy-ty); if(dist === 1){ [PUZZLE.board[emptyIdx], PUZZLE.board[idx]] = [PUZZLE.board[idx], PUZZLE.board[emptyIdx]]; renderPuzzleUI(); checkPuzzleWin(); } }
+  function checkPuzzleWin(){ const arr = PUZZLE.board.slice(0,-1).map(String); const goal = [...Array(PUZZLE.size*PUZZLE.size-1)].map((_,i)=>(i+1).toString()); const ok = arr.join() === goal.join(); if(ok){ finishPuzzle(true); } }
+  function startPuzzle(){ if(PUZZLE.running) return; shuffleBoard(); PUZZLE.running=true; PUZZLE.startTs = Date.now(); PUZZLE.timeLeft = PUZZLE.timeLimit; PUZZLE.timer = setInterval(()=>{ PUZZLE.timeLeft--; updatePuzzleTimerDisplay(); if(PUZZLE.timeLeft<=0){ finishPuzzle(false); } },1000); renderPuzzleUI(); }
+  function finishPuzzle(won){ PUZZLE.running=false; clearInterval(PUZZLE.timer); if(won){ const elapsed = Math.max(1, Math.round((Date.now()-PUZZLE.startTs)/1000)); savePuzzleRank(elapsed); document.getElementById('puzzleStatus').innerText = `Parabéns! Ganhou em ${elapsed}s`; } else { document.getElementById('puzzleStatus').innerText = 'Tempo esgotado!'; } renderPuzzleUI(); }
+  function updatePuzzleTimerDisplay(){ const el = document.getElementById('puzzleTimer'); if(!el) return; const s = PUZZLE.timeLeft || PUZZLE.timeLimit; const mm = String(Math.floor(s/60)).padStart(2,'0'); const ss = String(s%60).padStart(2,'0'); el.innerText = `${mm}:${ss}`; }
+  function savePuzzleRank(sec){ const ranks = load(LS.puzzleRank) || []; ranks.push({sec,ts:Date.now()}); ranks.sort((a,b)=>a.sec-b.sec); save(LS.puzzleRank, ranks.slice(0,10)); renderPuzzleRank(); }
+  function renderPuzzleRank(){ const ul = document.getElementById('puzzleRank'); if(!ul) return; const ranks = load(LS.puzzleRank) || []; ul.innerHTML = ranks.length ? ranks.map(r=>`<li class='card'>${r.sec}s - ${new Date(r.ts).toLocaleString()}</li>`).join('') : '<li class="small">Sem resultados</li>'; }
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const startBtn = document.getElementById('startPuzzleBtn'); if(startBtn) startBtn.addEventListener('click', ()=>{ startPuzzle(); document.getElementById('puzzleStatus').innerText=''; });
+    const shuffleBtn = document.getElementById('shuffleBtn'); if(shuffleBtn) shuffleBtn.addEventListener('click', ()=>{ shuffleBoard(); renderPuzzleUI(); });
+  });
+  // make initial board
+  shuffleBoard(); PUZZLE.timeLeft = PUZZLE.timeLimit;
+
+  // ---------- Init: render everything once so every section has content ready ----------
+  function initAll(){ renderCompetitors(); renderFeed(); renderEvents(); renderFriends(); renderMsgs(); renderRanking(); renderProfile(); renderPuzzleUI(); updatePendingCount(); }
+  window.addEventListener('load', ()=>{ initAll(); showSection('home'); });
+
+  </script>
+
+</body>
+</html>
+   </div>
             </div>
           </div>
         </div>
