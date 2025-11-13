@@ -1,6 +1,23 @@
 
 <html lang="pt">
 <head>
+  // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyClzY30up3gZTsgIqT1b_nYW7EHpKpwcaI",
+  authDomain: "playmates-cc4f7.firebaseapp.com",
+  projectId: "playmates-cc4f7",
+  storageBucket: "playmates-cc4f7.firebasestorage.app",
+  messagingSenderId: "104004735810",
+  appId: "1:104004735810:web:d3ee9a75399d6f0f222edb"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Playmates - Painel de Votação</title>
