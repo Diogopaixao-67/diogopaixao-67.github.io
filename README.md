@@ -1,23 +1,6 @@
 
 <html lang="pt">
 <head>
-  // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyClzY30up3gZTsgIqT1b_nYW7EHpKpwcaI",
-  authDomain: "playmates-cc4f7.firebaseapp.com",
-  projectId: "playmates-cc4f7",
-  storageBucket: "playmates-cc4f7.firebasestorage.app",
-  messagingSenderId: "104004735810",
-  appId: "1:104004735810:web:d3ee9a75399d6f0f222edb"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Playmates - Painel de Votação</title>
@@ -1284,6 +1267,128 @@ if (countdownData.start && countdownData.time > 0) iniciarContagem();
 </style>
 </head>
 <body>
+<!-- Firebase scripts -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "SUA_KEY",
+  authDomain: "SEU_DOMINIO.firebaseapp.com",
+  databaseURL: "https://SEU_PROJETO.firebaseio.com",
+  projectId: "SEU_PROJETO",
+  storageBucket: "SEU_PROJETO.appspot.com",
+  messagingSenderId: "ID",
+  appId: "ID"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+/* ======================================================
+   1) CADASTRAR USUÁRIO
+   ====================================================== */
+function cadastrarUsuario(nome, numero, escola, senha, fotoURL) {
+  const id = numero; // usar número como ID
+  return db.ref("usuarios/" + id).set({
+    nome: nome,
+    numero: numero,
+    escola: escola,
+    senha: senha,
+    fotoURL: fotoURL || "",
+    pontos: 0
+  });
+}
+
+/* ======================================================
+   2) LOGIN COM LIMITE DE 5 TENTATIVAS
+   ====================================================== */
+async function login(numero, senha) {
+  const userRef = db.ref("usuarios/" + numero);
+  const loginRef = db.ref("logins/" + numero);
+
+  const tentativasSnap = await loginRef.get();
+  const tentativas = tentativasSnap.exists() ? tentativasSnap.val().tentativas : 0;
+
+  if (tentativas >= 5) {
+    alert("Conta bloqueada por 5 tentativas.");
+    return false;
+  }
+
+  const snap = await userRef.get();
+  if (!snap.exists()) {
+    alert("Usuário não encontrado.");
+    loginRef.set({ tentativas: tentativas + 1 });
+    return false;
+  }
+
+  const data = snap.val();
+  if (data.senha !== senha) {
+    loginRef.set({ tentativas: tentativas + 1 });
+    alert("Senha incorreta!");
+    return false;
+  }
+
+  loginRef.set({ tentativas: 0 });
+  localStorage.setItem("user", numero);
+  alert("Login feito!");
+  return true;
+}
+
+/* ======================================================
+   3) SALVAR PERFIL EDITADO
+   ====================================================== */
+function atualizarPerfil(numero, novosDados) {
+  return db.ref("usuarios/" + numero).update(novosDados);
+}
+
+/* ======================================================
+   4) PEDIDOS DE PARTICIPAÇÃO
+   ====================================================== */
+function enviarPedido(nome, numero, motivo) {
+  const id = Date.now();
+  return db.ref("pedidosParticipacao/" + id).set({
+    nome: nome,
+    numero: numero,
+    motivo: motivo,
+    data: new Date().toISOString()
+  });
+}
+
+/* ======================================================
+   5) REGISTRAR VOTO
+   ====================================================== */
+async function votar(categoria, idConcorrente, numeroVotante) {
+  const votoRef = db.ref("votos/" + categoria + "/" + idConcorrente);
+
+  const snap = await votoRef.get();
+  let dados = snap.exists() ? snap.val() : { totalVotos: 0, votantes: {} };
+
+  // impedir votante repetir
+  if (dados.votantes && dados.votantes[numeroVotante]) {
+    alert("Você já votou aqui!");
+    return;
+  }
+
+  dados.totalVotos++;
+  dados.votantes[numeroVotante] = true;
+
+  await votoRef.set(dados);
+
+  alert("Voto registrado com sucesso!");
+}
+
+/* ======================================================
+   6) LISTA DE USUÁRIOS CADASTRADOS
+   ====================================================== */
+function listarCadastrados(callback) {
+  db.ref("usuarios").on("value", snap => {
+    callback(snap.val());
+  });
+}
+</script>
+
+  
   <div class="app">
     <header>
       <h1>Playmates</h1>
