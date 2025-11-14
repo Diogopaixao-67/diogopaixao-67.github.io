@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Playmates — Final</title>
+<title>Playmates — Corrigido</title>
 
 <!-- Firebase CDN (v8 classic) -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -35,6 +35,7 @@
   .list-item{background:#fff;padding:10px;border-radius:10px;display:flex;gap:10px;align-items:center;box-shadow:0 6px 18px rgba(0,0,0,0.03)}
   .thumb{width:56px;height:56px;border-radius:50%;object-fit:cover}
   .muted-small{font-size:12px;color:#888}
+  #debug {position:fixed; top:70px; right:12px; background:#fff; padding:8px; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,0.1); font-size:12px; max-width:260px; z-index:9999;}
   footer{height:72px}
   @media(min-width:700px){ main{max-width:720px;margin:0 auto} nav.bottom-nav{display:none} }
 </style>
@@ -145,18 +146,19 @@
   <button data-target="sosTab">SOS</button>
 </nav>
 
+<div id="debug" style="display:none"><strong>DEBUG</strong><div id="dbg"></div></div>
 <footer></footer>
 
 <script>
 /* ---------------------------
-   FIREBASE CONFIG (classic)
+   FIREBASE CONFIG (classic) - STORAGE BUCKET FIXED
    --------------------------- */
 const firebaseConfig = {
   apiKey: "AIzaSyClzY30up3gZTsgIqT1b_nYW7EHpKpwcaI",
   authDomain: "playmates-cc4f7.firebaseapp.com",
   databaseURL: "https://playmates-cc4f7-default-rtdb.firebaseio.com",
   projectId: "playmates-cc4f7",
-  storageBucket: "playmates-cc4f7.firebasestorage.app",
+  storageBucket: "playmates-cc4f7.appspot.com", // corrected
   messagingSenderId: "104004735810",
   appId: "1:104004735810:web:d3ee9a75399d6f0f222edb"
 };
@@ -176,6 +178,8 @@ const CLOCK_PASS = "LEX";
 const $ = id => document.getElementById(id);
 const tabs = Array.from(document.querySelectorAll('nav.bottom-nav button'));
 const state = { user: null };
+const dbgBox = $('debug'); const dbgInner = $('dbg');
+function dbg(msg){ dbgInner.innerHTML = (new Date()).toLocaleTimeString() + ' — ' + msg + '<br />' + dbgInner.innerHTML; dbgBox.style.display='block'; console.log('DBG:', msg); }
 
 /* ---------------------------
    NAVIGATION (single function)
@@ -183,7 +187,7 @@ const state = { user: null };
 function showTab(tabId) {
   document.querySelectorAll('.tab').forEach(t => { t.style.display = 'none'; t.classList.remove('visible'); });
   const node = document.getElementById(tabId);
-  if (node) { node.style.display = 'block'; node.classList.add('visible'); }
+  if (node) { node.style.display = 'block'; node.classList.add('visible'); dbg('showTab -> ' + tabId); }
 }
 tabs.forEach(btn => btn.addEventListener('click', () => showTab(btn.dataset.target)));
 showTab('dashboardTab');
@@ -192,60 +196,81 @@ showTab('dashboardTab');
    AUTH: register / login / logout
    --------------------------- */
 $('btnRegister').addEventListener('click', async () => {
-  const name = $('regName').value.trim();
-  const school = $('regSchool').value.trim();
-  const phone = $('regPhone').value.trim();
-  const pass = $('regPass').value.trim();
-  const file = $('regPhoto').files[0];
-  if (!name || !school || !phone || !pass || !file) { alert('Preencha tudo.'); return; }
+  try {
+    const name = $('regName').value.trim();
+    const school = $('regSchool').value.trim();
+    const phone = $('regPhone').value.trim();
+    const pass = $('regPass').value.trim();
+    const file = $('regPhoto').files[0];
+    if (!name || !school || !phone || !pass || !file) { alert('Preencha tudo.'); return; }
 
-  const userRef = db.ref('users/' + phone);
-  const snap = await userRef.once('value');
-  if (snap.exists()) { alert('Número já cadastrado.'); return; }
+    const userRef = db.ref('users/' + phone);
+    const snap = await userRef.once('value');
+    if (snap.exists()) { alert('Número já cadastrado.'); return; }
 
-  // upload photo
-  const photoRef = storage.ref().child('profilePhotos/' + phone + '_' + Date.now());
-  const up = await photoRef.put(file);
-  const url = await up.ref.getDownloadURL();
+    // upload photo with try/catch and fallback
+    let url = '';
+    try {
+      const photoRef = storage.ref().child('profilePhotos/' + phone + '_' + Date.now());
+      const up = await photoRef.put(file);
+      url = await up.ref.getDownloadURL();
+      dbg('Foto enviada -> ' + url);
+    } catch (err) {
+      dbg('Erro upload foto: ' + err.message);
+      // fallback to placeholder
+      url = 'https://via.placeholder.com/150';
+      alert('Upload de imagem falhou; foto padrão será usada.');
+    }
 
-  await userRef.set({
-    name, school, phone, password: pass, photo: url,
-    points: 0, attempts: 0, blocked: false, createdAt: Date.now()
-  });
+    await userRef.set({
+      name, school, phone, password: pass, photo: url,
+      points: 0, attempts: 0, blocked: false, createdAt: Date.now()
+    });
 
-  alert('Cadastro feito. Faça login.');
-  $('regName').value = $('regSchool').value = $('regPhone').value = $('regPass').value = '';
-  $('regPhoto').value = '';
+    alert('Cadastro feito. Faça login.');
+    $('regName').value = $('regSchool').value = $('regPhone').value = $('regPass').value = '';
+    $('regPhoto').value = '';
+    dbg('Usuário cadastrado: ' + phone);
+  } catch(e) {
+    dbg('Erro em register: ' + e.message);
+    alert('Erro no cadastro. Ver console/debug.');
+  }
 });
 
 $('btnLogin').addEventListener('click', async () => {
-  const phone = $('loginPhone').value.trim();
-  const pass = $('loginPass').value.trim();
-  if (!phone || !pass) { alert('Preencha tudo.'); return; }
+  try {
+    const phone = $('loginPhone').value.trim();
+    const pass = $('loginPass').value.trim();
+    if (!phone || !pass) { alert('Preencha tudo.'); return; }
 
-  const userRef = db.ref('users/' + phone);
-  const snap = await userRef.once('value');
-  if (!snap.exists()) { alert('Conta não existe.'); return; }
-  const u = snap.val();
-  if (u.blocked) { alert('Conta bloqueada.'); return; }
-  if (u.password !== pass) {
-    const attempts = (u.attempts || 0) + 1;
-    await userRef.update({ attempts });
-    if (attempts >= 4) { await userRef.update({ blocked: true }); alert('Conta bloqueada (4 tentativas).'); }
-    else alert('Senha incorreta. Tentativas: ' + attempts + '/4');
-    return;
+    const userRef = db.ref('users/' + phone);
+    const snap = await userRef.once('value');
+    if (!snap.exists()) { alert('Conta não existe.'); return; }
+    const u = snap.val();
+    if (u.blocked) { alert('Conta bloqueada.'); return; }
+    if (u.password !== pass) {
+      const attempts = (u.attempts || 0) + 1;
+      await userRef.update({ attempts });
+      if (attempts >= 4) { await userRef.update({ blocked: true }); alert('Conta bloqueada (4 tentativas).'); }
+      else alert('Senha incorreta. Tentativas: ' + attempts + '/4');
+      return;
+    }
+
+    await userRef.update({ attempts: 0 });
+    state.user = phone;
+    $('authSection').style.display = 'none';
+    $('appSection').style.display = 'block';
+    loadUserRealtime(phone);
+    startClockListener();
+    bindRealtimeLists();
+    listenNotifications();
+    updateTotalUsers();
+    showTab('dashboardTab');
+    dbg('Login OK: ' + phone);
+  } catch(e) {
+    dbg('Erro login: ' + e.message);
+    alert('Erro no login. Ver console/debug.');
   }
-
-  await userRef.update({ attempts: 0 });
-  state.user = phone;
-  $('authSection').style.display = 'none';
-  $('appSection').style.display = 'block';
-  loadUserRealtime(phone);
-  startClockListener();
-  bindRealtimeLists();
-  listenNotifications();
-  updateTotalUsers();
-  showTab('dashboardTab');
 });
 
 /* logout */
@@ -259,6 +284,7 @@ $('btnLogout').addEventListener('click', () => {
   $('meSchool').innerText = '';
   $('mePhone').innerText = '';
   $('mePoints').innerText = '0 pts';
+  dbg('Logout');
 });
 
 /* ---------------------------
@@ -287,13 +313,19 @@ $('btnEditProfile').addEventListener('click', () => {
   const newPhone = prompt('Número (se quiser alterar):', $('mePhone').innerText) || $('mePhone').innerText;
   const fileInput = document.createElement('input'); fileInput.type = 'file'; fileInput.accept = 'image/*';
   fileInput.onchange = async () => {
-    const file = fileInput.files[0];
-    if (!file) return;
-    const photoRef = storage.ref().child('profilePhotos/' + state.user + '_' + Date.now());
-    const up = await photoRef.put(file);
-    const url = await up.ref.getDownloadURL();
-    await db.ref('users/' + state.user).update({ name: newName, school: newSchool, phone: newPhone, photo: url });
-    alert('Perfil atualizado');
+    try {
+      const file = fileInput.files[0];
+      if (!file) return;
+      const photoRef = storage.ref().child('profilePhotos/' + state.user + '_' + Date.now());
+      const up = await photoRef.put(file);
+      const url = await up.ref.getDownloadURL();
+      await db.ref('users/' + state.user).update({ name: newName, school: newSchool, phone: newPhone, photo: url });
+      alert('Perfil atualizado');
+      dbg('Perfil atualizado: ' + state.user);
+    } catch(e) {
+      dbg('Erro atualizar perfil: ' + e.message);
+      alert('Falha ao atualizar foto. Ver debug.');
+    }
   };
   fileInput.click();
 });
@@ -316,6 +348,7 @@ function startClockListener(){
       const s = Math.floor((diff % 60000) / 1000);
       $('clockDisplay').innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
     }, 1000);
+    dbg('Clock listener ativo');
   });
 }
 
@@ -328,6 +361,7 @@ $('btnEditClock').addEventListener('click', async () => {
   const totalMs = ((h * 3600) + (m * 60) + s) * 1000;
   await db.ref('timer').set({ endAt: Date.now() + totalMs });
   alert('Relógio atualizado e sincronizado');
+  dbg('Relógio atualizado por ' + state.user);
 });
 
 /* ---------------------------
@@ -353,6 +387,7 @@ $('btnSendSMS').addEventListener('click', async () => {
   await db.ref('sms').push({ from: state.user, to, text, createdAt: now, expiresAt: now + 3*3600*1000 });
   $('smsTo').value = ''; $('smsText').value = '';
   alert('SMS enviado');
+  dbg('SMS enviado por ' + state.user + ' -> ' + to);
 });
 
 /* inbox render */
@@ -372,6 +407,7 @@ function renderInbox() {
         list.appendChild(div);
       });
     });
+    dbg('Inbox renderizada');
   });
 }
 
@@ -384,16 +420,22 @@ $('btnPost').addEventListener('click', async () => {
   const file = $('postFile').files[0];
   if(!text && !file) return alert('Escreva algo ou selecione uma imagem');
   const now = Date.now();
-  if(file){
-    const pRef = storage.ref().child('posts/' + state.user + '_' + now + '_' + file.name);
-    const up = await pRef.put(file);
-    const url = await up.ref.getDownloadURL();
-    await db.ref('posts').push({ user: state.user, text, img: url, createdAt: now, expiresAt: now + 3*3600*1000 });
-  } else {
-    await db.ref('posts').push({ user: state.user, text, img: '', createdAt: now, expiresAt: now + 3*3600*1000 });
+  try {
+    if(file){
+      const pRef = storage.ref().child('posts/' + state.user + '_' + now + '_' + file.name);
+      const up = await pRef.put(file);
+      const url = await up.ref.getDownloadURL();
+      await db.ref('posts').push({ user: state.user, text, img: url, createdAt: now, expiresAt: now + 3*3600*1000 });
+    } else {
+      await db.ref('posts').push({ user: state.user, text, img: '', createdAt: now, expiresAt: now + 3*3600*1000 });
+    }
+    $('postText').value = ''; $('postFile').value = '';
+    alert('Post criado');
+    dbg('Post criado por ' + state.user);
+  } catch(e) {
+    dbg('Erro criar post: ' + e.message);
+    alert('Falha ao publicar post. Ver debug.');
   }
-  $('postText').value = ''; $('postFile').value = '';
-  alert('Post criado');
 });
 
 function renderPosts() {
@@ -416,6 +458,7 @@ function renderPosts() {
       f.innerHTML = `<img class="thumb" src="${p.img||'https://via.placeholder.com/80'}" /><div style="flex:1"><div class="muted-small">${new Date(p.createdAt).toLocaleString()}</div><div>${(p.text||'').slice(0,80)}</div></div>`;
       feed.appendChild(f);
     });
+    dbg('Posts renderizados');
   });
 }
 
@@ -431,36 +474,4 @@ $('btnSearch').addEventListener('click', async () => {
   Object.keys(data).forEach(phone => {
     const u = data[phone];
     if ( (u.name||'').toLowerCase().includes(q) || (u.school||'').toLowerCase().includes(q) || (u.phone||'').includes(q) ) {
-      const div = document.createElement('div'); div.className='list-item';
-      div.innerHTML = `<img class="thumb" src="${u.photo || 'https://via.placeholder.com/80'}" /><div style="flex:1"><strong>${u.name}</strong><div class="muted-small">${u.school} • ${u.phone}</div></div><button id="top_${phone}" class="small-btn">Topar</button>`;
-      resultsDiv.appendChild(div);
-      document.getElementById('top_' + phone).addEventListener('click', async () => {
-        if(!state.user) return alert('Faça login');
-        if(state.user === phone) return alert('Não pode topar a si mesmo');
-        const key = state.user + '_' + phone;
-        const tSnap = await db.ref('topados/' + key).once('value');
-        if (tSnap.exists()) return alert('Já topou este perfil');
-        await db.ref('topados/' + key).set({ from: state.user, to: phone, at: Date.now() });
-        const userRef = db.ref('users/' + phone);
-        const uSnap = await userRef.once('value');
-        const pts = (uSnap.val() && uSnap.val().points) ? Number(uSnap.val().points) : 0;
-        const newPts = Math.round((pts * 1.005) * 100) / 100;
-        await userRef.update({ points: newPts });
-        await db.ref('notifications').push({ to: phone, message: `${state.user} te ajudou a ganhar dinheiro`, createdAt: Date.now() });
-        alert('Topado! Perfil recebeu +0.5% pontos');
-      });
-    }
-  });
-});
-
-/* ---------------------------
-   SOS ADMIN (LEX)
-   --------------------------- */
-$('btnAddSOS').addEventListener('click', () => {
-  const pw = prompt('Senha admin (LEX):');
-  if (pw !== ADMIN_PASS) return alert('Senha incorreta');
-  const text = prompt('Texto do SOS:');
-  const fileInput = document.createElement('input'); fileInput.type='file'; fileInput.accept='image/*';
-  fileInput.onchange = async () => {
-    const file = fileInput.files[0];
-    const pRef = stora
+    
