@@ -1596,7 +1596,7 @@ function listarCadastrados(callback) {
           <div id="quickResults" style="margin-top:10px"></div>
         </div>
       </div>
-    </main>
+    
   </div>
 
   <!-- Lucide icons -->
