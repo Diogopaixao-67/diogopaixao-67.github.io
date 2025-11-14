@@ -1552,8 +1552,7 @@ function listarCadastrados(callback) {
 
   </script>
 
-</body>
-</html>
+
    </div>
             </div>
           </div>
