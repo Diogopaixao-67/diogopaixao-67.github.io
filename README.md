@@ -4,11 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Playmates — Plataforma Oficial</title>
-
-<!-- ====== ESTILOS ====== -->
 <style>
 :root{
-  --bg:#f6f7fb; --card:#ffffff; --muted:#6b7280; --accent:#ff7b00; --accent-2:#ff9a3d;
+  --bg:#f6f7fb; --card:#fff; --muted:#6b7280; --accent:#ff7b00; --accent-2:#ff9a3d;
 }
 body { margin:0; font-family: Inter, sans-serif; background:var(--bg); color:#0b1222; }
 header { display:flex; justify-content: space-between; align-items:center; padding:12px 16px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#fff; font-weight:700; border-radius:0 0 14px 14px; }
@@ -24,7 +22,7 @@ nav button { background:none; color:#333; border:none; font-size:14px; }
 nav button.active { color:var(--accent); font-weight:700; }
 #notification { display:none; background:var(--accent); color:#fff; padding:12px; border-radius:10px; margin-bottom:10px; animation:fade 0.5s;}
 @keyframes fade { from {opacity:0; transform:translateY(-10px);} to {opacity:1; transform:translateY(0);} }
-#fotoPerfil { width:100px; height:100px; border-radius:50%; object-fit:cover; }
+#fotoPerfil { width:100px; height:100px; border-radius:50%; object-fit:cover; margin-bottom:10px; }
 input, label { display:block; margin:6px 0; width:100%; }
 </style>
 </head>
@@ -32,54 +30,45 @@ input, label { display:block; margin:6px 0; width:100%; }
 
 <header>
   <h1>Playmates</h1>
-  <div>
-    <button id="btnOpenAuth">Entrar / Cadastrar</button>
-    <button id="btnDemo" class="ghost">Conta Demo</button>
-  </div>
 </header>
 
 <main>
+  <!-- NOTIFICAÇÃO -->
+  <div id="notification" class="card"></div>
+
   <!-- LOGIN / CADASTRO -->
   <div class="card section active" id="sec-feed">
-    <div id="notification"></div>
-
     <div id="authArea">
       <h3>Bem-vindo ao Playmates</h3>
-      <div class="muted-small">Faça login ou crie conta</div>
       <div id="loginForm">
-        <label>Telemóvel</label><input id="loginPhone" type="tel" placeholder="ex: 922000000"/>
-        <label>Senha</label><input id="loginPass" type="password" placeholder="Senha"/>
-        <div><button id="loginSubmit">Entrar</button><button id="showRegister" class="ghost">Criar conta</button></div>
+        <label>Telemóvel</label><input id="loginPhone" type="tel"/>
+        <label>Senha</label><input id="loginPass" type="password"/>
+        <button id="loginSubmit">Entrar</button>
+        <button id="showRegister" class="ghost">Criar conta</button>
       </div>
       <div id="registerForm" style="display:none">
-        <label>Nome completo</label><input id="regName" type="text" placeholder="Nome completo"/>
+        <label>Nome completo</label><input id="regName" type="text"/>
         <label>Senha</label><input id="regPass" type="password"/>
         <label>Telemóvel</label><input id="regPhone" type="tel"/>
         <label>Escola</label><input id="regSchool" type="text"/>
         <label>Foto</label><input id="regPhoto" type="file" accept="image/*"/>
-        <div><button id="regSubmit">Criar conta</button><button id="regCancel" class="ghost">Voltar</button></div>
+        <button id="regSubmit">Criar conta</button>
+        <button id="regCancel" class="ghost">Voltar</button>
       </div>
     </div>
 
     <div id="loggedArea" style="display:none">
       <h3>Perfil</h3>
-      <img id="fotoPerfil" src="" alt="Foto de Perfil"/>
+      <img id="fotoPerfil" src="https://via.placeholder.com/100"/>
       <div id="perfilInfo"></div>
-      <button id="btnEditarPerfil">Editar Perfil</button>
       <button id="btnLogout">Sair</button>
-      <div id="editarPerfilArea" style="display:none">
-        <label>Nome</label><input id="editName" type="text"/>
-        <label>Escola</label><input id="editSchool" type="text"/>
-        <label>Foto</label><input id="editPhoto" type="file" accept="image/*"/>
-        <button id="btnSalvarPerfil">Salvar Alterações</button>
-      </div>
     </div>
   </div>
 
   <!-- EVENTOS -->
   <div class="card section" id="sec-eventos">
     <h2>Eventos — Playmates</h2>
-    <button id="btnNovoEvento">Criar evento</button>
+    <button id="btnNovoEvento">Criar evento (Senha LEX)</button>
     <div id="eventosLista"></div>
   </div>
 
@@ -91,7 +80,7 @@ input, label { display:block; margin:6px 0; width:100%; }
   </div>
 
   <!-- HISTÓRIA -->
-  <div class="card section" id="sec-historia">
+  <div class="card section active" id="sec-historia">
     <h2>História do Fundador</h2>
     <div id="historia">
       <h3>Diogo Paixão — Fundador & CEO</h3>
@@ -100,7 +89,6 @@ input, label { display:block; margin:6px 0; width:100%; }
   </div>
 </main>
 
-<!-- MENU -->
 <nav>
   <button onclick="show('feed')" class="active">Feed</button>
   <button onclick="show('eventos')">Eventos</button>
@@ -110,7 +98,7 @@ input, label { display:block; margin:6px 0; width:100%; }
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
+import { getDatabase, ref, set, get, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
 import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
 
 const firebaseConfig = {
@@ -130,66 +118,37 @@ const storage = getStorage(app);
 // ===================== NOTIFICAÇÃO =====================
 const notifBox = document.getElementById("notification");
 const notifRef = ref(db, "notificacao/");
-onValue(notifRef, snap => {
-  const msg = snap.val();
-  if(msg){ notifBox.innerHTML = msg; notifBox.style.display="block";}
-});
+onValue(notifRef, snap => { const msg = snap.val(); if(msg){ notifBox.innerText=msg; notifBox.style.display="block"; }});
 set(notifRef,"Olá eu sou Diogo Paixão, fundador & CEO da plataforma Playmates e espero que tenhas uma ótima experiência juvenil");
 
-// ===================== MENU =====================
-function show(tab){
-  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
-  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
-  document.getElementById("sec-"+tab).classList.add("active");
-  [...document.querySelectorAll("nav button")].find(b=>b.innerText.toLowerCase().includes(tab)).classList.add("active");
-}
-window.show=show;
+// ===================== LOGIN / CADASTRO =====================
+const loginPhone=document.getElementById('loginPhone'), loginPass=document.getElementById('loginPass'), loginSubmit=document.getElementById('loginSubmit');
+const showRegisterBtn=document.getElementById('showRegister'), regCancel=document.getElementById('regCancel'), regSubmit=document.getElementById('regSubmit');
+const regName=document.getElementById('regName'), regPass=document.getElementById('regPass'), regPhone=document.getElementById('regPhone'), regSchool=document.getElementById('regSchool'), regPhoto=document.getElementById('regPhoto');
+const authArea=document.getElementById('authArea'), loggedArea=document.getElementById('loggedArea');
+const fotoPerfil=document.getElementById('fotoPerfil'), perfilInfo=document.getElementById('perfilInfo'), btnLogout=document.getElementById('btnLogout');
 
-// ===================== LOGIN / REGISTRO =====================
-const loginPhone = document.getElementById('loginPhone');
-const loginPass = document.getElementById('loginPass');
-const loginSubmit = document.getElementById('loginSubmit');
-const showRegisterBtn = document.getElementById('showRegister');
-const regCancel = document.getElementById('regCancel');
-const regSubmit = document.getElementById('regSubmit');
-const regName = document.getElementById('regName');
-const regPass = document.getElementById('regPass');
-const regPhone = document.getElementById('regPhone');
-const regSchool = document.getElementById('regSchool');
-const regPhoto = document.getElementById('regPhoto');
-const authArea = document.getElementById("authArea");
-const loggedArea = document.getElementById("loggedArea");
-const fotoPerfil = document.getElementById("fotoPerfil");
-const perfilInfo = document.getElementById("perfilInfo");
-const btnEditarPerfil = document.getElementById("btnEditarPerfil");
-const editarPerfilArea = document.getElementById("editarPerfilArea");
-const editName = document.getElementById("editName");
-const editSchool = document.getElementById("editSchool");
-const editPhoto = document.getElementById("editPhoto");
-const btnLogout = document.getElementById("btnLogout");
-
-showRegisterBtn.onclick=()=>{ document.getElementById("loginForm").style.display="none"; document.getElementById("registerForm").style.display="block";};
-regCancel.onclick=()=>{ document.getElementById("registerForm").style.display="none"; document.getElementById("loginForm").style.display="block";};
+showRegisterBtn.onclick=()=>{ document.getElementById('loginForm').style.display='none'; document.getElementById('registerForm').style.display='block';};
+regCancel.onclick=()=>{ document.getElementById('registerForm').style.display='none'; document.getElementById('loginForm').style.display='block';};
 
 // Criar conta
 regSubmit.onclick=async ()=>{
   const name=regName.value.trim(), pass=regPass.value, phone=regPhone.value.trim(), school=regSchool.value.trim();
   if(!name||!pass||!phone) return alert("Preencha campos obrigatórios");
 
-  const userRef = ref(db, "users/"+phone);
+  const userRef = ref(db,"users/"+phone);
   const snap = await get(userRef);
   if(snap.exists()) return alert("Conta já existe");
 
-  let photoURL = "";
+  let photoURL="";
   if(regPhoto.files[0]){
     const file = regPhoto.files[0];
-    const photoRef = sRef(storage,"perfilFotos/"+phone);
-    await uploadBytes(photoRef,file);
-    photoURL = await getDownloadURL(photoRef);
+    const storageRef = sRef(storage,"perfilFotos/"+phone);
+    await uploadBytes(storageRef,file);
+    photoURL = await getDownloadURL(storageRef);
   }
 
-  await set(userRef,{name,pass,phone,school,points:0,foto:photoURL,posts:[]});
-  alert("Conta criada com sucesso");
+  await set(userRef,{name,pass,phone,school,foto:photoURL,points:0});
   loginUser(phone);
 };
 
@@ -206,40 +165,59 @@ loginSubmit.onclick=async ()=>{
 // Mostrar perfil
 function loginUser(phone){
   const userRef = ref(db,"users/"+phone);
-  authArea.style.display="none";
-  loggedArea.style.display="block";
+  authArea.style.display="none"; loggedArea.style.display="block";
+
+  // Ativar abas protegidas
+  document.querySelectorAll("#sec-eventos, #sec-jogos").forEach(s=>s.classList.remove("hidden"));
 
   onValue(userRef, snap=>{
     const u = snap.val();
     fotoPerfil.src = u.foto || "https://via.placeholder.com/100";
     perfilInfo.innerHTML = `<p><strong>Nome:</strong> ${u.name}</p><p><strong>Telemóvel:</strong> ${u.phone}</p><p><strong>Escola:</strong> ${u.school}</p><p><strong>Pontos:</strong> ${u.points}</p>`;
-
-    editName.value = u.name;
-    editSchool.value = u.school;
   });
 
-  // Editar perfil
-  btnEditarPerfil.onclick=()=>{ editarPerfilArea.style.display="block";};
-  document.getElementById("btnSalvarPerfil").onclick=async ()=>{
-    const snapOld = await get(userRef);
-    let updatedData = {name: editName.value.trim(), school: editSchool.value.trim()};
-    if(editPhoto.files[0]){
-      const file = editPhoto.files[0];
-      const photoRef = sRef(storage,"perfilFotos/"+phone);
-      await uploadBytes(photoRef,file);
-      const photoURL = await getDownloadURL(photoRef);
-      updatedData.foto = photoURL;
-    }
-    await set(userRef,{...snapOld.val(), ...updatedData});
-    alert("Perfil atualizado com sucesso!");
-    editarPerfilArea.style.display="none";
+  btnLogout.onclick=()=>{ 
+    loggedArea.style.display='none'; 
+    authArea.style.display='block'; 
+    // Desativar abas protegidas
+    document.querySelectorAll("#sec-eventos, #sec-jogos").forEach(s=>s.classList.add("hidden"));
   };
+}
 
-  // Logout
-  btnLogout.onclick=()=>{
-    loggedArea.style.display="none";
-    authArea.style.display="block";
-  };
+// ===================== EVENTOS =====================
+const eventosRef = ref(db,"eventos/");
+const eventosDiv = document.getElementById("eventosLista");
+function carregarEventos(){
+  onValue(eventosRef, snap=>{
+    eventosDiv.innerHTML="";
+    snap.forEach(item=>{
+      const key=item.key; const evt=item.val();
+      eventosDiv.innerHTML+=`<div class="post"><h3>${evt.titulo}</h3><p>${evt.texto}</p><button onclick="apagarEvento('${key}')">Apagar</button></div>`;
+    });
+  });
+}
+carregarEventos();
+document.getElementById("btnNovoEvento").onclick=()=>{
+  const senha = prompt("Digite a senha LEX para criar evento:");
+  if(senha!=="LEX") return alert("Senha incorreta!");
+  const titulo = prompt("Título do evento:");
+  const desc = prompt("Descrição:");
+  push(eventosRef,{titulo, texto:desc});
+};
+window.apagarEvento=(key)=>{
+  const senha = prompt("Digite a senha LEX para apagar:");
+  if(senha!=="LEX") return alert("Senha incorreta!");
+  remove(ref(db,"eventos/"+key));
+};
+
+// ===================== MENU =====================
+function show(tab){
+  const section = document.getElementById("sec-"+tab);
+  if(section.classList.contains("hidden")) return alert("Aba protegida. Faça login.");
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+  section.classList.add("active");
+  [...document.querySelectorAll("nav button")].find(b=>b.innerText.toLowerCase().includes(tab)).classList.add("active");
 }
 </script>
 </body>
