@@ -23,7 +23,12 @@ nav button.active { color:var(--accent); font-weight:700; }
 #notification { display:none; background:var(--accent); color:#fff; padding:12px; border-radius:10px; margin-bottom:10px; animation:fade 0.5s;}
 @keyframes fade { from {opacity:0; transform:translateY(-10px);} to {opacity:1; transform:translateY(0);} }
 #fotoPerfil { width:100px; height:100px; border-radius:50%; object-fit:cover; margin-bottom:10px; }
-input, label { display:block; margin:6px 0; width:100%; }
+input, label, textarea { display:block; margin:6px 0; width:100%; }
+textarea { resize:none; }
+.hidden { display:none !important; }
+.post { border-bottom:1px solid #eee; padding:8px 0; }
+.post img { width:50px; height:50px; border-radius:50%; object-fit:cover; margin-right:8px; vertical-align:middle; }
+.post-header { display:flex; align-items:center; margin-bottom:4px; }
 </style>
 </head>
 <body>
@@ -61,19 +66,22 @@ input, label { display:block; margin:6px 0; width:100%; }
       <h3>Perfil</h3>
       <img id="fotoPerfil" src="https://via.placeholder.com/100"/>
       <div id="perfilInfo"></div>
+      <textarea id="postText" rows="3" placeholder="Escreva algo..."></textarea>
+      <button id="btnPostar">Postar</button>
+      <div id="feedPosts"></div>
       <button id="btnLogout">Sair</button>
     </div>
   </div>
 
   <!-- EVENTOS -->
-  <div class="card section" id="sec-eventos">
+  <div class="card section hidden" id="sec-eventos">
     <h2>Eventos — Playmates</h2>
     <button id="btnNovoEvento">Criar evento (Senha LEX)</button>
     <div id="eventosLista"></div>
   </div>
 
   <!-- JOGOS -->
-  <div class="card section" id="sec-jogos">
+  <div class="card section hidden" id="sec-jogos">
     <h2>Jogos</h2>
     <div class="post"><h3>Playmates Runner</h3><p>Mini-jogo em desenvolvimento...</p></div>
     <div class="post"><h3>Playmates Quiz</h3><p>Teste seus conhecimentos!</p></div>
@@ -121,21 +129,23 @@ const notifRef = ref(db, "notificacao/");
 onValue(notifRef, snap => { const msg = snap.val(); if(msg){ notifBox.innerText=msg; notifBox.style.display="block"; }});
 set(notifRef,"Olá eu sou Diogo Paixão, fundador & CEO da plataforma Playmates e espero que tenhas uma ótima experiência juvenil");
 
-// ===================== LOGIN / CADASTRO =====================
+// ===================== ELEMENTOS =====================
 const loginPhone=document.getElementById('loginPhone'), loginPass=document.getElementById('loginPass'), loginSubmit=document.getElementById('loginSubmit');
 const showRegisterBtn=document.getElementById('showRegister'), regCancel=document.getElementById('regCancel'), regSubmit=document.getElementById('regSubmit');
 const regName=document.getElementById('regName'), regPass=document.getElementById('regPass'), regPhone=document.getElementById('regPhone'), regSchool=document.getElementById('regSchool'), regPhoto=document.getElementById('regPhoto');
 const authArea=document.getElementById('authArea'), loggedArea=document.getElementById('loggedArea');
-const fotoPerfil=document.getElementById('fotoPerfil'), perfilInfo=document.getElementById('perfilInfo'), btnLogout=document.getElementById('btnLogout');
+const fotoPerfil=document.getElementById('fotoPerfil'), perfilInfo=document.getElementById('perfilInfo');
+const feedPosts=document.getElementById('feedPosts'), btnPostar=document.getElementById('btnPostar');
+const btnLogout=document.getElementById('btnLogout');
+let currentUser=null;
 
 showRegisterBtn.onclick=()=>{ document.getElementById('loginForm').style.display='none'; document.getElementById('registerForm').style.display='block';};
 regCancel.onclick=()=>{ document.getElementById('registerForm').style.display='none'; document.getElementById('loginForm').style.display='block';};
 
-// Criar conta
+// ===================== LOGIN / CADASTRO =====================
 regSubmit.onclick=async ()=>{
   const name=regName.value.trim(), pass=regPass.value, phone=regPhone.value.trim(), school=regSchool.value.trim();
   if(!name||!pass||!phone) return alert("Preencha campos obrigatórios");
-
   const userRef = ref(db,"users/"+phone);
   const snap = await get(userRef);
   if(snap.exists()) return alert("Conta já existe");
@@ -152,7 +162,6 @@ regSubmit.onclick=async ()=>{
   loginUser(phone);
 };
 
-// Login
 loginSubmit.onclick=async ()=>{
   const phone=loginPhone.value.trim(), pass=loginPass.value;
   const snap = await get(ref(db,"users/"+phone));
@@ -162,12 +171,10 @@ loginSubmit.onclick=async ()=>{
   loginUser(phone);
 };
 
-// Mostrar perfil
 function loginUser(phone){
+  currentUser = phone;
   const userRef = ref(db,"users/"+phone);
   authArea.style.display="none"; loggedArea.style.display="block";
-
-  // Ativar abas protegidas
   document.querySelectorAll("#sec-eventos, #sec-jogos").forEach(s=>s.classList.remove("hidden"));
 
   onValue(userRef, snap=>{
@@ -176,11 +183,38 @@ function loginUser(phone){
     perfilInfo.innerHTML = `<p><strong>Nome:</strong> ${u.name}</p><p><strong>Telemóvel:</strong> ${u.phone}</p><p><strong>Escola:</strong> ${u.school}</p><p><strong>Pontos:</strong> ${u.points}</p>`;
   });
 
+  // ===================== POSTAR NO FEED =====================
+  btnPostar.onclick=async ()=>{
+    const texto = document.getElementById('postText').value.trim();
+    if(!texto) return alert("Digite algo para postar");
+    const userSnap = await get(ref(db,"users/"+phone));
+    const userData = userSnap.val();
+    push(ref(db,"feed/"),{autor:userData.name, foto:userData.foto, texto});
+    document.getElementById('postText').value="";
+  };
+
+  // ===================== MOSTRAR FEED =====================
+  const feedRef = ref(db,"feed/");
+  onValue(feedRef, snap=>{
+    feedPosts.innerHTML="";
+    snap.forEach(item=>{
+      const p=item.val();
+      feedPosts.innerHTML += `
+        <div class="post">
+          <div class="post-header">
+            <img src="${p.foto||'https://via.placeholder.com/50'}"/>
+            <strong>${p.autor}</strong>
+          </div>
+          <p>${p.texto}</p>
+        </div>
+      `;
+    });
+  });
+
   btnLogout.onclick=()=>{ 
-    loggedArea.style.display='none'; 
-    authArea.style.display='block'; 
-    // Desativar abas protegidas
+    loggedArea.style.display='none'; authArea.style.display='block'; 
     document.querySelectorAll("#sec-eventos, #sec-jogos").forEach(s=>s.classList.add("hidden"));
+    currentUser=null;
   };
 }
 
@@ -198,6 +232,7 @@ function carregarEventos(){
 }
 carregarEventos();
 document.getElementById("btnNovoEvento").onclick=()=>{
+  if(!currentUser) return alert("Faça login para criar evento");
   const senha = prompt("Digite a senha LEX para criar evento:");
   if(senha!=="LEX") return alert("Senha incorreta!");
   const titulo = prompt("Título do evento:");
