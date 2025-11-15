@@ -1,408 +1,246 @@
-<!doctype html>
-<html lang="pt-PT">
+<!DOCTYPE html>
+<html lang="pt">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Playmates — App</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playmates — Plataforma Oficial</title>
+
+<!-- ====== ESTILOS ====== -->
 <style>
 :root{
-  --bg:#f6f7fb; --card:#ffffff; --muted:#6b7280; --accent:#ff7b00; --accent-2:#ff9a3d; --primary:#1877f2;
+  --bg:#f6f7fb; --card:#ffffff; --muted:#6b7280; --accent:#ff7b00; --accent-2:#ff9a3d;
 }
-*{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;margin:0;padding:0}
-html,body{height:100%}
-body{background:var(--bg);color:#0b1222;min-height:100vh;padding-bottom:86px}
-.app{max-width:980px;margin:0 auto;padding:12px}
-header{display:flex;align-items:center;gap:12px;padding:14px;border-radius:12px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;margin-bottom:12px;box-shadow:0 8px 30px rgba(255,123,0,0.12)}
-header h1{font-size:18px;margin:0;font-weight:800}
-.top-actions{margin-left:auto;display:flex;gap:8px}
-button{cursor:pointer}
-.btn { background:var(--primary); color:#fff; border:none; padding:8px 12px; border-radius:10px; font-weight:700; }
-.btn.ghost { background:transparent; color:var(--primary); border:1px solid rgba(11,18,34,0.06); padding:8px 12px; border-radius:10px; font-weight:700; }
-.card{background:var(--card);border-radius:12px;padding:12px;box-shadow:0 6px 18px rgba(16,24,40,0.04);margin-bottom:12px}
-.row{display:flex;gap:8px;align-items:center}
-.small{font-size:13px;color:var(--muted)}
-.profile-top{display:flex;gap:12px;align-items:center}
-.avatar{width:72px;height:72px;border-radius:999px;overflow:hidden;background:#f3f5f8;border:3px solid rgba(255,123,0,0.12);flex:0 0 72px}
-.avatar img{width:100%;height:100%;object-fit:cover;display:block}
-.section{display:none}
-.section.active{display:block}
-.feed-post{background:#fff;border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:0 4px 14px rgba(16,24,40,0.04)}
-.feed-post img{width:100%;border-radius:10px;margin-top:10px;object-fit:cover}
-.menu-bottom{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #e6e6e6;padding:8px 6px;display:flex;justify-content:space-around;gap:6px;box-shadow:0 -6px 18px rgba(0,0,0,0.06);z-index:999}
-.menu-bottom button{background:none;border:0;color:#333;font-weight:700;padding:6px 8px;border-radius:8px}
-.menu-bottom button.active{color:var(--accent);box-shadow:inset 0 -2px 0 rgba(0,0,0,0.03)}
-.input-file{display:flex;gap:8px;align-items:center}
-.preview-img{width:100%;max-height:360px;object-fit:cover;border-radius:10px;margin-top:8px}
-.hidden{display:none}
-.small-note{font-size:13px;color:var(--muted);margin-top:6px}
-.badge{display:inline-block;padding:6px 8px;border-radius:999px;background:rgba(11,18,34,0.04);font-size:13px;color:var(--muted)}
-.center{display:flex;align-items:center;justify-content:center}
+body { margin:0; font-family: Inter, sans-serif; background:var(--bg); color:#0b1222; }
+header { display:flex; justify-content: space-between; align-items:center; padding:12px 16px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#fff; font-weight:700; border-radius:0 0 14px 14px; }
+header h1 { margin:0; font-size:20px; }
+button { cursor:pointer; border:0; border-radius:10px; padding:8px 12px; background:var(--accent); color:#fff; font-weight:600; }
+button.ghost { background:transparent; border:1px solid rgba(0,0,0,0.06); color:var(--accent);}
+main { padding:12px; max-width:980px; margin:0 auto; display:grid; grid-template-columns:1fr; gap:12px; }
+.card { background:var(--card); border-radius:12px; padding:12px; box-shadow:0 6px 20px rgba(16,24,40,0.04); }
+.section { display:none; }
+.section.active { display:block; }
+nav { display:flex; justify-content:space-around; background:white; position:fixed; bottom:0; left:0; right:0; border-top:1px solid #ddd; padding:8px 0; }
+nav button { background:none; color:#333; border:none; font-size:14px; }
+nav button.active { color:var(--accent); font-weight:700; }
+#notification { display:none; background:var(--accent); color:#fff; padding:12px; border-radius:10px; margin-bottom:10px; animation:fade 0.5s;}
+@keyframes fade { from {opacity:0; transform:translateY(-10px);} to {opacity:1; transform:translateY(0);} }
+#fotoPerfil { width:100px; height:100px; border-radius:50%; object-fit:cover; }
+input, label { display:block; margin:6px 0; width:100%; }
 </style>
 </head>
 <body>
-  <div class="app">
-    <header>
-      <h1>Playmates</h1>
-      <div class="top-actions">
-        <button id="btnDemo" class="btn.ghost">Conta Demo</button>
-        <button id="btnOpenAuth" class="btn">Entrar / Cadastrar</button>
-      </div>
-    </header>
 
-    <!-- AUTH CARD (mostra login/reg ou perfil quando logado) -->
-    <div id="authCard" class="card">
-      <div id="loginView">
-        <h3>Entrar</h3>
-        <div class="small-note">Login com telemóvel + senha — 5 tentativas bloqueiam.</div>
-        <div style="height:8px"></div>
-        <input id="loginPhone" placeholder="Telemóvel (ex: 922000000)">
-        <input id="loginPass" type="password" placeholder="Senha">
-        <div class="row" style="margin-top:8px">
-          <button id="loginBtn" class="btn">Entrar</button>
-          <button id="toRegister" class="btn.ghost">Criar conta</button>
-        </div>
-      </div>
+<header>
+  <h1>Playmates</h1>
+  <div>
+    <button id="btnOpenAuth">Entrar / Cadastrar</button>
+    <button id="btnDemo" class="ghost">Conta Demo</button>
+  </div>
+</header>
 
-      <div id="registerView" class="hidden">
-        <h3>Criar conta</h3>
-        <input id="regName" placeholder="Nome completo">
-        <input id="regPhone" placeholder="Telemóvel">
-        <input id="regPass" type="password" placeholder="Senha">
-        <input id="regSchool" placeholder="Escola (opcional)">
-        <div style="margin-top:8px" class="input-file">
-          <input id="regPhoto" type="file" accept="image/*">
-          <button id="createBtn" class="btn">Criar conta</button>
-        </div>
-        <div class="small-note">Foto opcional — pode editar depois.</div>
-        <div style="height:8px"></div>
-        <button id="backLogin" class="btn.ghost">Voltar</button>
-      </div>
+<main>
+  <!-- LOGIN / CADASTRO -->
+  <div class="card section active" id="sec-feed">
+    <div id="notification"></div>
 
-      <div id="profileView" class="hidden">
-        <div class="profile-top">
-          <div class="avatar"><img id="profileImg" src=""></div>
-          <div>
-            <div id="profileName" style="font-size:16px;font-weight:800">—</div>
-            <div id="profileSchool" class="small">—</div>
-            <div id="profilePhone" class="small">—</div>
-            <div style="height:8px"></div>
-            <div class="row">
-              <button id="btnEditProfile" class="btn.ghost">Editar</button>
-              <button id="btnLogout" class="btn.ghost">Sair</button>
-            </div>
-          </div>
-        </div>
+    <div id="authArea">
+      <h3>Bem-vindo ao Playmates</h3>
+      <div class="muted-small">Faça login ou crie conta</div>
+      <div id="loginForm">
+        <label>Telemóvel</label><input id="loginPhone" type="tel" placeholder="ex: 922000000"/>
+        <label>Senha</label><input id="loginPass" type="password" placeholder="Senha"/>
+        <div><button id="loginSubmit">Entrar</button><button id="showRegister" class="ghost">Criar conta</button></div>
+      </div>
+      <div id="registerForm" style="display:none">
+        <label>Nome completo</label><input id="regName" type="text" placeholder="Nome completo"/>
+        <label>Senha</label><input id="regPass" type="password"/>
+        <label>Telemóvel</label><input id="regPhone" type="tel"/>
+        <label>Escola</label><input id="regSchool" type="text"/>
+        <label>Foto</label><input id="regPhoto" type="file" accept="image/*"/>
+        <div><button id="regSubmit">Criar conta</button><button id="regCancel" class="ghost">Voltar</button></div>
       </div>
     </div>
 
-    <!-- TABS (visíveis após login) -->
-    <div id="tabsRow" class="card hidden">
-      <div class="row">
-        <button class="tab active" data-target="feed">Feed</button>
-        <button class="tab" data-target="eventos">Eventos</button>
-        <button class="tab" data-target="jogos">Jogos</button>
-        <button class="tab" data-target="historia">História</button>
+    <div id="loggedArea" style="display:none">
+      <h3>Perfil</h3>
+      <img id="fotoPerfil" src="" alt="Foto de Perfil"/>
+      <div id="perfilInfo"></div>
+      <button id="btnEditarPerfil">Editar Perfil</button>
+      <button id="btnLogout">Sair</button>
+      <div id="editarPerfilArea" style="display:none">
+        <label>Nome</label><input id="editName" type="text"/>
+        <label>Escola</label><input id="editSchool" type="text"/>
+        <label>Foto</label><input id="editPhoto" type="file" accept="image/*"/>
+        <button id="btnSalvarPerfil">Salvar Alterações</button>
       </div>
     </div>
-
-    <!-- SECTIONS -->
-    <div id="feed" class="section active card">
-      <div id="notifBox" class="card hidden"></div>
-
-      <h3>Publicar</h3>
-      <textarea id="postText" rows="3" placeholder="O que estás a pensar? (opcional)"></textarea>
-      <div class="row" style="margin-top:8px">
-        <input id="postImage" type="file" accept="image/*">
-        <button id="btnPublish" class="btn">Publicar</button>
-      </div>
-      <img id="preview" class="preview-img hidden" alt="preview">
-
-      <div style="margin-top:12px"><h4>Feed</h4><div id="postsContainer"></div></div>
-    </div>
-
-    <div id="eventos" class="section card">
-      <h3>Eventos</h3>
-      <div class="small-note">Para publicar/apagar eventos precisa da senha <strong>LEX</strong>.</div>
-      <div style="margin-top:8px" class="card">
-        <input id="eventPass" type="password" placeholder="Senha (LEX)">
-        <input id="eventTitle" placeholder="Título do evento">
-        <textarea id="eventDesc" rows="3" placeholder="Descrição do evento"></textarea>
-        <div class="row" style="margin-top:8px">
-          <button id="btnPublishEvent" class="btn">Publicar Evento</button>
-          <button id="btnClearExpired" class="btn.ghost">Eliminar expirados</button>
-        </div>
-      </div>
-      <div style="margin-top:12px"><h4>Eventos publicados</h4><div id="eventsContainer"></div></div>
-    </div>
-
-    <div id="jogos" class="section card">
-      <h3>Jogos</h3>
-      <div class="feed-post"><strong>Playmates Runner</strong><p>Mini-jogo de corrida — desvia obstáculos e coleciona pontos.</p></div>
-      <div class="feed-post"><strong>Playmates Quiz</strong><p>Quiz para treinar conhecimentos escolares.</p></div>
-      <div class="feed-post"><strong>Memória Flash</strong><p>Teste de memória com imagens rápidas.</p></div>
-    </div>
-
-    <div id="historia" class="section card">
-      <h3>História do Fundador</h3>
-      <p><strong>Diogo Paixão</strong> é o fundador e CEO da Playmates. A sua visão é criar um espaço digital seguro para jovens expressarem criatividade, aprenderem e ganharem oportunidades online. A Playmates nasceu da vontade de unir tecnologia, educação e cultura juvenil.</p>
-    </div>
-
-    <div style="height:86px"></div>
   </div>
 
-  <!-- MENU BOTTOM estilo WhatsApp -->
-  <div class="menu-bottom">
-    <button data-target="feed" class="active">Conversas</button>
-    <button data-target="eventos">Eventos</button>
-    <button data-target="jogos">Jogos</button>
-    <button data-target="historia">História</button>
+  <!-- EVENTOS -->
+  <div class="card section" id="sec-eventos">
+    <h2>Eventos — Playmates</h2>
+    <button id="btnNovoEvento">Criar evento</button>
+    <div id="eventosLista"></div>
   </div>
 
-  <!-- FIREBASE -->
-  <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-  import { getDatabase, ref, set, push, onValue, get, remove, update } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
+  <!-- JOGOS -->
+  <div class="card section" id="sec-jogos">
+    <h2>Jogos</h2>
+    <div class="post"><h3>Playmates Runner</h3><p>Mini-jogo em desenvolvimento...</p></div>
+    <div class="post"><h3>Playmates Quiz</h3><p>Teste seus conhecimentos!</p></div>
+  </div>
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyClzY30up3gZTsgIqT1b_nYW7EHpKpwcaI",
-    authDomain: "playmates-cc4f7.firebaseapp.com",
-    databaseURL: "https://playmates-cc4f7-default-rtdb.firebaseio.com",
-    projectId: "playmates-cc4f7",
-    storageBucket: "playmates-cc4f7.firebasestorage.app",
-    messagingSenderId: "104004735810",
-    appId: "1:104004735810:web:d3ee9a75399d6f0f222edb"
-  };
+  <!-- HISTÓRIA -->
+  <div class="card section" id="sec-historia">
+    <h2>História do Fundador</h2>
+    <div id="historia">
+      <h3>Diogo Paixão — Fundador & CEO</h3>
+      <p>Diogo criou a Playmates para jovens se expressarem e aprenderem...</p>
+    </div>
+  </div>
+</main>
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+<!-- MENU -->
+<nav>
+  <button onclick="show('feed')" class="active">Feed</button>
+  <button onclick="show('eventos')">Eventos</button>
+  <button onclick="show('jogos')">Jogos</button>
+  <button onclick="show('historia')">História</button>
+</nav>
 
-  /* ---------- Helpers ---------- */
-  const $ = id => document.getElementById(id);
-  const placeholderDataUrl = (initial) => {
-    const c=document.createElement('canvas'); c.width=200; c.height=200; const ctx=c.getContext('2d');
-    ctx.fillStyle='#f3f5f8'; ctx.fillRect(0,0,200,200); ctx.fillStyle='#ff7b00'; ctx.font='100px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText((initial||'P').slice(0,1).toUpperCase(),100,110); return c.toDataURL();
-  };
-  const fileToDataUrl = (file) => new Promise((res,rej)=>{ const r=new FileReader(); r.onload=e=>res(e.target.result); r.onerror=rej; r.readAsDataURL(file); });
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
+import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
 
-  /* ---------- State ---------- */
-  let sessionPhone = localStorage.getItem('pm_session') || null;
-  let currentUser = null;
+const firebaseConfig = {
+  apiKey: "AIzaSyClzY30up3gZTsgIqT1b_nYW7EHpKpwcaI",
+  authDomain: "playmates-cc4f7.firebaseapp.com",
+  databaseURL: "https://playmates-cc4f7-default-rtdb.firebaseio.com",
+  projectId: "playmates-cc4f7",
+  storageBucket: "playmates-cc4f7.appspot.com",
+  messagingSenderId: "104004735810",
+  appId: "1:104004735810:web:d3ee9a75399d6f0f222edb"
+};
 
-  /* ---------- Realtime listeners ---------- */
-  // accounts list (keeps in sync)
-  onValue(ref(db, '/accounts'), snap=>{
-    // we don't render the whole list here, but keep local copy updated implicitly via DB reads where needed
-    // optionally could show total counts etc.
-  });
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const storage = getStorage(app);
 
-  // notification global (founder message)
-  const notifRef = ref(db, '/notificacao/global');
-  onValue(notifRef, snap=>{
-    const v = snap.val();
-    if(!v) return;
-    $('notifBox').innerHTML = v;
-    $('notifBox').classList.remove('hidden');
-  });
-  // ensure default message exists
-  set(notifRef, 'Olá eu sou Diogo Paixão, fundador & CEO da plataforma Playmates e espero que tenhas uma ótima experiência juvenil.');
+// ===================== NOTIFICAÇÃO =====================
+const notifBox = document.getElementById("notification");
+const notifRef = ref(db, "notificacao/");
+onValue(notifRef, snap => {
+  const msg = snap.val();
+  if(msg){ notifBox.innerHTML = msg; notifBox.style.display="block";}
+});
+set(notifRef,"Olá eu sou Diogo Paixão, fundador & CEO da plataforma Playmates e espero que tenhas uma ótima experiência juvenil");
 
-  // posts (feed)
-  const postsRef = ref(db, '/posts');
-  onValue(postsRef, snap=>{
-    const container = $('postsContainer'); container.innerHTML = '';
-    const val = snap.val() || {};
-    const arr = Object.keys(val).map(k=>({ id:k, ...val[k]})).sort((a,b)=> (b.createdAt||0)-(a.createdAt||0));
-    arr.forEach(p=>{
-      const div = document.createElement('div'); div.className='feed-post';
-      div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><strong>${escapeHtml(p.author)}</strong><span class="small">${new Date(p.createdAt).toLocaleString()}</span></div>
-        <div style="margin-top:8px">${escapeHtml(p.text||'')}</div>
-        ${p.img?`<img src="${p.img}" alt="img">`:''}
-        <div style="margin-top:8px" class="row">
-          <button class="btn.ghost" onclick="likePost('${p.id}')">👍 ${p.likes||0}</button>
-          ${sessionPhone===p.authorPhone?`<button class="btn.ghost" onclick="deletePost('${p.id}')">🗑️ Remover</button>`:''}
-        </div>`;
-      container.appendChild(div);
-    });
-  });
+// ===================== MENU =====================
+function show(tab){
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+  document.getElementById("sec-"+tab).classList.add("active");
+  [...document.querySelectorAll("nav button")].find(b=>b.innerText.toLowerCase().includes(tab)).classList.add("active");
+}
+window.show=show;
 
-  // events
-  const eventsRef = ref(db, '/eventos');
-  onValue(eventsRef, snap=>{
-    const container = $('eventsContainer'); container.innerHTML = '';
-    const val = snap.val() || {};
-    const arr = Object.keys(val).map(k=>({ id:k, ...val[k]})).sort((a,b)=> (b.createdAt||0)-(a.createdAt||0));
-    arr.forEach(e=>{
-      const d = document.createElement('div'); d.className='card';
-      d.innerHTML = `<strong>${escapeHtml(e.title||'Evento')}</strong><div class="small-note">${new Date(e.createdAt).toLocaleString()}</div><p>${escapeHtml(e.desc||'')}</p>
-        <div style="margin-top:8px"><button class="btn.ghost" onclick="attemptDeleteEvent('${e.id}')">Apagar</button></div>`;
-      container.appendChild(d);
-    });
-  });
+// ===================== LOGIN / REGISTRO =====================
+const loginPhone = document.getElementById('loginPhone');
+const loginPass = document.getElementById('loginPass');
+const loginSubmit = document.getElementById('loginSubmit');
+const showRegisterBtn = document.getElementById('showRegister');
+const regCancel = document.getElementById('regCancel');
+const regSubmit = document.getElementById('regSubmit');
+const regName = document.getElementById('regName');
+const regPass = document.getElementById('regPass');
+const regPhone = document.getElementById('regPhone');
+const regSchool = document.getElementById('regSchool');
+const regPhoto = document.getElementById('regPhoto');
+const authArea = document.getElementById("authArea");
+const loggedArea = document.getElementById("loggedArea");
+const fotoPerfil = document.getElementById("fotoPerfil");
+const perfilInfo = document.getElementById("perfilInfo");
+const btnEditarPerfil = document.getElementById("btnEditarPerfil");
+const editarPerfilArea = document.getElementById("editarPerfilArea");
+const editName = document.getElementById("editName");
+const editSchool = document.getElementById("editSchool");
+const editPhoto = document.getElementById("editPhoto");
+const btnLogout = document.getElementById("btnLogout");
 
-  /* ---------- Utility functions that call DB ---------- */
-  window.escapeHtml = function(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+showRegisterBtn.onclick=()=>{ document.getElementById("loginForm").style.display="none"; document.getElementById("registerForm").style.display="block";};
+regCancel.onclick=()=>{ document.getElementById("registerForm").style.display="none"; document.getElementById("loginForm").style.display="block";};
 
-  // create account in DB
-  async function createAccountToDB(acc){
-    // structure: /accounts/{phone} => { name, pass, phone, school, photoDataUrl, failedAttempts, locked, points, notifications:{ ... } }
-    await set(ref(db, `/accounts/${acc.phone}`), {
-      name: acc.name,
-      pass: acc.pass,
-      phone: acc.phone,
-      school: acc.school || '—',
-      photo: acc.photo || '',
-      failedAttempts: 0,
-      locked: false,
-      points: 0
-    });
+// Criar conta
+regSubmit.onclick=async ()=>{
+  const name=regName.value.trim(), pass=regPass.value, phone=regPhone.value.trim(), school=regSchool.value.trim();
+  if(!name||!pass||!phone) return alert("Preencha campos obrigatórios");
+
+  const userRef = ref(db, "users/"+phone);
+  const snap = await get(userRef);
+  if(snap.exists()) return alert("Conta já existe");
+
+  let photoURL = "";
+  if(regPhoto.files[0]){
+    const file = regPhoto.files[0];
+    const photoRef = sRef(storage,"perfilFotos/"+phone);
+    await uploadBytes(photoRef,file);
+    photoURL = await getDownloadURL(photoRef);
   }
 
-  // read account from DB
-  async function getAccountFromDB(phone){
-    const s = await get(ref(db, `/accounts/${phone}`));
-    return s.exists() ? s.val() : null;
-  }
+  await set(userRef,{name,pass,phone,school,points:0,foto:photoURL,posts:[]});
+  alert("Conta criada com sucesso");
+  loginUser(phone);
+};
 
-  // update account in DB
-  async function updateAccountDB(phone, updates){
-    await update(ref(db, `/accounts/${phone}`), updates);
-  }
+// Login
+loginSubmit.onclick=async ()=>{
+  const phone=loginPhone.value.trim(), pass=loginPass.value;
+  const snap = await get(ref(db,"users/"+phone));
+  if(!snap.exists()) return alert("Conta não encontrada");
+  const user = snap.val();
+  if(user.pass!==pass) return alert("Senha incorreta");
+  loginUser(phone);
+};
 
-  /* ---------- Auth: Register / Login (synchronized via DB) ---------- */
-  $('toRegister').addEventListener('click', ()=>{ $('loginView').classList.add('hidden'); $('registerView').classList.remove('hidden'); });
-  $('backLogin').addEventListener('click', ()=>{ $('registerView').classList.add('hidden'); $('loginView').classList.remove('hidden'); });
+// Mostrar perfil
+function loginUser(phone){
+  const userRef = ref(db,"users/"+phone);
+  authArea.style.display="none";
+  loggedArea.style.display="block";
 
-  $('btnDemo').addEventListener('click', async ()=>{
-    const demoPhone = '999999999';
-    const acc = await getAccountFromDB(demoPhone);
-    if(acc) return alert('Demo já existe. Login: 999999999 / demo');
-    await createAccountToDB({ name:'Conta Demo', pass:'demo', phone: demoPhone, school:'Demo', photo:'' });
-    alert('Conta demo criada: 999999999 / demo');
+  onValue(userRef, snap=>{
+    const u = snap.val();
+    fotoPerfil.src = u.foto || "https://via.placeholder.com/100";
+    perfilInfo.innerHTML = `<p><strong>Nome:</strong> ${u.name}</p><p><strong>Telemóvel:</strong> ${u.phone}</p><p><strong>Escola:</strong> ${u.school}</p><p><strong>Pontos:</strong> ${u.points}</p>`;
+
+    editName.value = u.name;
+    editSchool.value = u.school;
   });
 
-  $('createBtn').addEventListener('click', async ()=>{
-    const name = $('regName').value.trim();
-    const phone = $('regPhone').value.trim();
-    const pass = $('regPass').value;
-    const school = $('regSchool').value.trim();
-    if(!name || !phone || !pass) return alert('Preenche nome, telemóvel e senha');
-    const existing = await getAccountFromDB(phone);
-    if(existing) return alert('Já existe conta com este telemóvel');
-    let photoData = '';
-    if($('regPhoto').files && $('regPhoto').files[0]){
-      try{ photoData = await fileToDataUrl($('regPhoto').files[0]); } catch(e){}
+  // Editar perfil
+  btnEditarPerfil.onclick=()=>{ editarPerfilArea.style.display="block";};
+  document.getElementById("btnSalvarPerfil").onclick=async ()=>{
+    const snapOld = await get(userRef);
+    let updatedData = {name: editName.value.trim(), school: editSchool.value.trim()};
+    if(editPhoto.files[0]){
+      const file = editPhoto.files[0];
+      const photoRef = sRef(storage,"perfilFotos/"+phone);
+      await uploadBytes(photoRef,file);
+      const photoURL = await getDownloadURL(photoRef);
+      updatedData.foto = photoURL;
     }
-    await createAccountToDB({ name, pass, phone, school, photo: photoData });
-    // auto-login
-    sessionPhone = phone; localStorage.setItem('pm_session', sessionPhone);
-    // push welcome notification to user's notifications node
-    await push(ref(db, `/accounts/${phone}/notifications`), { text: `Olá ${name}, bem-vindo(a) ao Playmates!`, createdAt: Date.now() });
-    // also push founder message to user's notifications
-    await push(ref(db, `/accounts/${phone}/notifications`), { text: `Olá eu sou Diogo Paixão, fundador & CEO da plataforma Playmates e espero que tenhas uma ótima experiência juvenil.`, createdAt: Date.now() });
-    renderAfterLogin();
-  });
-
-  $('loginBtn').addEventListener('click', async ()=>{
-    const phone = $('loginPhone').value.trim();
-    const pass = $('loginPass').value;
-    if(!phone || !pass) return alert('Preenche telemóvel e senha');
-    const acc = await getAccountFromDB(phone);
-    if(!acc) return alert('Conta não encontrada');
-    if(acc.locked) return alert('Conta bloqueada (contacta suporte).');
-    if(acc.pass === pass){
-      // reset failedAttempts
-      await updateAccountDB(phone, { failedAttempts: 0 });
-      sessionPhone = phone; localStorage.setItem('pm_session', sessionPhone);
-      // push welcome founder message to notifications for this user
-      await push(ref(db, `/accounts/${phone}/notifications`), { text: `Olá ${acc.name}, bem-vindo(a) ao Playmates!`, createdAt: Date.now() });
-      await push(ref(db, `/accounts/${phone}/notifications`), { text: `Olá eu sou Diogo Paixão, fundador & CEO da plataforma Playmates e espero que tenhas uma ótima experiência juvenil.`, createdAt: Date.now() });
-      renderAfterLogin();
-    } else {
-      const fa = (acc.failedAttempts||0) + 1;
-      const updates = { failedAttempts: fa };
-      if(fa >= 5) updates.locked = true;
-      await updateAccountDB(phone, updates);
-      if(fa >= 5) alert('Senha incorreta — conta bloqueada.');
-      else alert(`Senha incorreta. Tentativas: ${fa}/5`);
-    }
-  });
-
-  /* ---------- After login: render profile, sections, and user notifications ---------- */
-  async function renderAfterLogin(){
-    if(!sessionPhone) return;
-    const acc = await getAccountFromDB(sessionPhone);
-    if(!acc) return;
-    currentUser = acc;
-    // show profile view
-    $('loginView').classList.add('hidden');
-    $('registerView').classList.add('hidden');
-    $('profileView').classList.remove('hidden');
-    $('tabsRow').classList.remove('hidden');
-    $('authCard').classList.add('hidden'); // hide auth card
-    // fill profile
-    $('profileName').textContent = acc.name;
-    $('profileSchool').textContent = acc.school || '—';
-    $('profilePhone').textContent = acc.phone;
-    $('profileImg').src = acc.photo && acc.photo.length ? acc.photo : placeholderDataUrl(acc.name);
-    // subscribe to user's notifications (real-time)
-    onValue(ref(db, `/accounts/${sessionPhone}/notifications`), snap=>{
-      const data = snap.val() || {};
-      const list = Object.keys(data).sort((a,b)=> (data[b].createdAt||0)-(data[a].createdAt||0)).map(k=>data[k]);
-      // show the latest founder message in notifBox (if any)
-      if(list.length){
-        // use the newest
-        $('notifBox').innerHTML = escapeHtml(list[0].text || '');
-        $('notifBox').classList.remove('hidden');
-      }
-    });
-    // ensure sections show feed
-    activateSection('feed');
-  }
-
-  /* ---------- Publish post (writes to /posts) ---------- */
-  $('postImage').addEventListener('change', async (e)=> {
-    const f = e.target.files[0];
-    if(!f) { $('preview').classList.add('hidden'); $('preview').src=''; return; }
-    const data = await fileToDataUrl(f);
-    $('preview').src = data; $('preview').classList.remove('hidden');
-  });
-
-  $('btnPublish').addEventListener('click', async ()=>{
-    if(!sessionPhone) return alert('Inicia sessão para publicar');
-    const text = $('postText').value.trim();
-    let img = '';
-    if($('postImage').files && $('postImage').files[0]) img = await fileToDataUrl($('postImage').files[0]);
-    if(!text && !img) return alert('Escreve algo ou escolhe imagem');
-    const postObj = { author: currentUser.name, authorPhone: currentUser.phone, text, img, createdAt: Date.now(), likes: 0 };
-    await push(postsRef, postObj);
-    $('postText').value=''; $('postImage').value=''; $('preview').src=''; $('preview').classList.add('hidden');
-  });
-
-  window.likePost = async (id) => {
-    const pRef = ref(db, `/posts/${id}/likes`);
-    // naive transaction-like: read then set (Realtime DB has transaction support but modular SDK doesn't expose here simply; keep simple)
-    const snap = await get(ref(db, `/posts/${id}`));
-    if(!snap.exists()) return;
-    const cur = snap.val();
-    const newLikes = (cur.likes||0)+1;
-    await update(ref(db, `/posts/${id}`), { likes: newLikes });
+    await set(userRef,{...snapOld.val(), ...updatedData});
+    alert("Perfil atualizado com sucesso!");
+    editarPerfilArea.style.display="none";
   };
 
-  window.deletePost = async (id) => {
-    if(!confirm('Remover publicação?')) return;
-    const snap = await get(ref(db, `/posts/${id}`));
-    if(!snap.exists()) return alert('Publicação não encontrada');
-    const p = snap.val();
-    if(p.authorPhone !== sessionPhone) return alert('Só podes remover as tuas publicações');
-    await remove(ref(db, `/posts/${id}`));
+  // Logout
+  btnLogout.onclick=()=>{
+    loggedArea.style.display="none";
+    authArea.style.display="block";
   };
-
-  /* ---------- Events: create/delete with LEX ---------- */
-  $('btnPublishEvent').addEventListener('click', async ()=>{
-    const pass = $('eventPass').value;
-    if(pass !== 'LEX') return alert('Senha incorreta!');
-    const title = $('eventTitle').value.trim() || 'Evento';
-    const desc = $('eventDesc').value.trim() || '';
-    const ev = { title, desc, createdAt: Date.now(), expireAt: Date.no
+}
+</script>
+</body>
+</html>
