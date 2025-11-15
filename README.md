@@ -23,13 +23,12 @@ nav button.active { color:var(--accent); font-weight:700; }
 #notification { display:none; background:var(--accent); color:#fff; padding:12px; border-radius:10px; margin-bottom:10px; animation:fade 0.5s;}
 @keyframes fade { from {opacity:0; transform:translateY(-10px);} to {opacity:1; transform:translateY(0);} }
 #fotoPerfil { width:100px; height:100px; border-radius:50%; object-fit:cover; margin-bottom:10px; }
-input, label, textarea, select { display:block; margin:6px 0; width:100%; padding:6px; border-radius:6px; border:1px solid #ddd; }
+input, label, textarea { display:block; margin:6px 0; width:100%; }
 textarea { resize:none; }
-.sms-message { border-bottom:1px solid #eee; padding:8px 0; }
-.sms-header { display:flex; align-items:center; margin-bottom:4px; }
-.sms-header img { width:40px; height:40px; border-radius:50%; object-fit:cover; margin-right:8px; }
-.user-count { font-weight:600; color:var(--accent);}
-.event-views { font-size:12px; color:var(--muted);}
+.hidden { display:none !important; }
+.post { border-bottom:1px solid #eee; padding:8px 0; }
+.post img { width:50px; height:50px; border-radius:50%; object-fit:cover; margin-right:8px; vertical-align:middle; }
+.post-header { display:flex; align-items:center; margin-bottom:4px; }
 </style>
 </head>
 <body>
@@ -39,79 +38,67 @@ textarea { resize:none; }
 </header>
 
 <main>
-<div id="notification" class="card"></div>
+  <!-- NOTIFICAÇÃO -->
+  <div id="notification" class="card"></div>
 
-<!-- LOGIN / CADASTRO -->
-<div class="card section active" id="sec-sms">
-  <div id="authArea">
-    <h3>Bem-vindo ao Playmates</h3>
-    <div id="loginForm">
-      <label>Telemóvel</label><input id="loginPhone" type="tel"/>
-      <label>Senha</label><input id="loginPass" type="password"/>
-      <button id="loginSubmit">Entrar</button>
-      <button id="showRegister" class="ghost">Criar conta</button>
+  <!-- LOGIN / CADASTRO -->
+  <div class="card section active" id="sec-feed">
+    <div id="authArea">
+      <h3>Bem-vindo ao Playmates</h3>
+      <div id="loginForm">
+        <label>Telemóvel</label><input id="loginPhone" type="tel"/>
+        <label>Senha</label><input id="loginPass" type="password"/>
+        <button id="loginSubmit">Entrar</button>
+        <button id="showRegister" class="ghost">Criar conta</button>
+      </div>
+      <div id="registerForm" style="display:none">
+        <label>Nome completo</label><input id="regName" type="text"/>
+        <label>Senha</label><input id="regPass" type="password"/>
+        <label>Telemóvel</label><input id="regPhone" type="tel"/>
+        <label>Escola</label><input id="regSchool" type="text"/>
+        <label>Foto</label><input id="regPhoto" type="file" accept="image/*"/>
+        <button id="regSubmit">Criar conta</button>
+        <button id="regCancel" class="ghost">Voltar</button>
+      </div>
     </div>
-    <div id="registerForm" style="display:none">
-      <label>Nome completo</label><input id="regName" type="text"/>
-      <label>Senha</label><input id="regPass" type="password"/>
-      <label>Telemóvel</label><input id="regPhone" type="tel"/>
-      <label>Escola</label><input id="regSchool" type="text"/>
-      <label>Foto</label><input id="regPhoto" type="file" accept="image/*"/>
-      <button id="regSubmit">Criar conta</button>
-      <button id="regCancel" class="ghost">Voltar</button>
+
+    <div id="loggedArea" style="display:none">
+      <h3>Perfil</h3>
+      <img id="fotoPerfil" src="https://via.placeholder.com/100"/>
+      <div id="perfilInfo"></div>
+      <textarea id="postText" rows="3" placeholder="Escreva algo..."></textarea>
+      <button id="btnPostar">Postar</button>
+      <div id="feedPosts"></div>
+      <button id="btnLogout">Sair</button>
     </div>
   </div>
 
-  <div id="loggedArea" style="display:none">
-    <h3>Perfil</h3>
-    <img id="fotoPerfil" src="https://via.placeholder.com/100"/>
-    <div id="perfilInfo"></div>
-    <p>Usuários cadastrados: <span id="userCount" class="user-count">0</span></p>
-
-    <!-- Enviar SMS -->
-    <h3>Enviar SMS</h3>
-    <select id="smsDestinatario"></select>
-    <textarea id="smsTexto" maxlength="130" rows="2" placeholder="Mensagem (130 caracteres)"></textarea>
-    <button id="btnEnviarSMS">Enviar</button>
-    <h4>Mensagens recebidas</h4>
-    <div id="smsInbox"></div>
-
-    <!-- Pesquisa de perfis -->
-    <h3>Pesquisar usuários</h3>
-    <input type="text" id="searchInput" placeholder="Digite nome do usuário"/>
-    <div id="searchResults"></div>
-
-    <button id="btnLogout">Sair</button>
+  <!-- EVENTOS -->
+  <div class="card section hidden" id="sec-eventos">
+    <h2>Eventos — Playmates</h2>
+    <button id="btnNovoEvento">Criar evento (Senha LEX)</button>
+    <div id="eventosLista"></div>
   </div>
-</div>
 
-<!-- EVENTOS -->
-<div class="card section" id="sec-eventos">
-  <h2>Eventos — Playmates</h2>
-  <button id="btnNovoEvento">Criar evento (Senha LEX)</button>
-  <div id="eventosLista"></div>
-</div>
-
-<!-- JOGOS -->
-<div class="card section" id="sec-jogos">
-  <h2>Jogos</h2>
-  <div class="post"><h3>Playmates Runner</h3><p>Mini-jogo em desenvolvimento...</p></div>
-  <div class="post"><h3>Playmates Quiz</h3><p>Teste seus conhecimentos!</p></div>
-</div>
-
-<!-- HISTÓRIA -->
-<div class="card section" id="sec-historia">
-  <h2>História do Fundador</h2>
-  <div id="historia">
-    <h3>Diogo Paixão — Fundador & CEO</h3>
-    <p>Diogo criou a Playmates para jovens se expressarem e aprenderem...</p>
+  <!-- JOGOS -->
+  <div class="card section hidden" id="sec-jogos">
+    <h2>Jogos</h2>
+    <div class="post"><h3>Playmates Runner</h3><p>Mini-jogo em desenvolvimento...</p></div>
+    <div class="post"><h3>Playmates Quiz</h3><p>Teste seus conhecimentos!</p></div>
   </div>
-</div>
 
+  <!-- HISTÓRIA -->
+  <div class="card section active" id="sec-historia">
+    <h2>História do Fundador</h2>
+    <div id="historia">
+      <h3>Diogo Paixão — Fundador & CEO</h3>
+      <p>Diogo criou a Playmates para jovens se expressarem e aprenderem...</p>
+    </div>
+  </div>
 </main>
 
 <nav>
-  <button onclick="show('sms')" class="active">SMS</button>
+  <button onclick="show('feed')" class="active">Feed</button>
   <button onclick="show('eventos')">Eventos</button>
   <button onclick="show('jogos')">Jogos</button>
   <button onclick="show('historia')">História</button>
@@ -119,7 +106,7 @@ textarea { resize:none; }
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-import { getDatabase, ref, set, get, push, onValue, remove, runTransaction } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
+import { getDatabase, ref, set, get, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
 import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
 
 const firebaseConfig = {
@@ -136,28 +123,26 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const storage = getStorage(app);
 
-// NOTIFICAÇÃO
+// ===================== NOTIFICAÇÃO =====================
 const notifBox = document.getElementById("notification");
 const notifRef = ref(db, "notificacao/");
 onValue(notifRef, snap => { const msg = snap.val(); if(msg){ notifBox.innerText=msg; notifBox.style.display="block"; }});
 set(notifRef,"Olá eu sou Diogo Paixão, fundador & CEO da plataforma Playmates e espero que tenhas uma ótima experiência juvenil");
 
-// ELEMENTOS
+// ===================== ELEMENTOS =====================
 const loginPhone=document.getElementById('loginPhone'), loginPass=document.getElementById('loginPass'), loginSubmit=document.getElementById('loginSubmit');
 const showRegisterBtn=document.getElementById('showRegister'), regCancel=document.getElementById('regCancel'), regSubmit=document.getElementById('regSubmit');
 const regName=document.getElementById('regName'), regPass=document.getElementById('regPass'), regPhone=document.getElementById('regPhone'), regSchool=document.getElementById('regSchool'), regPhoto=document.getElementById('regPhoto');
 const authArea=document.getElementById('authArea'), loggedArea=document.getElementById('loggedArea');
 const fotoPerfil=document.getElementById('fotoPerfil'), perfilInfo=document.getElementById('perfilInfo');
-const smsDestinatario=document.getElementById('smsDestinatario'), smsTexto=document.getElementById('smsTexto'), btnEnviarSMS=document.getElementById('btnEnviarSMS');
-const smsInbox=document.getElementById('smsInbox'), searchInput=document.getElementById('searchInput'), searchResults=document.getElementById('searchResults');
+const feedPosts=document.getElementById('feedPosts'), btnPostar=document.getElementById('btnPostar');
 const btnLogout=document.getElementById('btnLogout');
-const userCountLabel = document.getElementById('userCount');
 let currentUser=null;
 
-// LOGIN / CADASTRO
 showRegisterBtn.onclick=()=>{ document.getElementById('loginForm').style.display='none'; document.getElementById('registerForm').style.display='block';};
 regCancel.onclick=()=>{ document.getElementById('registerForm').style.display='none'; document.getElementById('loginForm').style.display='block';};
 
+// ===================== LOGIN / CADASTRO =====================
 regSubmit.onclick=async ()=>{
   const name=regName.value.trim(), pass=regPass.value, phone=regPhone.value.trim(), school=regSchool.value.trim();
   if(!name||!pass||!phone) return alert("Preencha campos obrigatórios");
@@ -186,88 +171,54 @@ loginSubmit.onclick=async ()=>{
   loginUser(phone);
 };
 
-// FUNÇÃO LOGIN
 function loginUser(phone){
-  currentUser=phone;
-  authArea.style.display='none'; loggedArea.style.display='block';
+  currentUser = phone;
+  const userRef = ref(db,"users/"+phone);
+  authArea.style.display="none"; loggedArea.style.display="block";
   document.querySelectorAll("#sec-eventos, #sec-jogos").forEach(s=>s.classList.remove("hidden"));
 
-  const userRef = ref(db,"users/"+phone);
   onValue(userRef, snap=>{
     const u = snap.val();
     fotoPerfil.src = u.foto || "https://via.placeholder.com/100";
     perfilInfo.innerHTML = `<p><strong>Nome:</strong> ${u.name}</p><p><strong>Telemóvel:</strong> ${u.phone}</p><p><strong>Escola:</strong> ${u.school}</p><p><strong>Pontos:</strong> ${u.points}</p>`;
   });
 
-  // Contador total de usuários
-  const usersRef = ref(db,"users/");
-  onValue(usersRef, snap=>{
-    const total = snap.size;
-    userCountLabel.innerText = total >= 1000000 ? "1M+" : total;
-    smsDestinatario.innerHTML="<option value=''>Selecione destinatário</option>";
-    searchResults.innerHTML="";
+  // ===================== POSTAR NO FEED =====================
+  btnPostar.onclick=async ()=>{
+    const texto = document.getElementById('postText').value.trim();
+    if(!texto) return alert("Digite algo para postar");
+    const userSnap = await get(ref(db,"users/"+phone));
+    const userData = userSnap.val();
+    push(ref(db,"feed/"),{autor:userData.name, foto:userData.foto, texto});
+    document.getElementById('postText').value="";
+  };
+
+  // ===================== MOSTRAR FEED =====================
+  const feedRef = ref(db,"feed/");
+  onValue(feedRef, snap=>{
+    feedPosts.innerHTML="";
     snap.forEach(item=>{
-      const u=item.val();
-      if(u.phone !== currentUser){
-        smsDestinatario.innerHTML += `<option value="${u.phone}">${u.name}</option>`;
-        searchResults.innerHTML += `<div>${u.name} - ${u.phone} <button onclick="sendToUser('${u.phone}')">Enviar SMS</button></div>`;
-      }
+      const p=item.val();
+      feedPosts.innerHTML += `
+        <div class="post">
+          <div class="post-header">
+            <img src="${p.foto||'https://via.placeholder.com/50'}"/>
+            <strong>${p.autor}</strong>
+          </div>
+          <p>${p.texto}</p>
+        </div>
+      `;
     });
   });
 
-  // Enviar SMS
-  btnEnviarSMS.onclick=async ()=>{
-    const dest = smsDestinatario.value;
-    const msg = smsTexto.value.trim();
-    if(!dest||!msg) return alert("Selecione destinatário e digite mensagem");
-    const ts = Date.now() + 3*3600*1000;
-    push(ref(db,"sms/"+dest),{from:currentUser,text:msg,expires:ts});
-    smsTexto.value="";
-  };
-
-  // Receber SMS
-  onValue(ref(db,"sms/"+currentUser), snap=>{
-    smsInbox.innerHTML="";
-    const now = Date.now();
-    snap.forEach(item=>{
-      const m = item.val();
-      if(m.expires && m.expires < now){
-        remove(ref(db,"sms/"+currentUser+"/"+item.key));
-      } else {
-        get(ref(db,"users/"+m.from)).then(userSnap=>{
-          const sender=userSnap.val();
-          smsInbox.innerHTML += `<div class="sms-message"><div class="sms-header"><img src="${sender.foto||'https://via.placeholder.com/40'}"/> <strong>${sender.name}</strong></div><p>${m.text}</p></div>`;
-        });
-      }
-    });
-  });
-
-  searchInput.oninput=()=>{
-    const filtro = searchInput.value.toLowerCase();
-    searchResults.innerHTML="";
-    onValue(ref(db,"users/"), snap=>{
-      snap.forEach(item=>{
-        const u = item.val();
-        if(u.name.toLowerCase().includes(filtro) && u.phone !== currentUser)
-          searchResults.innerHTML += `<div>${u.name} - ${u.phone} <button onclick="sendToUser('${u.phone}')">Enviar SMS</button></div>`;
-      });
-    });
-  };
-
-  btnLogout.onclick=()=>{
-    loggedArea.style.display='none'; authArea.style.display='block';
+  btnLogout.onclick=()=>{ 
+    loggedArea.style.display='none'; authArea.style.display='block'; 
     document.querySelectorAll("#sec-eventos, #sec-jogos").forEach(s=>s.classList.add("hidden"));
     currentUser=null;
   };
 }
 
-// Função auxiliar botão enviar SMS direto
-window.sendToUser=(phone)=>{
-  smsDestinatario.value=phone;
-  smsTexto.focus();
-};
-
-// EVENTOS
+// ===================== EVENTOS =====================
 const eventosRef = ref(db,"eventos/");
 const eventosDiv = document.getElementById("eventosLista");
 function carregarEventos(){
@@ -275,8 +226,7 @@ function carregarEventos(){
     eventosDiv.innerHTML="";
     snap.forEach(item=>{
       const key=item.key; const evt=item.val();
-      evt.views = evt.views || 0;
-      eventosDiv.innerHTML+=`<div class="post"><h3>${evt.titulo}</h3><p>${evt.texto}</p><p class="event-views">👁️ ${evt.views}</p><button onclick="apagarEvento('${key}')">Apagar</button></div>`;
+      eventosDiv.innerHTML+=`<div class="post"><h3>${evt.titulo}</h3><p>${evt.texto}</p><button onclick="apagarEvento('${key}')">Apagar</button></div>`;
     });
   });
 }
@@ -287,7 +237,7 @@ document.getElementById("btnNovoEvento").onclick=()=>{
   if(senha!=="LEX") return alert("Senha incorreta!");
   const titulo = prompt("Título do evento:");
   const desc = prompt("Descrição:");
-  push(eventosRef,{titulo, texto:desc, views:0});
+  push(eventosRef,{titulo, texto:desc});
 };
 window.apagarEvento=(key)=>{
   const senha = prompt("Digite a senha LEX para apagar:");
@@ -295,27 +245,14 @@ window.apagarEvento=(key)=>{
   remove(ref(db,"eventos/"+key));
 };
 
-// Contador de views simulado ao abrir aba eventos
-function incrementarViews(){
-  onValue(eventosRef, snap=>{
-    snap.forEach(item=>{
-      const key=item.key;
-      runTransaction(ref(db,"eventos/"+key+"/views"), current=>{
-        return (current||0) + 1 > 1000000 ? 1000000 : (current||0) + 1;
-      });
-    });
-  }, {onlyOnce:true});
-}
-
-// MENU
+// ===================== MENU =====================
 function show(tab){
   const section = document.getElementById("sec-"+tab);
-  if(section.classList.contains("hidden")) return alert("Faça login para acessar esta aba.");
+  if(section.classList.contains("hidden")) return alert("Aba protegida. Faça login.");
   document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
   document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
   section.classList.add("active");
   [...document.querySelectorAll("nav button")].find(b=>b.innerText.toLowerCase().includes(tab)).classList.add("active");
-  if(tab==="eventos") incrementarViews();
 }
 </script>
 </body>
