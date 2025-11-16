@@ -94,8 +94,6 @@ textarea{resize:none;}
 <h2>Jogos</h2>
 <div class="post"><h3>Playmates Runner</h3><p>Mini-jogo em desenvolvimento...</p></div>
 <div class="post"><h3>Playmates Quiz</h3><p>Teste seus conhecimentos!</p></div>
-  <style>
-    
 <!-- HISTÓRIA -->
 <div class="card section" id="sec-historia">
 <h2>História do Fundador</h2>
