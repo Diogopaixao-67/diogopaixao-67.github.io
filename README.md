@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="pt">
 <head>
 <meta charset="UTF-8">
@@ -85,7 +86,7 @@ textarea{resize:none;}
 <!-- EVENTOS -->
 <div class="card section" id="sec-eventos">
 <h2>Eventos — Playmates</h2>
-<button id="btnNovoEvento">Criar evento (Somente o senhor)</button>
+<button id="btnNovoEvento">Criar evento (Senha LEX)</button>
 <div id="eventosLista"></div>
 </div>
 
@@ -94,21 +95,14 @@ textarea{resize:none;}
 <h2>Jogos</h2>
 <div class="post"><h3>Playmates Runner</h3><p>Mini-jogo em desenvolvimento...</p></div>
 <div class="post"><h3>Playmates Quiz</h3><p>Teste seus conhecimentos!</p></div>
+</div>
+
 <!-- HISTÓRIA -->
 <div class="card section" id="sec-historia">
 <h2>História do Fundador</h2>
 <div id="historia">
 <h3>Diogo Paixão — Fundador & CEO</h3>
-
-  
-  <h2>Sobre o Playmates</h2>
-
-  <p>
-    O Playmates foi criado por <strong>Diogo Paixão</strong> aos 17 anos e lançado em 2025.  
-    É uma plataforma pioneira em Angola que transforma votos em oportunidades financeiras.  
-    Já alcançou mais de 20 escolas do ensino médio, permitindo que estudantes ganhem recompensas de forma confiável e segura.  
-    É mais que uma disputa, é um caminho de empreendedorismo para jovens angolanos. Estimula liderança, comunicação e captação de apoios nas comunidades escolares.
-  </p>
+<p>Diogo criou a Playmates para jovens se expressarem e aprenderem...</p>
 </div>
 </div>
 </main>
