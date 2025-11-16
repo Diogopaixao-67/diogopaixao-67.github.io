@@ -112,10 +112,10 @@ textarea{resize:none;}
 </main>
 
 <nav>
-<button data-tab="sms" class="active">SMS</button>
+<button data-tab="sms" class="active">Início</button>
 <button data-tab="eventos">Eventos</button>
 <button data-tab="jogos">Jogos</button>
-<button data-tab="historia">História</button>
+<button data-tab="historia">Sobre</button>
 </nav>
 
 <script type="module">
