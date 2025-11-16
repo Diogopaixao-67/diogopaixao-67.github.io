@@ -84,7 +84,7 @@ textarea{resize:none;}
 <!-- EVENTOS -->
 <div class="card section" id="sec-eventos">
 <h2>Eventos — Playmates</h2>
-<button id="btnNovoEvento">Criar evento (Senha LEX)</button>
+<button id="btnNovoEvento">Criar evento (Somente o senhor)</button>
 <div id="eventosLista"></div>
 </div>
 
@@ -99,7 +99,10 @@ textarea{resize:none;}
 <div class="card section" id="sec-historia">
 <h2>História do Fundador</h2>
 <div id="historia">
-<h3>Diogo Paixão — Fundador & CEO</h3>
+  <style>
+    b{color:blue};
+  </style>
+<b>Diogo Paixão — Fundador & CEO</b>
   <h2>Sobre o Playmates</h2>
   <p>
     O Playmates foi criado por <strong>Diogo Paixão</strong> aos 17 anos e lançado em 2025.  
