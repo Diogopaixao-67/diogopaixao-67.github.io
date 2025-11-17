@@ -91,9 +91,32 @@ textarea{resize:none;}
 <!-- JOGOS -->
 <div class="card section" id="sec-jogos">
 <h2>Jogos</h2>
-<div class="post"><h3>Playmates Runner</h3><p>Mini-jogo em desenvolvimento...</p></div>
-<div class="post"><h3>Playmates Quiz</h3><p>Teste seus conhecimentos!</p></div>
+<!-- JOGOS (SUBSTITUIR ESTA DIV) -->
+<div class="card section" id="sec-jogos">
+  <h2>Jogos</h2>
+
+  <!-- Relógio central -->
+  <div id="countdownCard" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px;border-radius:10px;border:1px dashed #eee;margin-bottom:12px;">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <strong>Contagem regressiva:</strong>
+      <span id="countdownLabel" style="font-size:20px;font-weight:800;">00:00:00</span>
+    </div>
+    <div style="font-size:12px;color:#666;">
+      <button id="editCountdownBtn" title="Editar horário (senha A8)">📢 Editar contador</button>
+    </div>
+  </div>
+
+  <!-- Concorrentes (vertical) -->
+  <div id="competitorsList" style="display:flex;flex-direction:column;gap:10px;">
+    <!-- Cada concorrente será renderizado dinamicamente -->
+  </div>
+
+  <!-- templates hidden: file inputs para upload de fotos (um por concorrente) -->
+  <input type="file" id="compPhoto_1" accept="image/*" style="display:none"/>
+  <input type="file" id="compPhoto_2" accept="image/*" style="display:none"/>
+  <input type="file" id="compPhoto_3" accept="image/*" style="display:none"/>
 </div>
+
 
 <!-- HISTÓRIA -->
 <div class="card section" id="sec-historia">
