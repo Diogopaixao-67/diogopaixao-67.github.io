@@ -1,4 +1,4 @@
-<!doctype html>
+
 <html lang="pt">
 <head>
 <meta charset="utf-8"/>
@@ -433,6 +433,7 @@ onValue(competitorsRef, snap=>{
     });
   }
 });
+  
 
 /* upload fotos */
 [1,2,3].forEach(id=>{
@@ -445,4 +446,24 @@ onValue(competitorsRef, snap=>{
     const sRefPath = sRef(storage, path);
     try{
       await uploadBytes(sRefPath, file);
-      const url = await getDownloa
+      const url = await getDownloadURL(sRefPath);
+      const compRef = ref(db, `jogos/competitors/${id}`);
+      const snap = await get(compRef);
+      const comp = snap.exists() ? snap.val() : { name:`Concorrente ${id}`, school:'', votes:0 };
+      comp.photo = url;
+      await set(compRef, comp);
+      alert('Foto enviada com sucesso.');
+    }catch(err){
+      console.error(err); alert('Erro ao enviar foto.');
+    } finally { inp.value = ''; }
+  };
+});
+
+/* fim jogos block */
+
+/* Ready note: if DB rules block writes, configure Realtime DB rules in Firebase console accordingly. */
+/* If precisar, posso ajudar a criar regras seguras. */
+
+</script>
+</body>
+</html>
