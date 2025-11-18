@@ -472,4 +472,42 @@ onValue(competitorsRef, snap => {
     const storagePath = `jogos/competitors/${id}/photo_${Date.now()}`;
     const sRefPath = sRef(storage, storagePath);
     try{
-      await uplo
+      await uploadBytes(sRefPath, file);
+      const url = await getDownloadURL(sRefPath);
+      // atualiza apenas o campo photo sem perder outros campos
+      const compRef = ref(db, `jogos/competitors/${id}`);
+      const compSnap = await get(compRef);
+      const comp = compSnap.exists() ? compSnap.val() : { name: `Concorrente ${id}`, school:"", votes:0 };
+      comp.photo = url;
+      await set(compRef, comp);
+      alert("Foto enviada com sucesso.");
+    }catch(err){
+      console.error(err);
+      alert("Erro ao enviar foto.");
+    } finally {
+      input.value = "";
+    }
+  };
+});
+
+/* ---------- FIM BLOCO JOGOS ---------- */
+
+/* Carregar lista de eventos (views contadas) */
+onValue(eventosRef, snap=>{
+  const eventosDiv = document.getElementById("eventosLista");
+  eventosDiv.innerHTML = "";
+  snap.forEach(item=>{
+    const key = item.key;
+    const evt = item.val();
+    if(!evt.views) evt.views = 0;
+    // incrementa views localmente (cada leitura incrementa)
+    runTransaction(ref(db,"eventos/"+key+"/views"), current=>current===null?1:current+1);
+    eventosDiv.innerHTML += `<div class="post" style="padding:10px;border-bottom:1px solid #eee"><h3>${evt.titulo}</h3><p>${evt.texto}</p><p class="event-views">👁️ ${evt.views||0} views</p><button onclick="apagarEvento('${key}')">Apagar</button></div>`;
+  });
+});
+
+</script>
+</body>
+</html>
+
+      
