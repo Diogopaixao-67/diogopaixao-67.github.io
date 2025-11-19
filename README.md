@@ -137,7 +137,17 @@ textarea{resize:none}
   <!-- SOBRE -->
   <div id="sec-historia" class="card section">
     <h2>Sobre</h2>
-    <p><strong>Diogo Paixão</strong> — Fundador &amp; CEO. Protótipo Playmates.</p>
+<b>    <p><strong>Diogo Paixão</strong> — Fundador &amp; CEO.</b></p>
+<style>
+  b{color: blue;
+</style>
+      <h2>Sobre o Playmates</h2>
+  <p>
+    O Playmates foi criado por <strong>Diogo Paixão</strong> aos 17 anos e lançado em 2025.  
+    É uma plataforma pioneira em Angola que transforma votos em oportunidades financeiras.  
+    Já alcançou mais de 20 escolas do ensino médio, permitindo que estudantes ganhem recompensas de forma confiável e segura.  
+    É mais que uma disputa, é um caminho de empreendedorismo para jovens angolanos. Estimula liderança, comunicação e captação de apoios nas comunidades escolares.
+  </p>
   </div>
 </main>
 
