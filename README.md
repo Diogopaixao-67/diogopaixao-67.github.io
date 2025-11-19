@@ -138,9 +138,7 @@ textarea{resize:none}
   <div id="sec-historia" class="card section">
     <h2>Sobre</h2>
 <b>    <p><strong>Diogo Paixão</strong> — Fundador &amp; CEO.</b></p>
-<style>
-  b{color: blue;
-</style>
+ 
       <h2>Sobre o Playmates</h2>
   <p>
     O Playmates foi criado por <strong>Diogo Paixão</strong> aos 17 anos e lançado em 2025.  
