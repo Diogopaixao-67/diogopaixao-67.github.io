@@ -109,7 +109,7 @@ textarea{resize:none}
   <!-- EVENTOS -->
   <div id="sec-eventos" class="card section">
     <h2>Eventos — Playmates</h2>
-    <button id="btnNovoEvento" class="primary">Criar evento (Senha LEX)</button>
+    <button id="btnNovoEvento" class="primary">Criar evento (Somente o senhor)</button>
     <div id="eventosLista" style="margin-top:12px"></div>
   </div>
 
