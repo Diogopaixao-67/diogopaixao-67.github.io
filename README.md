@@ -45,10 +45,17 @@ textarea{resize:none}
 
 /* helper modal */
 .modal-back{position:fixed;inset:0;background:rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;z-index:60}
-.modal{background:#fff;padding:14px;border-radius:10px;max-width:420px;width:94%}
+.modal{background:#fff;padding:14px;border-radius:10px;max-width:520px;width:94%}
 .modal h3{margin:0 0 8px 0}
 .modal .row{margin:8px 0}
 .modal input{width:100%}
+.pill{display:inline-block;padding:6px 8px;border-radius:999px;background:#f7f7f7;margin-right:6px;font-size:12px}
+
+/* small UI */
+.flex{display:flex;gap:8px;align-items:center}
+.requestsList{margin-top:10px}
+.requestRow{display:flex;align-items:center;justify-content:space-between;padding:8px;border-radius:8px;border:1px solid #eee;background:#fff;margin-top:6px}
+.requestRow .meta{font-size:13px;color:#444}
 
 /* responsive */
 @media (max-width:520px){
@@ -96,9 +103,12 @@ textarea{resize:none}
       <h3>Perfil</h3>
       <img id="fotoPerfil" src="https://via.placeholder.com/100" style="width:100px;height:100px;border-radius:50%;object-fit:cover"/>
       <div id="perfilInfo"></div>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <button id="btnEditProfile" class="ghost">Editar Perfil</button>
+      </div>
       <p>Usuários cadastrados: <span id="userCount" class="user-count">0</span></p>
       <h4>Pesquisar usuários</h4>
-      <input id="searchInput" placeholder="Digite nome"/>
+      <input id="searchInput" placeholder="Digite nome ou telefone"/>
       <div id="searchResults"></div>
       <div style="margin-top:8px">
         <button id="btnLogout" class="ghost">Sair</button>
@@ -127,6 +137,26 @@ textarea{resize:none}
     </div>
 
     <div id="competitorsList"></div>
+
+    <!-- pedido panel (novo) -->
+    <div class="card" style="margin-top:10px">
+      <h3>Painel de pedidos — Packs de votos</h3>
+      <div style="display:grid;gap:8px">
+        <input id="req_name" placeholder="Nome"/>
+        <input id="req_school" placeholder="Escola"/>
+        <input id="req_whatsapp" placeholder="Número WhatsApp (ex: 2449...)"/>
+        <select id="req_pack">
+          <option value="free_400">Grátis — ganha 400kz</option>
+          <option value="500_2000">Pack 500kz — ganha 2000kz</option>
+        </select>
+        <div style="display:flex;gap:8px">
+          <button id="reqSubmit">Enviar pedido</button>
+          <button id="simPlus" class="ghost">+1 (Simulador)</button>
+          <div style="margin-left:auto" class="pill">Pedidos: <span id="reqCount">0</span></div>
+        </div>
+        <div id="requestsList" class="requestsList"></div>
+      </div>
+    </div>
 
     <!-- hidden file inputs -->
     <input type="file" id="compPhoto_1" accept="image/*" style="display:none"/>
@@ -165,7 +195,7 @@ import { getDatabase, ref, set, get, push, onValue, remove, runTransaction, upda
 import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
 
 /* ============ CONFIG ============ */
-/* Usaste este config; corrigi storageBucket para o formato appspot.com */
+/* Usa o teu config */
 const firebaseConfig = {
   apiKey: "AIzaSyClzY30up3gZTsgIqT1b_nYW7EHpKpwcaI",
   authDomain: "playmates-cc4f7.firebaseapp.com",
@@ -213,10 +243,15 @@ const showRegisterBtn = $('showRegister'), regCancel = $('regCancel'), regSubmit
 const regName = $('regName'), regPass = $('regPass'), regPhone = $('regPhone'), regSchool = $('regSchool'), regPhoto = $('regPhoto');
 const fotoPerfil = $('fotoPerfil'), perfilInfo = $('perfilInfo'), searchInput = $('searchInput'), searchResults = $('searchResults');
 const btnLogout = $('btnLogout'), userCountLabel = $('userCount');
+const btnEditProfile = $('btnEditProfile');
 
 const editCountdownBtn = $('editCountdownBtn'), countdownLabel = $('countdownLabel');
 const competitorsList = $('competitorsList');
 const fileInputs = {1: $('compPhoto_1'), 2: $('compPhoto_2'), 3: $('compPhoto_3')};
+
+/* Requests elements */
+const reqName = $('req_name'), reqSchool = $('req_school'), reqWhats = $('req_whatsapp'), reqPack = $('req_pack');
+const reqSubmit = $('reqSubmit'), simPlus = $('simPlus'), reqCountLabel = $('reqCount'), requestsList = $('requestsList');
 
 /* DB refs */
 const notifRef = ref(db, 'notificacao/');
@@ -224,12 +259,16 @@ const usersRef = ref(db, 'users/');
 const eventosRef = ref(db, 'eventos/');
 const countdownRef = ref(db, 'jogos/countdown');
 const competitorsRef = ref(db, 'jogos/competitors');
+const messagesRootRef = ref(db, 'messages/'); // messages/{recipientPhone}/{msgId}
+const requestsRef = ref(db, 'jogos/requests');
+const requestsCountRef = ref(db, 'jogos/requestsCount');
 
 /* default message */
 set(notifRef, "Bem-vindo ao Playmates!").catch(()=>{});
 
 /* state */
 let currentUser = null;
+let currentUserObj = null;
 
 /* UI helpers for modal (we use a simple modal for editing instead of many prompts) */
 function openModal(html, onOk){
@@ -293,185 +332,100 @@ function loginUser(phone){
   const userRef = ref(db, 'users/'+phone);
   onValue(userRef, snap=>{
     const u = snap.val()||{};
+    currentUserObj = u;
     fotoPerfil.src = u.foto || 'https://via.placeholder.com/100';
     perfilInfo.innerHTML = `<p><strong>Nome:</strong> ${u.name||''}</p><p><strong>Telemóvel:</strong> ${u.phone||''}</p><p><strong>Escola:</strong> ${u.school||''}</p><p><strong>Pontos:</strong> ${u.points||0}</p>`;
   });
 
   onValue(usersRef, snap=>{
     userCountLabel.innerText = snap.size >= 1000000 ? '1M+' : snap.size;
-    searchResults.innerHTML = '';
-    snap.forEach(item=>{
-      const u = item.val();
-      if(u.phone !== currentUser) searchResults.innerHTML += `<div style="padding:6px;border-bottom:1px solid #eee">${u.name} - ${u.phone}</div>`;
-    });
+    renderSearchResults(''); // initial render
   });
 }
 
 /* logout */
-btnLogout.onclick = ()=>{ currentUser = null; $('loggedArea').style.display='none'; $('loginForm').style.display='block'; };
+btnLogout.onclick = ()=>{ currentUser = null; currentUserObj = null; $('loggedArea').style.display='none'; $('loginForm').style.display='block'; };
 
-/* EVENTOS */
-$('btnNovoEvento').onclick = async ()=>{
-  if(!currentUser) return alert('Faça login para criar evento.');
-  const s = prompt('Senha para publicar evento:');
-  if(s !== 'LEX') return alert('Senha errada!');
-  const t = prompt('Título:'), c = prompt('Descrição:');
-  if(!t||!c) return alert('Dados inválidos');
-  push(eventosRef, { titulo:t, texto:c, views:0 });
+/* EDIT PROFILE button */
+btnEditProfile.onclick = ()=>{
+  if(!currentUser) return alert('Faça login para editar o perfil.');
+  openModal(`<h3>Editar perfil</h3>
+    <div class="row"><label>Nome</label><input id="m_name" value="${(currentUserObj && currentUserObj.name)||''}" /></div>
+    <div class="row"><label>Escola</label><input id="m_school" value="${(currentUserObj && currentUserObj.school)||''}" /></div>
+    <div class="row"><label>Foto (cole link)</label><input id="m_foto" value="${(currentUserObj && currentUserObj.foto)||''}" /></div>`, async (root)=>{
+      const name = root.querySelector('#m_name').value.trim();
+      const school = root.querySelector('#m_school').value.trim();
+      const foto = root.querySelector('#m_foto').value.trim();
+      await update(ref(db, `users/${currentUser}`), { name, school, foto });
+      showNotification('Perfil atualizado',2000);
+  });
 };
 
-onValue(eventosRef, snap=>{
-  const div = $('eventosLista'); if(!div) return;
-  div.innerHTML = '';
+/* Search: filter users and open profile modal */
+searchInput.addEventListener('input', e=>{
+  renderSearchResults(e.target.value || '');
+});
+
+async function renderSearchResults(q){
+  const snap = await get(usersRef);
+  searchResults.innerHTML = '';
+  if(!snap.exists()) return;
+  const lower = (q||'').toLowerCase();
   snap.forEach(item=>{
-    const k = item.key; const e = item.val();
-    div.innerHTML += `<div style="padding:10px;border-bottom:1px solid #eee"><h3>${e.titulo||''}</h3><p>${e.texto||''}</p><p class="event-views">👁️ ${e.views||0}</p></div>`;
+    const u = item.val();
+    if(!u) return;
+    const label = `${u.name||''} — ${u.phone||''}`;
+    if(!lower || label.toLowerCase().includes(lower) || (u.phone||'').includes(lower)){
+      const div = document.createElement('div');
+      div.style.padding = '8px';
+      div.style.borderBottom = '1px solid #eee';
+      div.style.cursor = 'pointer';
+      div.innerHTML = `<strong>${u.name||''}</strong><div style="font-size:12px;color:#666">${u.school||''} • ${u.phone||''}</div>`;
+      div.onclick = ()=> openProfileModal(u);
+      searchResults.appendChild(div);
+    }
   });
-});
-
-/* JOGOS - countdown */
-function formatHMS(ms){
-  if(ms < 0) ms = 0;
-  const total = Math.floor(ms/1000);
-  const h = Math.floor(total/3600).toString().padStart(2,'0');
-  const m = Math.floor((total%3600)/60).toString().padStart(2,'0');
-  const s = Math.floor(total%60).toString().padStart(2,'0');
-  return `${h}:${m}:${s}`;
 }
-let currentTarget = null;
-onValue(countdownRef, snap=>{
-  const v = snap.val();
-  currentTarget = v && v.target ? v.target : null;
-  countdownLabel.innerText = formatHMS(currentTarget?currentTarget - Date.now():0);
-});
-setInterval(()=>{ countdownLabel.innerText = formatHMS(currentTarget?currentTarget - Date.now():0); }, 1000);
 
-editCountdownBtn.onclick = async ()=>{
-  if(!currentUser) return alert('Faça login para editar o contador.');
-  const pw = prompt('Senha para editar o contador:');
-  if(pw !== 'A8') return alert('Senha incorreta.');
-  let h = parseInt(prompt('Horas (0-99):','0')) || 0;
-  let m = parseInt(prompt('Minutos (0-59):','0')) || 0;
-  let s = parseInt(prompt('Segundos (0-59):','30')) || 0;
-  if(h<0) h=0; if(m<0) m=0; if(s<0) s=0;
-  const totalMs = ((h*3600)+(m*60)+s)*1000;
-  await set(countdownRef, { target: Date.now() + totalMs });
-  showNotification('Contador atualizado',2000);
-};
-
-/* Competitors: ensure defaults and render */
-async function ensureDefaultCompetitors(){
-  const snap = await get(competitorsRef);
-  if(!snap.exists()){
-    const defaults = {
-      1:{ name:'Concorrente 1', school:'Escola A', votes:0, photo:'' },
-      2:{ name:'Concorrente 2', school:'Escola B', votes:0, photo:'' },
-      3:{ name:'Concorrente 3', school:'Escola C', votes:0, photo:'' }
-    };
-    await set(competitorsRef, defaults);
+/* Profile modal: show info and allow sending internal SMS that expire in 3h; list messages from currentUser to this user with edit/delete */
+async function openProfileModal(userObj){
+  const phone = userObj.phone;
+  // load messages to this recipient
+  const msgsSnap = await get(ref(db, `messages/${phone}`));
+  const msgs = [];
+  if(msgsSnap.exists()){
+    msgsSnap.forEach(m=> msgs.push({ id: m.key, ...m.val() }));
   }
-}
-ensureDefaultCompetitors();
-
-function renderCompetitors(listObj){
-  competitorsList.innerHTML = '';
-  [1,2,3].forEach(id=>{
-    const c = listObj && listObj[id] ? listObj[id] : { name:`Concorrente ${id}`, school:'', votes:0, photo:'' };
-    const card = document.createElement('div'); card.className='compCard';
-    const img = document.createElement('img'); img.src = c.photo || 'https://via.placeholder.com/80';
-    const info = document.createElement('div'); info.className='compInfo';
-    info.innerHTML = `<div style="font-weight:800">${c.name}</div><div style="color:#666">${c.school||''}</div><div style="margin-top:8px;font-weight:700;color:var(--accent-3)">Votos: <span id="votes_${id}">${c.votes||0}</span></div>`;
-    const actions = document.createElement('div'); actions.className='compActions';
-
-    // Edit button (senha 5A) — allows upload or link
-    const editBtn = document.createElement('button'); editBtn.innerText='⚫ Editar'; editBtn.className='edit-orange';
-    editBtn.onclick = async ()=>{
-      if(!currentUser) return alert('Faça login para editar concorrentes.');
-      const pw = prompt('Senha para editar concorrente:');
-      if(pw !== '5A') return alert('Senha incorreta.');
-      // show modal with options
-      openModal(`<h3>Editar concorrente ${id}</h3>
-        <div class="row"><label>Nome</label><input id="m_name" value="${(c.name||'')}" /></div>
-        <div class="row"><label>Escola</label><input id="m_school" value="${(c.school||'')}" /></div>
-        <div class="row"><label>Votos</label><input id="m_votes" type="number" value="${(c.votes||0)}" /></div>
-        <div class="row"><label>Imagem: (1) Upload no botão foto ou (2) cole link abaixo</label><input id="m_link" placeholder="https://..." /></div>`, async (root)=>{
-          const newName = root.querySelector('#m_name').value.trim();
-          const newSchool = root.querySelector('#m_school').value.trim();
-          const newVotes = parseInt(root.querySelector('#m_votes').value) || 0;
-          const link = root.querySelector('#m_link').value.trim();
-          const updates = { name: newName, school: newSchool, votes: newVotes };
-          if(link) updates.photo = link;
-          await update(ref(db, `jogos/competitors/${id}`), updates);
-          showNotification('Concorrente atualizado',2000);
-        });
-    };
-
-    // Photo button triggers hidden input
-    const photoBtn = document.createElement('button'); photoBtn.innerText='📷 Foto'; photoBtn.className='photo-btn';
-    photoBtn.onclick = ()=> { if(fileInputs[id]) fileInputs[id].click(); };
-
-    // Vote button
-    const voteBtn = document.createElement('button'); voteBtn.innerText='VOTAR'; voteBtn.className='vote-green';
-    voteBtn.onclick = async ()=>{
-      if(!currentUser) return alert('Faça login para votar.');
-      // voter's name
-      const vsnap = await get(ref(db, `users/${currentUser}`));
-      const voter = vsnap.exists() ? vsnap.val().name : 'Anon';
-      const msg = `Olá eu chamo-me ${voter} e desejo votar no concorrente ${c.name}`;
-      const waLink = `https://wa.me/244941530467?text=${encodeURIComponent(msg)}`;
-      window.open(waLink, '_blank');
-      await runTransaction(ref(db, `jogos/competitors/${id}/votes`), cur => (cur||0)+1);
-      await push(ref(db, 'jogos/votes'), { voter: currentUser, competitor: id, ts: Date.now() });
-    };
-
-    actions.appendChild(editBtn); actions.appendChild(photoBtn); actions.appendChild(voteBtn);
-    card.appendChild(img); card.appendChild(info); card.appendChild(actions);
-    competitorsList.appendChild(card);
+  const now = Date.now();
+  const validMsgs = msgs.filter(m => (m.expiresAt||0) > now);
+  let html = `<h3>${userObj.name || ''}</h3><div><img src="${userObj.foto||'https://via.placeholder.com/100'}" style="width:80px;height:80px;border-radius:8px;object-fit:cover;margin-right:8px;float:left"/></div>
+    <div style="margin-top:6px"><strong>Escola:</strong> ${userObj.school||''}</div>
+    <div><strong>Telemóvel:</strong> ${userObj.phone||''}</div>
+    <div style="clear:both"></div>
+    <hr/>
+    <h4>Enviar SMS interna (expira em 3h)</h4>
+    <textarea id="msg_text" placeholder="Escreve a mensagem" style="height:80px"></textarea>
+    <div style="display:flex;gap:8px;margin-top:8px"><button id="sendMsgBtn">Enviar</button><button id="cancelMsg" class="ghost">Fechar</button></div>
+    <hr/>
+    <h4>Mensagens válidas para este perfil</h4>
+    <div id="modalMsgsList">${renderMsgsListHTML(validMsgs)}</div>
+  `;
+  openModal(html, (root)=>{
+    // send button handlers are attached after modal shows
   });
-}
+  // attach send/cancel/edit/delete handlers
+  setTimeout(()=>{ // small delay until modal elements exist
+    const root = $('modalRoot');
+    if(!root) return;
+    const sendBtn = root.querySelector('#sendMsgBtn');
+    const cancelBtn = root.querySelector('#cancelMsg');
+    const textEl = root.querySelector('#msg_text');
 
-/* realtime listener */
-onValue(competitorsRef, snap=>{
-  const v = snap.val() || {};
-  renderCompetitors(v);
-  [1,2,3].forEach(id=>{
-    const el = document.getElementById(`votes_${id}`);
-    if(el) el.innerText = (v[id] && v[id].votes) ? v[id].votes : 0;
-  });
-});
+    cancelBtn.onclick = ()=>{ root.style.display='none'; root.innerHTML=''; };
 
-/* upload handlers */
-[1,2,3].forEach(id=>{
-  const inp = fileInputs[id];
-  if(!inp) return;
-  inp.onchange = async (e)=>{
-    try{
-      const file = e.target.files[0];
-      if(!file) return;
-      if(!currentUser) return alert('Faça login para enviar foto.');
-      const path = `jogos/competitors/${id}/photo_${Date.now()}`;
-      const sRefPath = sRef(storage, path);
-      await uploadBytes(sRefPath, file);
-      const url = await getDownloadURL(sRefPath);
-      await update(ref(db, `jogos/competitors/${id}`), { photo: url });
-      showNotification('Foto enviada com sucesso',2000);
-    }catch(err){
-      console.error(err); alert('Erro ao enviar foto: '+(err.message||err));
-    } finally { inp.value=''; }
-  };
-});
-
-/* Ensure UI safe defaults */
-document.addEventListener('DOMContentLoaded', ()=> {
-  // ensure sections visible default
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.getElementById('sec-sms').classList.add('active');
-});
-
-/* If permission issues, you may need to set DB/Storage rules for testing.
-   For production, restrict rules properly.
-*/
-
-</script>
-</body>
-</html>
+    sendBtn.onclick = async ()=>{
+      if(!currentUser) return alert('Faça login para enviar mensagem interna.');
+      const txt = (textEl.value||'').trim();
+      if(!txt) return alert('Escreve algo');
+      const expiresAt = Date.now() + (3*60*60*1000); // 3 horas
+      const payload = { 
