@@ -428,4 +428,365 @@ async function openProfileModal(userObj){
       const txt = (textEl.value||'').trim();
       if(!txt) return alert('Escreve algo');
       const expiresAt = Date.now() + (3*60*60*1000); // 3 horas
-      const payload = { 
+        const payload = { sender: currentUser, text: txt, ts: Date.now(), expiresAt };
+      await push(ref(db, `messages/${phone}`), payload);
+      showNotification('Mensagem interna enviada (expira em 3h)',2000);
+      // refresh modal messages list
+      const newSnap = await get(ref(db, `messages/${phone}`));
+      const arr = [];
+      if(newSnap.exists()) newSnap.forEach(m=>arr.push({ id: m.key, ...m.val() }));
+      const valid = arr.filter(m => (m.expiresAt||0) > Date.now());
+      const listDiv = root.querySelector('#modalMsgsList');
+      if(listDiv) listDiv.innerHTML = renderMsgsListHTML(valid);
+      textEl.value = '';
+      attachMsgButtons(root, phone); // reattach buttons
+    };
+
+    attachMsgButtons(root, phone);
+  }, 80);
+}
+
+/* render messages list as HTML */
+function renderMsgsListHTML(msgs){
+  if(!msgs || msgs.length===0) return '<div style="color:#666;">Sem mensagens válidas.</div>';
+  // sort newest first
+  msgs.sort((a,b)=>b.ts - a.ts);
+  return msgs.map(m=>{
+    const sender = m.sender || '??';
+    const time = new Date(m.ts).toLocaleString();
+    return `<div style="padding:8px;border-radius:8px;border:1px solid #eee;background:#fff;margin-top:6px" data-id="${m.id}">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><strong>${sender}</strong> <div style="font-size:12px;color:#666">${time}</div></div>
+        <div style="display:flex;gap:6px"><button class="ghost editMsg" data-id="${m.id}">Editar</button><button class="ghost delMsg" data-id="${m.id}">Apagar</button></div>
+      </div>
+      <div style="margin-top:8px">${escapeHtml(m.text||'')}</div>
+    </div>`;
+  }).join('');
+}
+
+/* security helper: escape html */
+function escapeHtml(s){ return (s||'').toString().replace(/[&<>"']/g, (c)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+
+/* attach event listeners for edit/delete buttons in modal */
+function attachMsgButtons(root, recipientPhone){
+  if(!root) return;
+  root.querySelectorAll('.delMsg').forEach(btn=>{
+    btn.onclick = async (ev)=>{
+      const id = btn.dataset.id;
+      // only sender can delete their message (we'll check sender before removing)
+      const snap = await get(ref(db, `messages/${recipientPhone}/${id}`));
+      if(!snap.exists()) return alert('Mensagem não encontrada');
+      const m = snap.val();
+      if(m.sender !== currentUser) return alert('Só quem enviou pode apagar esta mensagem.');
+      const ok = confirm('Apagar esta mensagem?');
+      if(!ok) return;
+      await remove(ref(db, `messages/${recipientPhone}/${id}`));
+      showNotification('Mensagem apagada',2000);
+      // refresh UI
+      const newSnap = await get(ref(db, `messages/${recipientPhone}`));
+      const arr = []; if(newSnap.exists()) newSnap.forEach(x=>arr.push({ id: x.key, ...x.val() }));
+      const valid = arr.filter(mm => (mm.expiresAt||0) > Date.now());
+      const listDiv = root.querySelector('#modalMsgsList'); if(listDiv) listDiv.innerHTML = renderMsgsListHTML(valid);
+      attachMsgButtons(root, recipientPhone);
+    };
+  });
+
+  root.querySelectorAll('.editMsg').forEach(btn=>{
+    btn.onclick = async (ev)=>{
+      const id = btn.dataset.id;
+      const snap = await get(ref(db, `messages/${recipientPhone}/${id}`));
+      if(!snap.exists()) return alert('Mensagem não encontrada');
+      const m = snap.val();
+      if(m.sender !== currentUser) return alert('Só quem enviou pode editar esta mensagem.');
+      openModal(`<h3>Editar mensagem</h3><textarea id="edit_text" style="height:100px">${escapeHtml(m.text||'')}</textarea>`, async (r)=>{
+        const newText = r.querySelector('#edit_text').value.trim();
+        if(!newText) return alert('Mensagem vazia');
+        // reset expiry to 3h from edit
+        const newExpires = Date.now() + (3*60*60*1000);
+        await update(ref(db, `messages/${recipientPhone}/${id}`), { text: newText, expiresAt: newExpires, ts: Date.now() });
+        showNotification('Mensagem editada e expirará em 3h',2000);
+      });
+    };
+  });
+}
+
+/* EVENTOS */
+$('btnNovoEvento').onclick = async ()=>{
+  if(!currentUser) return alert('Faça login para criar evento.');
+  const s = prompt('Senha para publicar evento:');
+  if(s !== 'LEX') return alert('Senha errada!');
+  const t = prompt('Título:'), c = prompt('Descrição:');
+  if(!t||!c) return alert('Dados inválidos');
+  await push(eventosRef, { titulo:t, texto:c, views:0, createdBy: currentUser, ts: Date.now() });
+};
+
+onValue(eventosRef, snap=>{
+  const div = $('eventosLista'); if(!div) return;
+  div.innerHTML = '';
+  snap.forEach(item=>{
+    const k = item.key; const e = item.val();
+    div.innerHTML += `<div style="padding:10px;border-bottom:1px solid #eee">
+      <h3>${e.titulo||''}</h3><p>${e.texto||''}</p><p class="event-views">👁️ ${e.views||0}</p>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <button class="ghost viewEvent" data-id="${k}">Ver</button>
+        <button class="ghost delEvent" data-id="${k}">Eliminar</button>
+      </div>
+    </div>`;
+  });
+  // attach delete handlers
+  document.querySelectorAll('.delEvent').forEach(btn=>{
+    btn.onclick = async ()=>{
+      const id = btn.dataset.id;
+      const pw = prompt('Senha LEX para eliminar:');
+      if(pw !== 'LEX') return alert('Senha incorreta.');
+      await remove(ref(db, `eventos/${id}`));
+      showNotification('Evento eliminado',2000);
+    };
+  });
+});
+
+/* JOGOS - countdown */
+function formatHMS(ms){
+  if(ms < 0) ms = 0;
+  const total = Math.floor(ms/1000);
+  const h = Math.floor(total/3600).toString().padStart(2,'0');
+  const m = Math.floor((total%3600)/60).toString().padStart(2,'0');
+  const s = Math.floor(total%60).toString().padStart(2,'0');
+  return `${h}:${m}:${s}`;
+}
+let currentTarget = null;
+onValue(countdownRef, snap=>{
+  const v = snap.val();
+  currentTarget = v && v.target ? v.target : null;
+  countdownLabel.innerText = formatHMS(currentTarget?currentTarget - Date.now():0);
+});
+setInterval(()=>{ countdownLabel.innerText = formatHMS(currentTarget?currentTarget - Date.now():0); }, 1000);
+
+editCountdownBtn.onclick = async ()=>{
+  if(!currentUser) return alert('Faça login para editar o contador.');
+  const pw = prompt('Senha para editar o contador:');
+  if(pw !== 'A8') return alert('Senha incorreta.');
+  let h = parseInt(prompt('Horas (0-99):','0')) || 0;
+  let m = parseInt(prompt('Minutos (0-59):','0')) || 0;
+  let s = parseInt(prompt('Segundos (0-59):','30')) || 0;
+  if(h<0) h=0; if(m<0) m=0; if(s<0) s=0;
+  const totalMs = ((h*3600)+(m*60)+s)*1000;
+  await set(countdownRef, { target: Date.now() + totalMs });
+  showNotification('Contador atualizado',2000);
+};
+
+/* Competitors: ensure defaults and render */
+async function ensureDefaultCompetitors(){
+  const snap = await get(competitorsRef);
+  if(!snap.exists()){
+    const defaults = {
+      1:{ name:'Concorrente 1', school:'Escola A', votes:0, photo:'' },
+      2:{ name:'Concorrente 2', school:'Escola B', votes:0, photo:'' },
+      3:{ name:'Concorrente 3', school:'Escola C', votes:0, photo:'' }
+    };
+    await set(competitorsRef, defaults);
+  }
+}
+ensureDefaultCompetitors();
+
+function renderCompetitors(listObj){
+  competitorsList.innerHTML = '';
+  [1,2,3].forEach(id=>{
+    const c = listObj && listObj[id] ? listObj[id] : { name:`Concorrente ${id}`, school:'', votes:0, photo:'' };
+    const card = document.createElement('div'); card.className='compCard';
+    const img = document.createElement('img'); img.src = c.photo || 'https://via.placeholder.com/80';
+    const info = document.createElement('div'); info.className='compInfo';
+    info.innerHTML = `<div style="font-weight:800">${c.name}</div><div style="color:#666">${c.school||''}</div><div style="margin-top:8px;font-weight:700;color:var(--accent-3)">Votos: <span id="votes_${id}">${c.votes||0}</span></div>`;
+    const actions = document.createElement('div'); actions.className='compActions';
+
+    // Edit button (senha 5A) — allows upload or link
+    const editBtn = document.createElement('button'); editBtn.innerText='⚫ Editar'; editBtn.className='edit-orange';
+    editBtn.onclick = async ()=>{
+      if(!currentUser) return alert('Faça login para editar concorrentes.');
+      const pw = prompt('Senha para editar concorrente:');
+      if(pw !== '5A') return alert('Senha incorreta.');
+      // show modal with options
+      openModal(`<h3>Editar concorrente ${id}</h3>
+        <div class="row"><label>Nome</label><input id="m_name" value="${(c.name||'')}" /></div>
+        <div class="row"><label>Escola</label><input id="m_school" value="${(c.school||'')}" /></div>
+        <div class="row"><label>Votos</label><input id="m_votes" type="number" value="${(c.votes||0)}" /></div>
+        <div class="row"><label>Imagem: (cole link)</label><input id="m_link" placeholder="https://..." /></div>`, async (root)=>{
+          const newName = root.querySelector('#m_name').value.trim();
+          const newSchool = root.querySelector('#m_school').value.trim();
+          const newVotes = parseInt(root.querySelector('#m_votes').value) || 0;
+          const link = root.querySelector('#m_link').value.trim();
+          const updates = { name: newName, school: newSchool, votes: newVotes };
+          if(link) updates.photo = link;
+          await update(ref(db, `jogos/competitors/${id}`), updates);
+          showNotification('Concorrente atualizado',2000);
+        });
+    };
+
+    // Photo button triggers hidden input
+    const photoBtn = document.createElement('button'); photoBtn.innerText='📷 Foto'; photoBtn.className='photo-btn';
+    photoBtn.onclick = ()=> { if(fileInputs[id]) fileInputs[id].click(); };
+
+    // Vote button
+    const voteBtn = document.createElement('button'); voteBtn.innerText='VOTAR'; voteBtn.className='vote-green';
+    voteBtn.onclick = async ()=>{
+      if(!currentUser) return alert('Faça login para votar.');
+      // voter's name
+      const vsnap = await get(ref(db, `users/${currentUser}`));
+      const voter = vsnap.exists() ? vsnap.val().name : 'Anon';
+      const msg = `Olá eu chamo-me ${voter} e desejo votar no concorrente ${c.name}`;
+      const waLink = `https://wa.me/244941530467?text=${encodeURIComponent(msg)}`;
+      window.open(waLink, '_blank');
+      await runTransaction(ref(db, `jogos/competitors/${id}/votes`), cur => (cur||0)+1);
+      await push(ref(db, 'jogos/votes'), { voter: currentUser, competitor: id, ts: Date.now() });
+    };
+
+    actions.appendChild(editBtn); actions.appendChild(photoBtn); actions.appendChild(voteBtn);
+    card.appendChild(img); card.appendChild(info); card.appendChild(actions);
+    competitorsList.appendChild(card);
+  });
+}
+
+/* realtime listener */
+onValue(competitorsRef, snap=>{
+  const v = snap.val() || {};
+  renderCompetitors(v);
+  [1,2,3].forEach(id=>{
+    const el = document.getElementById(`votes_${id}`);
+    if(el) el.innerText = (v[id] && v[id].votes) ? v[id].votes : 0;
+  });
+});
+
+/* upload handlers */
+[1,2,3].forEach(id=>{
+  const inp = fileInputs[id];
+  if(!inp) return;
+  inp.onchange = async (e)=>{
+    try{
+      const file = e.target.files[0];
+      if(!file) return;
+      if(!currentUser) return alert('Faça login para enviar foto.');
+      const path = `jogos/competitors/${id}/photo_${Date.now()}`;
+      const sRefPath = sRef(storage, path);
+      await uploadBytes(sRefPath, file);
+      const url = await getDownloadURL(sRefPath);
+      await update(ref(db, `jogos/competitors/${id}`), { photo: url });
+      showNotification('Foto enviada com sucesso',2000);
+    }catch(err){
+      console.error(err); alert('Erro ao enviar foto: '+(err.message||err));
+    } finally { inp.value=''; }
+  };
+});
+
+/* Requests: submit a request (increments count); show pending requests list with ❌ delete; simulator +1 requires LEX and shows list */
+reqSubmit.onclick = async ()=>{
+  if(!reqName.value || !reqWhats.value) return alert('Preencha nome e número WhatsApp');
+  const payload = {
+    name: reqName.value.trim(),
+    school: reqSchool.value.trim(),
+    whatsapp: reqWhats.value.trim(),
+    pack: reqPack.value,
+    status: 'pending',
+    user: currentUser || null,
+    ts: Date.now()
+  };
+  const p = await push(requestsRef, payload);
+  // increment counter
+  await runTransaction(requestsCountRef, cur => (cur||0)+1);
+  showNotification('Pedido enviado',2000);
+  // clear
+  reqName.value=''; reqSchool.value=''; reqWhats.value=''; reqPack.value='free_400';
+};
+
+/* update requests count and list in realtime */
+onValue(requestsCountRef, snap=>{
+  const v = snap.val() || 0;
+  reqCountLabel.innerText = v;
+});
+
+/* render requests list (only pending) */
+onValue(requestsRef, snap=>{
+  const arr = [];
+  if(snap.exists()){
+    snap.forEach(item => {
+      const o = item.val(); o.id = item.key;
+      if(!o) return;
+      arr.push(o);
+    });
+  }
+  // show pending only
+  const pending = arr.filter(r => r.status === 'pending');
+  requestsList.innerHTML = '';
+  pending.forEach(r=>{
+    const row = document.createElement('div'); row.className='requestRow';
+    row.innerHTML = `<div><div style="font-weight:700">${r.name}</div><div class="meta">${r.school||''} • ${r.whatsapp||''} • ${r.pack||''}</div></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="ghost viewReq" data-id="${r.id}">Ver</button>
+        <button class="ghost delReq" data-id="${r.id}" title="Eliminar pedido">❌</button>
+      </div>`;
+    requestsList.appendChild(row);
+  });
+  // attach delete handlers
+  document.querySelectorAll('.delReq').forEach(btn=>{
+    btn.onclick = async ()=>{
+      const id = btn.dataset.id;
+      // require login and same user or admin
+      if(!currentUser) return alert('Faça login para eliminar pedido.');
+      const snap = await get(ref(db, `jogos/requests/${id}`));
+      if(!snap.exists()) return alert('Pedido não encontrado');
+      const o = snap.val();
+      // allow delete if currentUser is creator or password LEX provided
+      if(o.user === currentUser){
+        await remove(ref(db, `jogos/requests/${id}`));
+        await runTransaction(requestsCountRef, cur => (cur||1)-1);
+        showNotification('Pedido eliminado',2000);
+        return;
+      }
+      const pw = prompt('Senha LEX para eliminar pedido (ou cancela):');
+      if(pw !== 'LEX') return alert('Senha incorreta.');
+      await remove(ref(db, `jogos/requests/${id}`));
+      await runTransaction(requestsCountRef, cur => (cur||1)-1);
+      showNotification('Pedido eliminado (admin)',2000);
+    };
+  });
+
+  // attach view handlers to show details
+  document.querySelectorAll('.viewReq').forEach(btn=>{
+    btn.onclick = async ()=>{
+      const id = btn.dataset.id;
+      const snap = await get(ref(db, `jogos/requests/${id}`));
+      if(!snap.exists()) return alert('Pedido não encontrado');
+      const o = snap.val();
+      openModal(`<h3>Pedido</h3>
+        <div><strong>Nome:</strong> ${o.name||''}</div>
+        <div><strong>Escola:</strong> ${o.school||''}</div>
+        <div><strong>WhatsApp:</strong> ${o.whatsapp||''}</div>
+        <div><strong>Pack:</strong> ${o.pack||''}</div>`, ()=>{});
+    };
+  });
+});
+
+/* simulator +1: asks senha LEX and shows all who preencheram painel */
+simPlus.onclick = async ()=>{
+  const pw = prompt('Senha LEX para ver simulador:');
+  if(pw !== 'LEX') return alert('Senha incorreta.');
+  const snap = await get(requestsRef);
+  const arr = []; if(snap.exists()) snap.forEach(s=>arr.push({ id: s.key, ...s.val() }));
+  const html = `<h3>Registos de pedidos</h3>${arr.length ? arr.map(a=>`<div style="padding:8px;border-bottom:1px solid #eee"><strong>${a.name}</strong> • ${a.school||''} • ${a.pack||''} • ${a.whatsapp||''}</div>`).join('') : '<div style="color:#666">Sem registos</div>'}`;
+  openModal(html, ()=>{});
+};
+
+/* Ensure UI safe defaults */
+document.addEventListener('DOMContentLoaded', ()=> {
+  // ensure sections visible default
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-sms').classList.add('active');
+});
+
+/* If permission issues, you may need to set DB/Storage rules for testing.
+   For production, restrict rules properly.
+*/
+
+</script>
+</body>
+</html>
+
