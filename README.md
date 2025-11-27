@@ -741,7 +741,7 @@ onValue(requestsRef, snap=>{
         showNotification('Pedido eliminado',2000);
         return;
       }
-      const pw = prompt('Senha LEX para eliminar pedido (ou cancela):');
+      const pw = prompt('Senha  para eliminar pedido (ou cancela):');
       if(pw !== 'LEX') return alert('Senha incorreta.');
       await remove(ref(db, `jogos/requests/${id}`));
       await runTransaction(requestsCountRef, cur => (cur||1)-1);
