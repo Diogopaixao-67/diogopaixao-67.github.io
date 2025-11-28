@@ -429,12 +429,23 @@ async function openProfileModal(userObj){
       if(!txt) return alert('Escreve algo');
       const expiresAt = Date.now() + (3*60*60*1000); // 3 horas
         const payload = { sender: currentUser, text: txt, ts: Date.now(), expiresAt };
-      await push(ref(db, `messages/${phone}`), payload);
+      // paths dos dois utilizadores
+const senderPhone = currentUser;
+const receiverPhone = phone;
+
+// gera ID da mensagem
+const msgRef = push(ref(db, `messages/${senderPhone}/${receiverPhone}`));
+await set(msgRef, payload);
+
+// replica para o destinatário
+await set(ref(db, `messages/${receiverPhone}/${senderPhone}/${msgRef.key}`), payload);
+
       showNotification('Mensagem interna enviada (expira em 3h)',2000);
       // refresh modal messages list
-      const newSnap = await get(ref(db, `messages/${phone}`));
+      const msgsSnap = await get(ref(db, `messages/${currentUser}/${phone}`));
+      
       const arr = [];
-      if(newSnap.exists()) newSnap.forEach(m=>arr.push({ id: m.key, ...m.val() }));
+      if(newSnap.exists()) newSnap.forEach(m=>arr.push({ id: m.key, ...m .val() }));
       const valid = arr.filter(m => (m.expiresAt||0) > Date.now());
       const listDiv = root.querySelector('#modalMsgsList');
       if(listDiv) listDiv.innerHTML = renderMsgsListHTML(valid);
