@@ -440,17 +440,20 @@ await set(msgRef, payload);
 // replica para o destinatário
 await set(ref(db, `messages/${receiverPhone}/${senderPhone}/${msgRef.key}`), payload);
 
-      showNotification('Mensagem interna enviada (expira em 3h)',2000);
-      // refresh modal messages list
-      const msgsSnap = await get(ref(db, `messages/${currentUser}/${phone}`));
-      
-      const arr = [];
-      if(newSnap.exists()) newSnap.forEach(m=>arr.push({ id: m.key, ...m .val() }));
-      const valid = arr.filter(m => (m.expiresAt||0) > Date.now());
-      const listDiv = root.querySelector('#modalMsgsList');
-      if(listDiv) listDiv.innerHTML = renderMsgsListHTML(valid);
-      textEl.value = '';
-      attachMsgButtons(root, phone); // reattach buttons
+      showNotification('Mensagem interna enviada (expira em 3h)',2000);// refresh modal messages list
+const msgsSnap = await get(ref(db, `messages/${currentUser}/${phone}`));
+
+const arr = [];
+if(msgsSnap.exists()) msgsSnap.forEach(m=>arr.push({ id: m.key, ...m.val() }));
+
+const valid = arr.filter(m => (m.expiresAt||0) > Date.now());
+
+const listDiv = root.querySelector('#modalMsgsList');
+if(listDiv) listDiv.innerHTML = renderMsgsListHTML(valid);
+
+textEl.value = '';
+attachMsgButtons(root, phone);
+// reattach buttons
     };
 
     attachMsgButtons(root, phone);
@@ -484,8 +487,9 @@ function attachMsgButtons(root, recipientPhone){
   root.querySelectorAll('.delMsg').forEach(btn=>{
     btn.onclick = async (ev)=>{
       const id = btn.dataset.id;
-      // only sender can delete their message (we'll check sender before removing)
-      const snap = await get(ref(db, `messages/${recipientPhone}/${id}`));
+      // only sender can delete their message (we'll check sender before rem. 
+      messages/currentUser/otherUser/msgId
+      
       if(!snap.exists()) return alert('Mensagem não encontrada');
       const m = snap.val();
       if(m.sender !== currentUser) return alert('Só quem enviou pode apagar esta mensagem.');
