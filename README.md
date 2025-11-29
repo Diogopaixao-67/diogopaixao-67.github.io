@@ -526,7 +526,7 @@ onValue(eventosRef, snap=>{
   snap.forEach(item=>{
     const k = item.key; const e = item.val();
     div.innerHTML += `<div style="padding:10px;border-bottom:1px solid #eee">
-      <h3>${e.titulo||''}</h3><p>${e.texto||''}</p><p class="event-views">👁️ ${e.views||0}</p>
+      <h3>${e.titulo||''}</h3><p>${e.texto||''}</p><p class="event-views">👁️ ${e.views||+99}</p>
       <div style="display:flex;gap:8px;margin-top:6px">
         <button class="ghost viewEvent" data-id="${k}">Ver</button>
         <button class="ghost delEvent" data-id="${k}">Eliminar</button>
