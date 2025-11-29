@@ -460,9 +460,6 @@ attachMsgButtons(root, phone);
   }, 80);
 }
 
-/* render messages list as HTML */
-fun
-
 /* EVENTOS */
 $('btnNovoEvento').onclick = async ()=>{
   if(!currentUser) return alert('Faça login para criar evento.');
@@ -487,7 +484,7 @@ async function openProfileModal(userObj){
     <div><img src="${userObj.foto || 'https://via.placeholder.com/100'}" 
       style="width:80px;height:80px;border-radius:8px;object-fit:cover;margin-right:8px;float:left"/></div>
 
-    <div style="margin-top:6px"><strong>Escola:</strong> ${userObj.school || ''}</div>
+    <div style="margin-top:6px"><strong>Escola:</s/div>
     <div><strong>Telemóvel:</strong> ${userObj.phone || ''}</div>
 
     <div style="clear:both"></div>
