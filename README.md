@@ -461,75 +461,224 @@ attachMsgButtons(root, phone);
 }
 
 /* render messages list as HTML */
-function renderMsgsListHTML(msgs){
-  if(!msgs || msgs.length===0) return '<div style="color:#666;">Sem mensagens válidas.</div>';
-  // sort newest first
-  msgs.sort((a,b)=>b.ts - a.ts);
-  return msgs.map(m=>{
-    const sender = m.sender || '??';
-    const time = new Date(m.ts).toLocaleString();
-    return `<div style="padding:8px;border-radius:8px;border:1px solid #eee;background:#fff;margin-top:6px" data-id="${m.id}">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div><strong>${sender}</strong> <div style="font-size:12px;color:#666">${time}</div></div>
-        <div style="display:flex;gap:6px"><button class="ghost editMsg" data-id="${m.id}">Editar</button><button class="ghost delMsg" data-id="${m.id}">Apagar</button></div>
-      </div>
-      <div style="margin-top:8px">${escapeHtml(m.text||'')}</div>
-    </div>`;
-  }).join('');
-}
-
-/* security helper: escape html */
-function escapeHtml(s){ return (s||'').toString().replace(/[&<>"']/g, (c)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
-
-/* attach event listeners for edit/delete buttons in modal */
-function attachMsgButtons(root, recipientPhone){
-  if(!root) return;
-  root.querySelectorAll('.delMsg').forEach(btn=>{
-    btn.onclick = async (ev)=>{
-      const id = btn.dataset.id;
-      // only sender can delete their message (we'll check sender before rem. 
-      messages/currentUser/otherUser/msgId
-      
-      if(!snap.exists()) return alert('Mensagem não encontrada');
-      const m = snap.val();
-      if(m.sender !== currentUser) return alert('Só quem enviou pode apagar esta mensagem.');
-      const ok = confirm('Apagar esta mensagem?');
-      if(!ok) return;
-      await remove(ref(db, `messages/${recipientPhone}/${id}`));
-      showNotification('Mensagem apagada',2000);
-      // refresh UI
-      const newSnap = await get(ref(db, `messages/${recipientPhone}`));
-      const arr = []; if(newSnap.exists()) newSnap.forEach(x=>arr.push({ id: x.key, ...x.val() }));
-      const valid = arr.filter(mm => (mm.expiresAt||0) > Date.now());
-      const listDiv = root.querySelector('#modalMsgsList'); if(listDiv) listDiv.innerHTML = renderMsgsListHTML(valid);
-      attachMsgButtons(root, recipientPhone);
-    };
-  });
-
-  root.querySelectorAll('.editMsg').forEach(btn=>{
-    btn.onclick = async (ev)=>{
-      const id = btn.dataset.id;
-      const snap = await get(ref(db, `messages/${recipientPhone}/${id}`));
-      if(!snap.exists()) return alert('Mensagem não encontrada');
-      const m = snap.val();
-      if(m.sender !== currentUser) return alert('Só quem enviou pode editar esta mensagem.');
-      openModal(`<h3>Editar mensagem</h3><textarea id="edit_text" style="height:100px">${escapeHtml(m.text||'')}</textarea>`, async (r)=>{
-        const newText = r.querySelector('#edit_text').value.trim();
-        if(!newText) return alert('Mensagem vazia');
-        // reset expiry to 3h from edit
-        const newExpires = Date.now() + (3*60*60*1000);
-        await update(ref(db, `messages/${recipientPhone}/${id}`), { text: newText, expiresAt: newExpires, ts: Date.now() });
-        showNotification('Mensagem editada e expirará em 3h',2000);
-      });
-    };
-  });
-}
+fun
 
 /* EVENTOS */
 $('btnNovoEvento').onclick = async ()=>{
   if(!currentUser) return alert('Faça login para criar evento.');
   const s = prompt('Senha para publicar evento:');
-  if(s !== 'LEX') return alert('Senha errada!');
+  if(s !== 'LEX') return alert('Senha errada!'/* Profile modal: show info and allow sending internal SMS that expire in 3h */
+async function openProfileModal(userObj){
+  const receiverPhone = userObj.phone;
+  const senderPhone = currentUser;
+
+  // carregar mensagens entre os dois
+  const msgsSnap = await get(ref(db, `messages/${senderPhone}/${receiverPhone}`));
+  const msgs = [];
+  if (msgsSnap.exists()) {
+    msgsSnap.forEach(m => msgs.push({ id: m.key, ...m.val() }));
+  }
+
+  const now = Date.now();
+  const validMsgs = msgs.filter(m => (m.expiresAt || 0) > now);
+
+  let html = `
+    <h3>${userObj.name || ''}</h3>
+    <div><img src="${userObj.foto || 'https://via.placeholder.com/100'}" 
+      style="width:80px;height:80px;border-radius:8px;object-fit:cover;margin-right:8px;float:left"/></div>
+
+    <div style="margin-top:6px"><strong>Escola:</strong> ${userObj.school || ''}</div>
+    <div><strong>Telemóvel:</strong> ${userObj.phone || ''}</div>
+
+    <div style="clear:both"></div>
+    <hr/>
+
+    <h4>Enviar SMS interna (expira em 3h)</h4>
+    <textarea id="msg_text" placeholder="Escreve a mensagem" style="height:80px"></textarea>
+
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button id="sendMsgBtn">Enviar</button>
+      <button id="cancelMsg" class="ghost">Fechar</button>
+    </div>
+
+    <hr/>
+    <h4>Mensagens válidas para este perfil</h4>
+    <div id="modalMsgsList">${renderMsgsListHTML(validMsgs)}</div>
+  `;
+
+  openModal(html);
+
+  setTimeout(() => {
+    const root = $('modalRoot');
+    if (!root) return;
+
+    const sendBtn = root.querySelector('#sendMsgBtn');
+    const cancelBtn = root.querySelector('#cancelMsg');
+    const textEl = root.querySelector('#msg_text');
+
+    // fechar modal
+    cancelBtn.onclick = () => {
+      root.style.display = 'none';
+      root.innerHTML = '';
+    };
+
+    // enviar a mensagem
+    sendBtn.onclick = async () => {
+      if (!senderPhone) return alert('Faça login para enviar mensagens.');
+
+      const txt = (textEl.value || '').trim();
+      if (!txt) return alert('Escreve algo');
+
+      const expiresAt = Date.now() + (3 * 60 * 60 * 1000); // 3h
+      const payload = {
+        sender: senderPhone,
+        text: txt,
+        ts: Date.now(),
+        expiresAt
+      };
+
+      // cria ID para a mensagem
+      const msgRef = push(ref(db, `messages/${senderPhone}/${receiverPhone}`));
+      await set(msgRef, payload);
+
+      // replica para o destinatário
+      await set(ref(db, `messages/${receiverPhone}/${senderPhone}/${msgRef.key}`), payload);
+
+      showNotification("Mensagem interna enviada (expira em 3h)", 2000);
+
+      // atualizar a lista do modal
+      const newSnap = await get(ref(db, `messages/${senderPhone}/${receiverPhone}`));
+      const arr = [];
+      if (newSnap.exists()) newSnap.forEach(m => arr.push({ id: m.key, ...m.val() }));
+
+      const valid = arr.filter(m => (m.expiresAt || 0) > Date.now());
+
+      const listDiv = root.querySelector('#modalMsgsList');
+      if (listDiv) listDiv.innerHTML = renderMsgsListHTML(valid);
+
+      textEl.value = "";
+      attachMsgButtons(root, receiverPhone);
+    };
+
+    attachMsgButtons(root, receiverPhone);
+  }, 80);
+}
+
+
+/* render messages list as HTML */
+function renderMsgsListHTML(msgs){
+  if (!msgs || msgs.length === 0)
+    return '<div style="color:#666;">Sem mensagens válidas.</div>';
+
+  msgs.sort((a,b)=> b.ts - a.ts);
+
+  return msgs.map(m=>{
+    const sender = m.sender || '??';
+    const time = new Date(m.ts).toLocaleString();
+    return `
+      <div style="padding:8px;border-radius:8px;border:1px solid #eee;background:#fff;margin-top:6px"
+           data-id="${m.id}">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <strong>${sender}</strong>
+            <div style="font-size:12px;color:#666">${time}</div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="ghost editMsg" data-id="${m.id}">Editar</button>
+            <button class="ghost delMsg" data-id="${m.id}">Apagar</button>
+          </div>
+        </div>
+
+        <div style="margin-top:8px">${escapeHtml(m.text || '')}</div>
+      </div>`;
+  }).join('');
+}
+
+
+/* segurança */
+function escapeHtml(s){
+  return (s || '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+
+/* botões editar/apagar */
+function attachMsgButtons(root, recipientPhone){
+  if (!root) return;
+
+  const senderPhone = currentUser;
+
+  // apagar mensagem
+  root.querySelectorAll('.delMsg').forEach(btn=>{
+    btn.onclick = async ()=>{
+      const id = btn.dataset.id;
+
+      const snap = await get(ref(db, `messages/${senderPhone}/${recipientPhone}/${id}`));
+      if (!snap.exists()) return alert('Mensagem não encontrada');
+
+      const m = snap.val();
+      if (m.sender !== senderPhone) return alert('Só quem enviou pode apagar.');
+
+      const ok = confirm("Apagar esta mensagem?");
+      if (!ok) return;
+
+      await remove(ref(db, `messages/${senderPhone}/${recipientPhone}/${id}`));
+      await remove(ref(db, `messages/${recipientPhone}/${senderPhone}/${id}`));
+
+      showNotification("Mensagem apagada", 2000);
+
+      const newSnap = await get(ref(db, `messages/${senderPhone}/${recipientPhone}`));
+      const arr = [];
+      if (newSnap.exists()) newSnap.forEach(x => arr.push({ id:x.key, ...x.val() }));
+
+      const valid = arr.filter(mm => (mm.expiresAt || 0) > Date.now());
+
+      const listDiv = root.querySelector('#modalMsgsList');
+      if (listDiv) listDiv.innerHTML = renderMsgsListHTML(valid);
+
+      attachMsgButtons(root, recipientPhone);
+    };
+  });
+
+  // editar mensagem
+  root.querySelectorAll('.editMsg').forEach(btn=>{
+    btn.onclick = async ()=>{
+      const id = btn.dataset.id;
+
+      const snap = await get(ref(db, `messages/${senderPhone}/${recipientPhone}/${id}`));
+      if (!snap.exists()) return alert('Mensagem não encontrada');
+
+      const m = snap.val();
+      if (m.sender !== senderPhone) return alert('Só quem enviou pode editar.');
+
+      openModal(`
+        <h3>Editar mensagem</h3>
+        <textarea id="edit_text" style="height:100px">${escapeHtml(m.text||'')}</textarea>
+      `, async (r)=>{
+        const newText = r.querySelector('#edit_text').value.trim();
+        if (!newText) return alert("Mensagem vazia.");
+
+        const newExpires = Date.now() + (3 * 60 * 60 * 1000);
+
+        await update(ref(db, `messages/${senderPhone}/${recipientPhone}/${id}`), {
+          text:newText,
+          expiresAt:newExpires,
+          ts: Date.now()
+        });
+
+        await update(ref(db, `messages/${recipientPhone}/${senderPhone}/${id}`), {
+          text:newText,
+          expiresAt:newExpires,
+          ts: Date.now()
+        });
+
+        showNotification("Mensagem editada (expira em 3h)", 2000);
+      });
+    };
+  });
+}
+);
   const t = prompt('Título:'), c = prompt('Descrição:');
   if(!t||!c) return alert('Dados inválidos');
   await push(eventosRef, { titulo:t, texto:c, views:0, createdBy: currentUser, ts: Date.now() });
