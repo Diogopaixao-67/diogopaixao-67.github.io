@@ -782,7 +782,7 @@ onValue(requestsRef, snap=>{
 
 /* simulator +1: asks senha LEX and shows all who preencheram painel */
 simPlus.onclick = async ()=>{
-  const pw = prompt('Senha LEX para ver simulador:');
+  const pw = prompt('Senha para ver simulador:');
   if(pw !== 'LEX') return alert('Senha incorreta.');
   const snap = await get(requestsRef);
   const arr = []; if(snap.exists()) snap.forEach(s=>arr.push({ id: s.key, ...s.val() }));
