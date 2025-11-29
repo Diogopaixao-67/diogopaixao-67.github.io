@@ -398,10 +398,6 @@ $('btnNovoEvento').onclick = async ()=>{
 async function openProfileModal(userObj){
   const receiverPhone = userObj.phone;
   const senderPhone = currentUser;
-
-
-
-;
   const t = prompt('Título:'), c = prompt('Descrição:');
   if(!t||!c) return alert('Dados inválidos');
   await push(eventosRef, { titulo:t, texto:c, views:0, createdBy: currentUser, ts: Date.now() });
