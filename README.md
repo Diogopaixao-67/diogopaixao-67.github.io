@@ -785,9 +785,9 @@ document.addEventListener('DOMContentLoaded', ()=> {
 /* If permission issues, you may need to set DB/Storage rules for testing.
    For production, restrict rules properly.
 */
-
 </script>
-<footer style="width:100%; text-align:center; padding:15px; margin-top:20px; 
+
+<footer style="width:100%; text-align:center; padding:15px; margin-top:20px;
 background:#f2f2f2; color:#333; font-size:14px; border-top:1px solid #ddd;">
   © 2023–2025 Playmates • Todos os direitos reservados  
   | <a href="#" style="color:#333; text-decoration:underline;">Termos de Uso</a>
@@ -795,5 +795,4 @@ background:#f2f2f2; color:#333; font-size:14px; border-top:1px solid #ddd;">
 
 </body>
 </html>
-
 
