@@ -187,7 +187,10 @@ textarea{resize:none}
   </div>
 
   <!-- SOBRE -->
-  <!-- Seção Sobre -->
+ 
+  
+  <div id="sec-historia" class="card section">
+    <!-- Seção Sobre -->
 <div style="text-align:center; margin:20px 0;">
   <div style="
     width:150px; 
@@ -202,8 +205,7 @@ textarea{resize:none}
   </div>
   <p style="margin-top:10px; font-size:16px; color:#333;">Meu story aqui</p>
 </div>
-  
-  <div id="sec-historia" class="card section">
+    
     <h2>Sobre</h2>
     <p><strong>Diogo Paixão</strong> — Fundador &amp; CEO.</p>
   <p>
