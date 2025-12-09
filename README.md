@@ -401,7 +401,7 @@ btnEditProfile.onclick = ()=>{
     <div class="row"><label>Nome</label><input id="m_name" value="${(currentUserObj && currentUserObj.name)||''}" /></div>
     <div class="row"><label>Escola</label><input id="m_school" value="${(currentUserObj && currentUserObj.school)||''}" /></div>
     <div class="row"><label>Foto (cole link)</label><input id="m_foto" value="${(currentUserObj && currentUserObj.foto)||''}" /></div>
-    <div class="row"><label>Senha editar foto (5A)</label><input id="editPwd" /></div>`, async (root)=>{
+    <div class="row"><label> editar foto </label><input id="editPwd" /></div>`, async (root)=>{
       const name = root.querySelector('#m_name').value.trim();
       const school = root.querySelector('#m_school').value.trim();
       const foto = root.querySelector('#m_foto').value.trim();
