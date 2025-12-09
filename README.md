@@ -187,6 +187,22 @@ textarea{resize:none}
   </div>
 
   <!-- SOBRE -->
+  <!-- Seção Sobre -->
+<div style="text-align:center; margin:20px 0;">
+  <div style="
+    width:150px; 
+    height:150px; 
+    margin:0 auto; 
+    border-radius:50%; 
+    overflow:hidden; 
+    border:3px solid #FFA500;"> <!-- borda laranja -->
+    <img src="https://diogopaixao-67.github.io/Imagens/IMG-20251022-WA0007.jpg" 
+         alt="Minha Foto" 
+         style="width:100%; height:100%; object-fit:cover;">
+  </div>
+  <p style="margin-top:10px; font-size:16px; color:#333;">Meu story aqui</p>
+</div>
+  
   <div id="sec-historia" class="card section">
     <h2>Sobre</h2>
     <p><strong>Diogo Paixão</strong> — Fundador &amp; CEO.</p>
