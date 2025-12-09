@@ -1,4 +1,4 @@
- <!doctype html>
+
 <html lang="pt">
 <head>
 <meta charset="utf-8"/>
@@ -152,10 +152,10 @@ textarea{resize:none}
     <div style="margin-top:10px" class="card">
       <h3>IBAN da Playmates</h3>
       <div style="display:flex;align-items:center;gap:8px">
-        <div id="ibanText" style="font-weight:800">AO00 0000 0000 0000 0000 0000</div>
+        <div id="ibanText" style="font-weight:800"> AO06005500007150984310146</div>
         <button id="copyIban" class="ghost">Copiar</button>
       </div>
-      <div style="font-size:12px;color:#666;margin-top:6px">IBAN fixo (opção A). Substitui no código conforme necessário.</div>
+      <div style="font-size:12px;color:#666;margin-top:6px">IBAN fixo (opção A). Desejando apoiar um ato inovador.</div>
     </div>
 
     <div id="competitorsList"></div>
