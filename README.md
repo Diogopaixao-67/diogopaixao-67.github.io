@@ -967,7 +967,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
 
 <footer style="width:100%; text-align:center; padding:15px; margin-top:20px;
 background:#f2f2f2; color:#333; font-size:14px; border-top:1px solid #ddd;">
-  © 2023–2025 Playmates • Todos os direitos reservados  
+  © 2023–2026 Playmates • Todos os direitos reservados  
   | <a href="#" style="color:#333; text-decoration:underline;">Termos de Uso</a>
 </footer>
 
