@@ -114,7 +114,7 @@ textarea{resize:none}
 
       <p>Usuários cadastrados: <span id="userCount" class="user-count">0</span></p>
 
-      <h4>Mensagens (Inbox)</h4>
+      <h4>Mensagens</h4>
       <div id="inboxList" style="margin-bottom:10px"></div>
 
       <h4>Pesquisar usuários</h4>
@@ -168,8 +168,8 @@ textarea{resize:none}
         <input id="req_school" placeholder="Escola"/>
         <input id="req_whatsapp" placeholder="Número WhatsApp (ex: 2449...)"/>
         <select id="req_pack">
-          <option value="free_400">Grátis — ganha 400kz</option>
-          <option value="500_2000">Pack 500kz — ganha 2000kz</option>
+          <option value="30 votos">Grátis — ganha 400kz</option>
+          <option value="50 Votos">Pack ouro— ganha 1000kz</option>
         </select>
         <div style="display:flex;gap:8px">
           <button id="reqSubmit">Enviar pedido</button>
@@ -184,6 +184,9 @@ textarea{resize:none}
     <input type="file" id="compPhoto_1" accept="image/*" style="display:none"/>
     <input type="file" id="compPhoto_2" accept="image/*" style="display:none"/>
     <input type="file" id="compPhoto_3" accept="image/*" style="display:none"/>
+    id="compPhoto_4" accept="image/*" style="display:none"/>
+    id="compPhoto_5" accept="image/*" style="display:none"/>
+    id="compPhoto_6" accept="image/*" style="display:none"/>
   </div>
 
   <!-- SOBRE -->
@@ -218,10 +221,10 @@ textarea{resize:none}
 </main>
 
 <nav>
-  <button data-tab="sms" class="active"><small class="navIcon">🏠</small><span>Início</span></button>
-  <button data-tab="eventos"><small class="navIcon">📅</small><span>Eventos</span></button>
-  <button data-tab="jogos"><small class="navIcon">🎮</small><span>Jogos</span></button>
-  <button data-tab="historia"><small class="navIcon">ℹ️</small><span>Sobre</span></button>
+  <button data-tab="sms" class="active"><small class="navIcon"></small><span>Início</span></button>
+  <button data-tab="eventos"><small class="navIcon"></small><span>Eventos</span></button>
+  <button data-tab="jogos"><small class="navIcon"></small><span>Jogos</span></button>
+  <button data-tab="historia"><small class="navIcon"></small><span>Sobre</span></button>
 </nav>
 
 <!-- modal container -->
