@@ -184,8 +184,10 @@ textarea{resize:none}
     <input type="file" id="compPhoto_1" accept="image/*" style="display:none"/>
     <input type="file" id="compPhoto_2" accept="image/*" style="display:none"/>
     <input type="file" id="compPhoto_3" accept="image/*" style="display:none"/>
-    </div>
+
   
+    
+  </div>
 
   <!-- SOBRE -->
  
