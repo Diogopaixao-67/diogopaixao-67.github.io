@@ -709,9 +709,7 @@ async function ensureDefaultCompetitors(){
       1:{ name:'Concorrente 1', school:'Escola A', votes:0, photo:'' },
       2:{ name:'Concorrente 2', school:'Escola B', votes:0, photo:'' },
       3:{ name:'Concorrente 3', school:'Escola C', votes:0, photo:'' }
-      4:{ name:'Concorrente 4', school:'Escola C', votes:0, photo:'' }
-    5:{ name:'Concorrente 5', school:'Escola C', votes:0, photo:''}
-    6:{ name:'Concorrente 6', school:'Escola C', votes:0, photo:'' }
+
     };
     await set(competitorsRef, defaults);
   }
