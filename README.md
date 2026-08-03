@@ -401,7 +401,7 @@ background:#1ea952;
 
 <nav>
   <button data-tab="sms" class="active"><small class="navIcon"></small><span>Início</span></button>
-  <button data-tab="eventos"><small class="navIcon"></small><span>Eventos</span></button>
+  <button data-tab="eventos"><small class="navIcon"></small><span>Marketplace</span></button>
   <button data-tab="jogos"><small class="navIcon"></small><span>Jogos</span></button>
   <button data-tab="historia"><small class="navIcon"></small><span>Sobre</span></button>
 </nav>
