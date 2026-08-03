@@ -324,7 +324,7 @@ background:#1ea952;
         <strong>Contagem regressiva:</strong>
         <span id="countdownLabel">00:00:00</span>
       </div>
-      <div style="font-size:12px;color:#666"><button id="editCountdownBtn" class="small-ghost" title="Editar (senha A8)">📢 Editar contador</button></div>
+      <div style="font-size:12px;color:#666"><button id="editCountdownBtn" class="small-ghost" title="Editar (senha A8)">📢  contador</button></div>
       <div class="smallNote">Tempo visível em tempo real para todos os utilizadores.</div>
     </div>
 
