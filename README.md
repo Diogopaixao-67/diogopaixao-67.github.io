@@ -283,7 +283,7 @@ background:#1ea952;
     </div>
   </div>
 
-  <!-- EVENTOS -->
+  <!-- Marketplace -->
   <div id="sec-eventos" class="card section">
 
     <div class="eventoBanner">
