@@ -1,3 +1,5 @@
+
+<html lang="pt">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -64,21 +66,21 @@ textarea{resize:none}
   .compCard img{width:64px;height:64px}
   #countdownLabel{font-size:18px}
 }
-/*========================
+/*=============================
 CARTEIRA
-========================*/
+=============================*/
 
 .walletCard{
-
-background:white;
 
 margin-top:15px;
 
 padding:15px;
 
+background:#ffffff;
+
 border-radius:15px;
 
-box-shadow:0 5px 18px rgba(0,0,0,.12);
+box-shadow:0 4px 15px rgba(0,0,0,.12);
 
 cursor:pointer;
 
@@ -100,17 +102,17 @@ font-weight:bold;
 
 color:#ff7b00;
 
-margin-bottom:10px;
+margin-bottom:8px;
 
 }
 
-.walletSaldo{
+#walletSaldo{
 
-font-size:28px;
+font-size:30px;
 
 font-weight:bold;
 
-color:#25D366;
+color:#16a34a;
 
 }
 </style>
@@ -154,19 +156,19 @@ color:#25D366;
       <h3>Perfil</h3>
       <img id="fotoPerfil" src="https://via.placeholder.com/100" style="width:100px;height:100px;border-radius:50%;object-fit:cover"/>
       <div id="perfilInfo"></div>
+      <div id="walletCard" class="walletCard">
 
-<div id="walletCard" class="walletCard">
+<div class="walletTitulo">
 
-    <div class="walletTitulo">
-        💰 Carteira
-    </div>
+💰 Carteira Digital
 
-    <div id="walletSaldo"
-         class="walletSaldo">
+</div>
 
-         0,00 Kz
+<div id="walletSaldo">
 
-    </div>
+0,00 Kz
+
+</div>
 
 </div>
       <div style="display:flex;gap:8px;margin-top:6px">
@@ -367,7 +369,9 @@ const messagesRootRef = ref(db, 'messages/');
 const requestsRef = ref(db, 'jogos/requests');
 const requestsCountRef = ref(db, 'jogos/requestsCount');
 const postsRef = ref(db, 'posts/');
+/* ================= CARTEIRA ================= */
 
+const walletRef = ref(db,'wallet/');
 set(notifRef, "Bem-vindo ao Playmates!").catch(()=>{});
 
 let currentUser = null;
@@ -403,7 +407,19 @@ regSubmit.onclick = async ()=>{
       await uploadBytes(sRefPath, file);
       photoURL = await getDownloadURL(sRefPath);
     }
-    await set(uRef, { name, pass, phone, school, foto:photoURL, points:0, votes:0 });await set(ref(db,"wallet/"+phone),{
+    await set(uRef,{
+    name,
+    pass,
+    phone,
+    school,
+    foto:photoURL,
+    points:0,
+    votes:0
+});
+
+/* cria carteira */
+
+await set(ref(db,"wallet/"+phone),{
 
     saldo:0,
 
@@ -440,21 +456,30 @@ function loginUser(phone){
   $('registerForm').style.display = 'none';
   $('loggedArea').style.display = 'block';
 
-  const userRef = ref(db, 'users/'+phone);const walletUserRef=ref(db,"wallet/"+phone);
+  const userRef = ref(db, 'users/'+phone);
+  /* carteira */
 
-onValue(walletUserRef,(snap)=>{
+const myWalletRef=ref(db,"wallet/"+phone);
 
-if(!snap.exists())return;
+onValue(myWalletRef,(snap)=>{
+
+if(!snap.exists()) return;
 
 const dados=snap.val();
 
 document.getElementById("walletSaldo").innerHTML=
 
-Number(dados.saldo).toLocaleString("pt-PT",{
+Number(dados.saldo||0).toLocaleString(
+
+"pt-PT",
+
+{
 
 minimumFractionDigits:2
 
-})+" Kz";
+}
+
+)+" Kz";
 
 });
   onValue(userRef, snap=>{
@@ -1051,35 +1076,42 @@ document.addEventListener('DOMContentLoaded', ()=> {
 /* Final note: DB rules must allow read/write during testing.
    For production, tighten security rules and remove plaintext passwords from DB.
 */
-/* ===========================
-   CARTEIRA DIGITAL
-=========================== */
+document.getElementById("walletCard").onclick=function(){
 
-const walletRef = ref(db, "wallet/");
-const depositsRef = ref(db, "walletDeposits/");
-const withdrawsRef = ref(db, "walletWithdraws/");
-function openWallet(){
+abrirCarteira();
+
+};
+function abrirCarteira(){
+
+const saldo=document.getElementById("walletSaldo").innerHTML;
 
 openModal(`
 
-<h2>
+<h3>
 
-💰 Minha Carteira
+💰 Carteira Digital
 
-</h2>
+</h3>
 
-<div
-style="font-size:35px;
+<div style="
+
+font-size:34px;
+
 font-weight:bold;
-color:#25D366;
-margin:20px 0;"
-id="saldoModal">
 
-${document.getElementById("walletSaldo").innerHTML}
+color:#16a34a;
+
+text-align:center;
+
+margin:20px;
+
+">
+
+${saldo}
 
 </div>
 
-<button id="btnDepositar">
+<button id="btnDeposito">
 
 Depositar
 
@@ -1087,7 +1119,7 @@ Depositar
 
 <br><br>
 
-<button id="btnSacar">
+<button id="btnSaque">
 
 Sacar
 
@@ -1095,7 +1127,9 @@ Sacar
 
 <br><br>
 
-<div id="walletHistorico">
+<div id="historicoCarteira">
+
+Nenhuma movimentação.
 
 </div>
 
@@ -1103,101 +1137,19 @@ Sacar
 
 setTimeout(()=>{
 
-document.getElementById("btnDepositar").onclick=depositar;
+document.getElementById("btnDeposito").onclick=()=>{
 
-document.getElementById("btnSacar").onclick=sacar;
+alert("Bloco 2");
 
-mostrarHistorico();
+};
+
+document.getElementById("btnSaque").onclick=()=>{
+
+alert("Bloco 3");
+
+};
 
 },100);
-
-}
-async function depositar(){
-
-const valor=prompt("Valor do depósito");
-
-if(!valor)return;
-
-await push(depositsRef,{
-
-usuario:currentUser,
-
-valor:Number(valor),
-
-estado:"Pendente",
-
-data:Date.now()
-
-});
-
-alert("Pedido enviado com sucesso.");
-
-}
-async function sacar(){
-
-const valor=prompt("Valor do saque");
-
-if(!valor)return;
-
-await push(withdrawsRef,{
-
-usuario:currentUser,
-
-valor:Number(valor),
-
-estado:"Pendente",
-
-data:Date.now()
-
-});
-
-alert("Pedido enviado.");
-
-}
-function mostrarHistorico(){
-
-const lista=document.getElementById("walletHistorico");
-
-const refHist=ref(db,"wallet/"+currentUser+"/historico");
-
-onValue(refHist,(snap)=>{
-
-lista.innerHTML="<h3>Histórico</h3>";
-
-if(!snap.exists()){
-
-lista.innerHTML+="Nenhum movimento.";
-
-return;
-
-}
-
-snap.forEach(item=>{
-
-const d=item.val();
-
-lista.innerHTML+=`
-
-<div style="padding:10px;
-border-bottom:1px solid #ddd;">
-
-${d.tipo}
-
-<br>
-
-<strong>
-
-${Number(d.valor).toLocaleString("pt-PT")} Kz
-
-</strong>
-
-</div>
-
-`;
-
-});
-
-});
 
 }
 </script>
@@ -1207,6 +1159,7 @@ background:#f2f2f2; color:#333; font-size:14px; border-top:1px solid #ddd;">
   © 2023–2026 Playmates • Todos os direitos reservados  
   | <a href="#" style="color:#333; text-decoration:underline;">Termos de Uso</a>
 </footer>
-</body>
 
+</body>
+</html>
 
