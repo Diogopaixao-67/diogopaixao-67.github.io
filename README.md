@@ -1207,7 +1207,6 @@ background:#f2f2f2; color:#333; font-size:14px; border-top:1px solid #ddd;">
   © 2023–2026 Playmates • Todos os direitos reservados  
   | <a href="#" style="color:#333; text-decoration:underline;">Termos de Uso</a>
 </footer>
-
 </body>
 </html>
 
