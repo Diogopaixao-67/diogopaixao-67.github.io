@@ -205,6 +205,83 @@ transform:scale(1.02);
 background:#1ea952;
 
 }
+.rankCard{
+
+display:flex;
+
+align-items:center;
+
+gap:15px;
+
+padding:15px;
+
+margin-top:12px;
+
+border-radius:15px;
+
+background:#fff;
+
+box-shadow:0 4px 12px rgba(0,0,0,.12);
+
+}
+
+.rankPos{
+
+font-size:28px;
+
+font-weight:bold;
+
+width:60px;
+
+text-align:center;
+
+color:#ff7b00;
+
+}
+
+.rankFoto{
+
+width:70px;
+
+height:70px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+}
+
+.rankInfo{
+
+flex:1;
+
+}
+
+.rankNome{
+
+font-size:18px;
+
+font-weight:bold;
+
+}
+
+.rankEscola{
+
+color:#666;
+
+margin-top:5px;
+
+}
+
+.rankVotos{
+
+font-size:22px;
+
+font-weight:bold;
+
+color:#16a34a;
+
+}
 </style>
 </head>
 <body>
@@ -387,7 +464,15 @@ background:#1ea952;
   </div>
   <p style="margin-top:10px; font-size:16px; color:#333;">Meu story aqui</p>
 </div>
-    
+    <div id="sec-ranking" class="card section">
+
+<h2>🏆 Ranking Global</h2>
+
+<div id="rankingLista">
+
+</div>
+
+</div>
     <h2>Sobre</h2>
     <p><strong>Diogo Paixão</strong> — Fundador &amp; CEO.</p>
   <p>
@@ -404,6 +489,10 @@ background:#1ea952;
   <button data-tab="eventos"><small class="navIcon"></small><span>Marketplace</span></button>
   <button data-tab="jogos"><small class="navIcon"></small><span>Jogos</span></button>
   <button data-tab="historia"><small class="navIcon"></small><span>Sobre</span></button>
+  <button data-tab="ranking">
+    <small class="navIcon">🏆</small>
+    <span>Ranking</span>
+</button>
 </nav>
 
 <!-- modal container -->
@@ -1253,6 +1342,82 @@ alert("Bloco 3");
 },100);
 
 }
+onValue(usersRef,(snap)=>{
+
+const lista=document.getElementById("rankingLista");
+
+lista.innerHTML="";
+
+if(!snap.exists()) return;
+
+let usuarios=[];
+
+snap.forEach(item=>{
+
+usuarios.push(item.val());
+
+});
+
+usuarios.sort((a,b)=>
+
+(b.votes||0)-(a.votes||0)
+
+);
+
+usuarios.forEach((u,index)=>{
+
+lista.innerHTML+=`
+
+<div class="rankCard">
+
+<div class="rankPos">
+
+${index+1}°
+
+</div>
+
+<img
+
+class="rankFoto"
+
+src="${u.foto||'https://via.placeholder.com/80'}">
+
+<div class="rankInfo">
+
+<div class="rankNome">
+
+${u.name}
+
+</div>
+
+<div class="rankEscola">
+
+${u.school}
+
+</div>
+
+</div>
+
+<div class="rankVotos">
+
+${u.votes||0}
+
+</div>
+
+</div>
+
+`;
+
+});
+
+});
+await runTransaction(
+
+ref(db,"users/"+telefone+"/votes"),
+
+v=>(v||0)+1
+
+);
 </script>
 
 <footer style="width:100%; text-align:center; padding:15px; margin-top:20px;
