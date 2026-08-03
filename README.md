@@ -1,4 +1,5 @@
 
+
 <html lang="pt">
 <head>
 <meta charset="utf-8"/>
@@ -115,6 +116,95 @@ font-weight:bold;
 color:#16a34a;
 
 }
+/*==========================
+EVENTOS
+==========================*/
+
+.eventoBanner{
+
+width:100%;
+
+overflow:hidden;
+
+border-radius:12px;
+
+}
+
+.eventoBanner img{
+
+width:100%;
+
+display:block;
+
+border-radius:12px;
+
+object-fit:cover;
+
+}
+
+.eventoInfo{
+
+padding:15px 0;
+
+text-align:center;
+
+}
+
+.eventoInfo h2{
+
+color:#ff7b00;
+
+margin-bottom:10px;
+
+}
+
+.eventoInfo p{
+
+color:#555;
+
+font-size:15px;
+
+line-height:1.5;
+
+}
+
+.areaComprar{
+
+margin-top:20px;
+
+}
+
+.areaComprar button{
+
+width:100%;
+
+padding:18px;
+
+font-size:22px;
+
+background:#25D366;
+
+border:none;
+
+border-radius:12px;
+
+color:white;
+
+font-weight:bold;
+
+cursor:pointer;
+
+transition:.25s;
+
+}
+
+.areaComprar button:hover{
+
+transform:scale(1.02);
+
+background:#1ea952;
+
+}
 </style>
 </head>
 <body>
@@ -195,11 +285,36 @@ color:#16a34a;
 
   <!-- EVENTOS -->
   <div id="sec-eventos" class="card section">
-    <h2>Eventos — Playmates</h2>
-    <button id="btnNovoEvento" class="primary">Criar evento (Somente o senhor)</button>
-    <div id="eventosLista" style="margin-top:12px"></div>
-  </div>
 
+    <div class="eventoBanner">
+
+        <img id="eventoBannerImg"
+             src="banner.jpg"
+             alt="Banner do Evento">
+
+    </div>
+
+    <div class="eventoInfo">
+
+        <h2 id="eventoTitulo">
+            Evento Playmates
+        </h2>
+
+        <p id="eventoDescricao">
+            Garanta já a sua participação no evento oficial do Playmates.
+        </p>
+
+    </div>
+
+    <div class="areaComprar">
+
+        <button id="btnComprarEvento">
+            🛒 Comprar Agora
+        </button>
+
+    </div>
+
+</div>
   <!-- JOGOS -->
   <div id="sec-jogos" class="card section">
     <h2>Jogos</h2>
@@ -749,39 +864,25 @@ function openQuickComposer({ phone, name }){
 }
 
 /* EVENTOS */
-$('btnNovoEvento').onclick = async ()=>{
-  if(!currentUser) return alert('Faça login para criar evento.');
-  const s = prompt('Senha para publicar evento:');
-  if(s !== 'LEX') return alert('Senha errada!');
-  const t = prompt('Título:'), c = prompt('Descrição:');
-  if(!t||!c) return alert('Dados inválidos');
-  await push(eventosRef, { titulo:t, texto:c, views:0, createdBy: currentUser, ts: Date.now() });
+const numeroEvento="244941530467";
+
+document.getElementById("btnComprarEvento").onclick=function(){
+
+const mensagem=
+
+"Olá! Tenho interesse em comprar um ingresso do evento Playmates.";
+
+window.open(
+
+"https://wa.me/"+numeroEvento+
+
+"?text="+encodeURIComponent(mensagem),
+
+"_blank"
+
+);
+
 };
-
-onValue(eventosRef, snap=>{
-  const div = $('eventosLista'); if(!div) return;
-  div.innerHTML = '';
-  snap.forEach(item=>{
-    const k = item.key; const e = item.val();
-    div.innerHTML += `<div style="padding:10px;border-bottom:1px solid #eee">
-      <h3>${e.titulo||''}</h3><p>${e.texto||''}</p><p class="event-views">👁️ ${e.views||99}</p>
-      <div style="display:flex;gap:8px;margin-top:6px">
-        <button class="ghost viewEvent" data-id="${k}">Ver</button>
-        <button class="ghost delEvent" data-id="${k}">Eliminar</button>
-      </div>
-    </div>`;
-  });
-  document.querySelectorAll('.delEvent').forEach(btn=>{
-    btn.onclick = async ()=>{
-      const id = btn.dataset.id;
-      const pw = prompt('Senha  para eliminar:');
-      if(pw !== 'LEX') return alert('Senha incorreta.');
-      await remove(ref(db, `eventos/${id}`));
-      showNotification('Evento eliminado',2000);
-    };
-  });
-});
-
 /* JOGOS - countdown */
 function formatHMS(ms){
   if(ms < 0) ms = 0;
@@ -1162,4 +1263,3 @@ background:#f2f2f2; color:#333; font-size:14px; border-top:1px solid #ddd;">
 
 </body>
 </html>
-
