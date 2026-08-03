@@ -1,5 +1,3 @@
-
-<html lang="pt">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -66,6 +64,55 @@ textarea{resize:none}
   .compCard img{width:64px;height:64px}
   #countdownLabel{font-size:18px}
 }
+/*========================
+CARTEIRA
+========================*/
+
+.walletCard{
+
+background:white;
+
+margin-top:15px;
+
+padding:15px;
+
+border-radius:15px;
+
+box-shadow:0 5px 18px rgba(0,0,0,.12);
+
+cursor:pointer;
+
+transition:.25s;
+
+}
+
+.walletCard:hover{
+
+transform:scale(1.02);
+
+}
+
+.walletTitulo{
+
+font-size:18px;
+
+font-weight:bold;
+
+color:#ff7b00;
+
+margin-bottom:10px;
+
+}
+
+.walletSaldo{
+
+font-size:28px;
+
+font-weight:bold;
+
+color:#25D366;
+
+}
 </style>
 </head>
 <body>
@@ -107,6 +154,21 @@ textarea{resize:none}
       <h3>Perfil</h3>
       <img id="fotoPerfil" src="https://via.placeholder.com/100" style="width:100px;height:100px;border-radius:50%;object-fit:cover"/>
       <div id="perfilInfo"></div>
+
+<div id="walletCard" class="walletCard">
+
+    <div class="walletTitulo">
+        💰 Carteira
+    </div>
+
+    <div id="walletSaldo"
+         class="walletSaldo">
+
+         0,00 Kz
+
+    </div>
+
+</div>
       <div style="display:flex;gap:8px;margin-top:6px">
         <button id="btnEditProfile" class="ghost">Editar Perfil</button>
         <button id="btnNewPost" class="ghost">Nova Postagem (3h)</button>
@@ -341,7 +403,13 @@ regSubmit.onclick = async ()=>{
       await uploadBytes(sRefPath, file);
       photoURL = await getDownloadURL(sRefPath);
     }
-    await set(uRef, { name, pass, phone, school, foto:photoURL, points:0, votes:0 });
+    await set(uRef, { name, pass, phone, school, foto:photoURL, points:0, votes:0 });await set(ref(db,"wallet/"+phone),{
+
+    saldo:0,
+
+    historico:{}
+
+});
     loginUser(phone);
     showNotification('Conta criada e logado',3000);
   }catch(err){
@@ -372,7 +440,23 @@ function loginUser(phone){
   $('registerForm').style.display = 'none';
   $('loggedArea').style.display = 'block';
 
-  const userRef = ref(db, 'users/'+phone);
+  const userRef = ref(db, 'users/'+phone);const walletUserRef=ref(db,"wallet/"+phone);
+
+onValue(walletUserRef,(snap)=>{
+
+if(!snap.exists())return;
+
+const dados=snap.val();
+
+document.getElementById("walletSaldo").innerHTML=
+
+Number(dados.saldo).toLocaleString("pt-PT",{
+
+minimumFractionDigits:2
+
+})+" Kz";
+
+});
   onValue(userRef, snap=>{
     const u = snap.val()||{};
     currentUserObj = u;
@@ -967,6 +1051,155 @@ document.addEventListener('DOMContentLoaded', ()=> {
 /* Final note: DB rules must allow read/write during testing.
    For production, tighten security rules and remove plaintext passwords from DB.
 */
+/* ===========================
+   CARTEIRA DIGITAL
+=========================== */
+
+const walletRef = ref(db, "wallet/");
+const depositsRef = ref(db, "walletDeposits/");
+const withdrawsRef = ref(db, "walletWithdraws/");
+function openWallet(){
+
+openModal(`
+
+<h2>
+
+💰 Minha Carteira
+
+</h2>
+
+<div
+style="font-size:35px;
+font-weight:bold;
+color:#25D366;
+margin:20px 0;"
+id="saldoModal">
+
+${document.getElementById("walletSaldo").innerHTML}
+
+</div>
+
+<button id="btnDepositar">
+
+Depositar
+
+</button>
+
+<br><br>
+
+<button id="btnSacar">
+
+Sacar
+
+</button>
+
+<br><br>
+
+<div id="walletHistorico">
+
+</div>
+
+`,()=>{});
+
+setTimeout(()=>{
+
+document.getElementById("btnDepositar").onclick=depositar;
+
+document.getElementById("btnSacar").onclick=sacar;
+
+mostrarHistorico();
+
+},100);
+
+}
+async function depositar(){
+
+const valor=prompt("Valor do depósito");
+
+if(!valor)return;
+
+await push(depositsRef,{
+
+usuario:currentUser,
+
+valor:Number(valor),
+
+estado:"Pendente",
+
+data:Date.now()
+
+});
+
+alert("Pedido enviado com sucesso.");
+
+}
+async function sacar(){
+
+const valor=prompt("Valor do saque");
+
+if(!valor)return;
+
+await push(withdrawsRef,{
+
+usuario:currentUser,
+
+valor:Number(valor),
+
+estado:"Pendente",
+
+data:Date.now()
+
+});
+
+alert("Pedido enviado.");
+
+}
+function mostrarHistorico(){
+
+const lista=document.getElementById("walletHistorico");
+
+const refHist=ref(db,"wallet/"+currentUser+"/historico");
+
+onValue(refHist,(snap)=>{
+
+lista.innerHTML="<h3>Histórico</h3>";
+
+if(!snap.exists()){
+
+lista.innerHTML+="Nenhum movimento.";
+
+return;
+
+}
+
+snap.forEach(item=>{
+
+const d=item.val();
+
+lista.innerHTML+=`
+
+<div style="padding:10px;
+border-bottom:1px solid #ddd;">
+
+${d.tipo}
+
+<br>
+
+<strong>
+
+${Number(d.valor).toLocaleString("pt-PT")} Kz
+
+</strong>
+
+</div>
+
+`;
+
+});
+
+});
+
+}
 </script>
 
 <footer style="width:100%; text-align:center; padding:15px; margin-top:20px;
@@ -977,3 +1210,4 @@ background:#f2f2f2; color:#333; font-size:14px; border-top:1px solid #ddd;">
 
 </body>
 </html>
+
