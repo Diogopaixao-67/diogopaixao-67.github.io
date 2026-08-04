@@ -372,11 +372,11 @@ color:#16a34a;
     <div class="eventoInfo">
 
         <h2 id="eventoTitulo">
-            Evento Playmates
+            Marketplace Playmates
         </h2>
 
         <p id="eventoDescricao">
-            Garanta já a sua participação no evento oficial do Playmates.
+            Garanta já a sua participação na compra do E-book de Importaçaõ.
         </p>
 
     </div>
@@ -462,13 +462,7 @@ color:#16a34a;
   </div>
   <p style="margin-top:10px; font-size:16px; color:#333;">Meu story aqui</p>
 </div>
-    <div id="sec-ranking" class="card section">
-
-<h2>🏆 Ranking Global</h2>
-
-<div id="rankingLista">
-
-</div>
+ 
 
 </div>
     <h2>Sobre</h2>
@@ -487,9 +481,7 @@ color:#16a34a;
   <button data-tab="eventos"><small class="navIcon"></small><span>Marketplace</span></button>
   <button data-tab="jogos"><small class="navIcon"></small><span>Jogos</span></button>
   <button data-tab="historia"><small class="navIcon"></small><span>Sobre</span></button>
-  <button data-tab="ranking">
-    <small class="navIcon">🏆</small>
-    <span>Ranking</span>
+  
 </button>
 </nav>
 
