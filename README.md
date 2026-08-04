@@ -281,7 +281,7 @@ background:#1ea952;
     </div>
   </div>
 
-  <!-- Marketplace -->
+  <!-- eventos -->
   <div id="sec-eventos" class="card section">
 
     <div class="eventoBanner">
@@ -311,10 +311,6 @@ background:#1ea952;
         <button id="btnComprarEvento">
             🛒 Comprar Agora
         </button>
-
-    </div>
-
-</div>
   <!-- JOGOS -->
   <div id="sec-jogos" class="card section">
     <h2>Jogos</h2>
