@@ -1,5 +1,3 @@
-
-
 <html lang="pt">
 <head>
 <meta charset="utf-8"/>
@@ -239,6 +237,49 @@ color:#ff7b00;
 
 }
 
+.rankFoto{
+
+width:70px;
+
+height:70px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+}
+
+.rankInfo{
+
+flex:1;
+
+}
+
+.rankNome{
+
+font-size:18px;
+
+font-weight:bold;
+
+}
+
+.rankEscola{
+
+color:#666;
+
+margin-top:5px;
+
+}
+
+.rankVotos{
+
+font-size:22px;
+
+font-weight:bold;
+
+color:#16a34a;
+
+}
 </style>
 </head>
 <body>
@@ -320,11 +361,15 @@ color:#ff7b00;
   <!-- Marketplace -->
   <div id="sec-eventos" class="card section">
 
+    <div class="eventoBanner">
+
+        
 <div class="eventoBanner">
     <img id="eventoBannerImg"
          src="https://diogopaixao-67.github.io/importação.png"
          alt="Banner do Evento">
-</div>
+
+    </div>
 
     <div class="eventoInfo">
 
@@ -333,7 +378,7 @@ color:#ff7b00;
         </h2>
 
         <p id="eventoDescricao">
-            Garanta já a sua participação na compra do E-book de Importação.
+             Garanta já a sua participação na compra do E-book de Importação.
         </p>
 
     </div>
@@ -346,7 +391,7 @@ color:#ff7b00;
 
     </div>
 
-
+</div>
   <!-- JOGOS -->
   <div id="sec-jogos" class="card section">
     <h2>Jogos</h2>
@@ -390,7 +435,7 @@ color:#ff7b00;
         <div id="requestsList" class="requestsList"></div>
       </div>
     </div>
- 
+
     <!-- hidden file inputs -->
     <input type="file" id="compPhoto_1" accept="image/*" style="display:none"/>
     <input type="file" id="compPhoto_2" accept="image/*" style="display:none"/>
@@ -418,6 +463,8 @@ color:#ff7b00;
          style="width:100%; height:100%; object-fit:cover;">
   </div>
   <p style="margin-top:10px; font-size:16px; color:#333;">Meu story aqui</p>
+</div>
+</div>
     <h2>Sobre</h2>
     <p><strong>Diogo Paixão</strong> — Fundador &amp; CEO.</p>
   <p>
@@ -427,18 +474,29 @@ color:#ff7b00;
     É mais que uma disputa, é um caminho de empreendedorismo para jovens angolanos. Estimula liderança, comunicação e captação de apoios nas comunidades escolares.
   </p>
   </div>
-      
 </main>
+</div> <!-- fecha sec-historia -->
+
+<div id="sec-ranking" class="card section">
+
+<h2>🏆 Ranking Global</h2>
+
+<div id="rankingLista"></div>
+
+</div>
 <nav>
   <button data-tab="sms" class="active"><small class="navIcon"></small><span>Início</span></button>
   <button data-tab="eventos"><small class="navIcon"></small><span>Marketplace</span></button>
   <button data-tab="jogos"><small class="navIcon"></small><span>Jogos</span></button>
   <button data-tab="historia"><small class="navIcon"></small><span>Sobre</span></button>
+  <button data-tab="ranking"><small class="navIcon">🏆</small>
+    <span>Ranking</span>
+</button>
 </nav>
 
 <!-- modal container -->
-<div id="modalRoot" style="display:none">
- 
+<div id="modalRoot" style="display:none"></div>
+
 <script type="module">
 /* Firebase imports */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
@@ -775,7 +833,7 @@ async function openProfileModal(userObj){
     };
 
     sendBtn.onclick = async ()=>{
-      if(!currentUser) return alert('Faça login para enviar mensagem.');
+      if(!currentUser) return alert('Faça login para enviar mensagem interna.');
       const txt = (textEl.value||'').trim();
       if(!txt) return alert('Escreve algo');
       await sendInternalMessage(currentUser, otherPhone, txt);
@@ -900,7 +958,7 @@ document.getElementById("btnComprarEvento").onclick=function(){
 
 const mensagem=
 
-"Olá! Tenho interesse em comprar este E-Book de Importaçaõ no Playmates.";
+"Olá! Tenho interesse em comprar este E-Book de Importaçaõ no Playmates..";
 
 window.open(
 
@@ -1309,8 +1367,37 @@ usuarios.forEach((u,index)=>{
 
 lista.innerHTML+=`
 
+<div class="rankCard">
+
+<div class="rankPos">
+
+${index+1}°
 
 </div>
+
+<img
+
+class="rankFoto"
+
+src="${u.foto||'https://via.placeholder.com/80'}">
+
+<div class="rankInfo">
+
+<div class="rankNome">
+
+${u.name}
+
+</div>
+
+<div class="rankEscola">
+
+${u.school}
+
+</div>
+
+</div>
+
+<div class="rankVotos">
 
 ${u.votes||0}
 
@@ -1323,7 +1410,6 @@ ${u.votes||0}
 });
 
 });
-
 </script>
 
 <footer style="width:100%; text-align:center; padding:15px; margin-top:20px;
