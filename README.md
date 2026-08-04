@@ -473,13 +473,7 @@ color:#16a34a;
   </p>
   </div>
 </main>
-</div> <!-- fecha sec-historia -->
-
-<div id="sec-ranking" class="card section">
-
-<h2>🏆 Ranking Global</h2>
-
-<div id="rankingLista"></div>
+</div> 
 
 </div>
 <nav>
@@ -487,13 +481,13 @@ color:#16a34a;
   <button data-tab="eventos"><small class="navIcon"></small><span>Marketplace</span></button>
   <button data-tab="jogos"><small class="navIcon"></small><span>Jogos</span></button>
   <button data-tab="historia"><small class="navIcon"></small><span>Sobre</span></button>
-  <button data-tab="ranking"><small class="navIcon">🏆</small>
+  <button data-tab="ranking"><small class="navIcon"></small>
     <span>Ranking</span>
 </button>
 </nav>
 
 <!-- modal container -->
-<div id="modalRoot" style="display:none"></div>
+<div id="modalRoot" style="display:none">
 
 <script type="module">
 /* Firebase imports */
@@ -1415,6 +1409,5 @@ background:#f2f2f2; color:#333; font-size:14px; border-top:1px solid #ddd;">
   © 2023–2026 Playmates • Todos os direitos reservados  
   | <a href="#" style="color:#333; text-decoration:underline;">Termos de Uso</a>
 </footer>
-
 </body>
 </html>
