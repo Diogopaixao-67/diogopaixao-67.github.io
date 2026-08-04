@@ -365,9 +365,9 @@ color:#16a34a;
 
     <div class="eventoBanner">
 
-        <img id="eventoBannerImg"
-             src="banner.jpg"
-             alt="Banner do Evento">
+        <img id="eventoBanner
+        Img"
+             src="https://diogopaixao-67.github.io/importação.png">
 
     </div>
 
