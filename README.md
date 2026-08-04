@@ -359,7 +359,7 @@ font-weight:bold;
         </h2>
 
         <p id="eventoDescricao">
-            Garanta já a sua participação na compra do E-book de Importaçaõ.
+            Garanta já a sua participação na compra do E-book de Importação.
         </p>
 
     </div>
@@ -372,7 +372,7 @@ font-weight:bold;
 
     </div>
 
-</div>
+
   <!-- JOGOS -->
   <div id="sec-jogos" class="card section">
     <h2>Jogos</h2>
@@ -416,7 +416,7 @@ font-weight:bold;
         <div id="requestsList" class="requestsList"></div>
       </div>
     </div>
-
+ 
     <!-- hidden file inputs -->
     <input type="file" id="compPhoto_1" accept="image/*" style="display:none"/>
     <input type="file" id="compPhoto_2" accept="image/*" style="display:none"/>
@@ -444,10 +444,6 @@ font-weight:bold;
          style="width:100%; height:100%; object-fit:cover;">
   </div>
   <p style="margin-top:10px; font-size:16px; color:#333;">Meu story aqui</p>
-</div>
- 
-
-</div>
     <h2>Sobre</h2>
     <p><strong>Diogo Paixão</strong> — Fundador &amp; CEO.</p>
   <p>
@@ -456,8 +452,13 @@ font-weight:bold;
     Já alcançou mais de 20 escolas do ensino médio, permitindo que estudantes ganhem recompensas de forma confiável e segura.  
     É mais que uma disputa, é um caminho de empreendedorismo para jovens angolanos. Estimula liderança, comunicação e captação de apoios nas comunidades escolares.
   </p>
+  </div>
+    </div>
+    </div>
+     </div>
+      </div>
+      
 </main>
-
 <nav>
   <button data-tab="sms" class="active"><small class="navIcon"></small><span>Início</span></button>
   <button data-tab="eventos"><small class="navIcon"></small><span>Marketplace</span></button>
@@ -804,7 +805,7 @@ async function openProfileModal(userObj){
     };
 
     sendBtn.onclick = async ()=>{
-      if(!currentUser) return alert('Faça login para enviar mensagem interna.');
+      if(!currentUser) return alert('Faça login para enviar mensagem.');
       const txt = (textEl.value||'').trim();
       if(!txt) return alert('Escreve algo');
       await sendInternalMessage(currentUser, otherPhone, txt);
@@ -1338,37 +1339,8 @@ usuarios.forEach((u,index)=>{
 
 lista.innerHTML+=`
 
-<div class="rankCard">
-
-<div class="rankPos">
-
-${index+1}°
 
 </div>
-
-<img
-
-class="rankFoto"
-
-src="${u.foto||'https://via.placeholder.com/80'}">
-
-<div class="rankInfo">
-
-<div class="rankNome">
-
-${u.name}
-
-</div>
-
-<div class="rankEscola">
-
-${u.school}
-
-</div>
-
-</div>
-
-<div class="rankVotos">
 
 ${u.votes||0}
 
@@ -1381,13 +1353,7 @@ ${u.votes||0}
 });
 
 });
-await runTransaction(
 
-ref(db,"users/"+telefone+"/votes"),
-
-v=>(v||0)+1
-
-);
 </script>
 
 <footer style="width:100%; text-align:center; padding:15px; margin-top:20px;
