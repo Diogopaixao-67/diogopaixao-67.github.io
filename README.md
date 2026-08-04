@@ -363,13 +363,11 @@ color:#16a34a;
   <!-- Marketplace -->
   <div id="sec-eventos" class="card section">
 
-    <div class="eventoBanner">
-
-        <img id="eventoBanner
-        Img"
-             src="https://diogopaixao-67.github.io/importação.png">
-
-    </div>
+<div class="eventoBanner">
+    <img id="eventoBannerImg"
+         src="https://diogopaixao-67.github.io/importação.png"
+         alt="Banner do Evento">
+</div>
 
     <div class="eventoInfo">
 
