@@ -265,23 +265,6 @@ font-weight:bold;
 
 }
 
-.rankEscola{
-
-color:#666;
-
-margin-top:5px;
-
-}
-
-.rankVotos{
-
-font-size:22px;
-
-font-weight:bold;
-
-color:#16a34a;
-
-}
 </style>
 </head>
 <body>
@@ -949,7 +932,7 @@ document.getElementById("btnComprarEvento").onclick=function(){
 
 const mensagem=
 
-"Olá! Tenho interesse em comprar um ingresso do evento Playmates.";
+"Olá! Tenho interesse em comprar este E-Book de Importaçaõ no Playmates.";
 
 window.open(
 
