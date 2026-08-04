@@ -427,10 +427,6 @@ color:#ff7b00;
     É mais que uma disputa, é um caminho de empreendedorismo para jovens angolanos. Estimula liderança, comunicação e captação de apoios nas comunidades escolares.
   </p>
   </div>
-    </div>
-    </div>
-     </div>
-      </div>
       
 </main>
 <nav>
@@ -442,7 +438,7 @@ color:#ff7b00;
 
 <!-- modal container -->
 <div id="modalRoot" style="display:none">
-
+ 
 <script type="module">
 /* Firebase imports */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
