@@ -456,7 +456,6 @@ font-weight:bold;
     Já alcançou mais de 20 escolas do ensino médio, permitindo que estudantes ganhem recompensas de forma confiável e segura.  
     É mais que uma disputa, é um caminho de empreendedorismo para jovens angolanos. Estimula liderança, comunicação e captação de apoios nas comunidades escolares.
   </p>
-  </div>
 </main>
 
 <nav>
@@ -464,12 +463,10 @@ font-weight:bold;
   <button data-tab="eventos"><small class="navIcon"></small><span>Marketplace</span></button>
   <button data-tab="jogos"><small class="navIcon"></small><span>Jogos</span></button>
   <button data-tab="historia"><small class="navIcon"></small><span>Sobre</span></button>
-  
-</button>
 </nav>
 
 <!-- modal container -->
-<div id="modalRoot" style="display:none"></div>
+<div id="modalRoot" style="display:none">
 
 <script type="module">
 /* Firebase imports */
