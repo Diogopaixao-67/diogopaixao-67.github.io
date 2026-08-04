@@ -395,7 +395,7 @@ background:#1ea952;
   </div>
 </main>
 </div> 
-</div>
+
 <nav>
   <button data-tab="sms" class="active"><small class="navIcon"></small><span>Início</span></button>
   <button data-tab="eventos"><small class="navIcon"></small><span>Marketplace</span></button>
@@ -1259,6 +1259,3 @@ background:#f2f2f2; color:#333; font-size:14px; border-top:1px solid #ddd;">
   © 2023–2026 Playmates • Todos os direitos reservados  
   | <a href="#" style="color:#333; text-decoration:underline;">Termos de Uso</a>
 </footer>
-
-</body>
-</html>
