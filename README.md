@@ -390,8 +390,6 @@ color:#16a34a;
         </button>
 
     </div>
-
-</div>
   <!-- JOGOS -->
   <div id="sec-jogos" class="card section">
     <h2>Jogos</h2>
