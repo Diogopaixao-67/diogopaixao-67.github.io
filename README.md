@@ -239,32 +239,6 @@ color:#ff7b00;
 
 }
 
-.rankFoto{
-
-width:70px;
-
-height:70px;
-
-border-radius:50%;
-
-object-fit:cover;
-
-}
-
-.rankInfo{
-
-flex:1;
-
-}
-
-.rankNome{
-
-font-size:18px;
-
-font-weight:bold;
-
-}
-
 </style>
 </head>
 <body>
