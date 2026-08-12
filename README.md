@@ -5,21 +5,21 @@
 <title>Playmates — Protótipo (WhatsApp style)</title>
 <style>
 :root{
-  --bg:#e9f5ee; --card:#fff; --muted:#6b7280; --accent-3:#ff7b00;
+  --bg:#f4f7fb; --card:#ffffff; --muted:#667085; --accent-3:#2563eb; --accent-2:#0f172a; --gold:#d4af37;
   --shadow: 0 6px 18px rgba(16,24,40,0.06);
 }
 *{box-sizing:border-box}
 body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:var(--bg);color:#0b1222;min-height:100vh;padding-bottom:100px}
-header{display:flex;align-items:center;gap:12px;padding:12px 16px;background:linear-gradient(90deg,var(--accent-3),#ff9a3d);color:#fff;font-weight:700;border-radius:0 0 14px 14px;position:sticky;top:0;z-index:40}
+header{display:flex;align-items:center;gap:12px;padding:13px 16px;background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;font-weight:700;border-radius:0 0 14px 14px;position:sticky;top:0;z-index:40}
 header h1{margin:0;font-size:18px}
 main{padding:12px;max-width:980px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:12px}
 .card{background:var(--card);border-radius:12px;padding:12px;box-shadow:var(--shadow)}
 .section{display:none}
 .section.active{display:block}
-nav{display:flex;justify-content:space-around;background:white;position:fixed;bottom:0;left:0;right:0;border-top:1px solid #ddd;padding:8px 0;z-index:50}
-nav button{background:none;color:#333;border:none;font-size:13px;padding:6px 4px;width:25%;display:flex;flex-direction:column;align-items:center;gap:4px}
-nav button.active{color:var(--accent-3);font-weight:700}
-small.navIcon{font-size:18px}
+nav{display:flex;justify-content:space-around;align-items:center;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);position:fixed;bottom:0;left:0;right:0;border-top:1px solid #dbe2ea;padding:8px 4px;z-index:50;box-shadow:0 -8px 24px rgba(15,23,42,.08)}
+nav button{background:none;color:#64748b;border:none;font-size:12px;padding:7px 4px;width:25%;display:flex;flex-direction:column;align-items:center;gap:4px;transition:.2s}
+nav button.active{color:#2563eb;font-weight:800;transform:translateY(-1px)}
+small.navIcon{font-size:18px;line-height:1}
 
 /* common */
 button{cursor:pointer;border:0;border-radius:10px;padding:8px 12px;background:var(--accent-3);color:#fff;font-weight:600}
@@ -203,10 +203,34 @@ transform:scale(1.02);
 background:#1ea952;
 
 }
+
+/* PLAYMATES — refinamento visual */
+.section{animation:sectionIn .22s ease}
+@keyframes sectionIn{from{opacity:.4;transform:translateY(5px)}to{opacity:1;transform:none}}
+.marketplaceProduct{border:1px solid #e2e8f0;border-radius:18px;overflow:hidden;background:#fff;box-shadow:0 12px 30px rgba(15,23,42,.08)}
+.marketplaceProductImage{width:100%;aspect-ratio:1/1;display:block;object-fit:contain;background:linear-gradient(145deg,#eef2ff,#f8fafc);padding:10px}
+.marketplaceBody{padding:16px}
+.marketplaceBadge{display:inline-flex;padding:5px 9px;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-size:11px;font-weight:800}
+.marketplacePrice{font-size:24px;font-weight:900;color:#0f172a;margin:8px 0}
+.marketplaceBuy{width:100%;padding:14px!important;border-radius:12px!important;background:linear-gradient(135deg,#2563eb,#1d4ed8)!important}
+.jogosGrid{display:grid;gap:12px}
+@media(min-width:700px){.jogosGrid{grid-template-columns:1fr 1fr}}
+.competitorsGrid{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:700px){.competitorsGrid{grid-template-columns:1fr 1fr}}
+.compCard{box-shadow:0 8px 22px rgba(15,23,42,.05);border:1px solid #e5eaf1}
+.compCard img{background:#f1f5f9}
+.vote-green{background:#2563eb!important}
+.edit-orange{background:#0f172a!important}
+.photo-btn{color:#334155}
+#countdownCard{border:1px solid #dbe4f0;background:linear-gradient(145deg,#ffffff,#f8fafc)}
+#countdownLabel{color:#0f172a}
+.walletTitulo{color:#2563eb}
+#userCount.user-count{color:#2563eb}
+
 </style>
 </head>
 <body>
-<header><h1>Playmates</h1></header>
+<header><div style="font-size:22px">◈</div><h1>PLAYMATES</h1><div style="margin-left:auto;font-size:11px;opacity:.8">PLATFORM</div></header>
 
 <main>
   <div id="notification" class="card" style="display:none"></div>
@@ -281,87 +305,82 @@ background:#1ea952;
     </div>
   </div>
 
-  <!-- eventos -->
+  <!-- MARKETPLACE -->
   <div id="sec-eventos" class="card section">
-
-    <div class="eventoBanner">
-
-        
-<div class="eventoBanner">
-    <img id="eventoBannerImg"
-         src="https://diogopaixao-67.github.io/importação.png"
-         alt="Banner do Evento">
-
-    </div>
-
-    <div class="eventoInfo">
-
-        <h2 id="eventoTitulo">
-            Marketplace Playmates
-        </h2>
-
-        <p id="eventoDescricao">
-             Garanta já a sua participação na compra do E-book de Importação.
+    <div class="marketplaceProduct">
+      <img id="eventoBannerImg"
+           class="marketplaceProductImage"
+           src="https://diogopaixao-67.github.io/importação.png"
+           alt="E-book de Importação Playmates">
+      <div class="marketplaceBody">
+        <span class="marketplaceBadge">MARKETPLACE • PRODUTO DIGITAL</span>
+        <h2 id="eventoTitulo" style="margin:10px 0 6px">E-book de Importação</h2>
+        <p id="eventoDescricao" style="color:#667085;line-height:1.55;margin:0">
+          Guia digital para quem deseja aprender estratégias de importação e encontrar fornecedores.
         </p>
-
+        <div class="marketplacePrice">Disponível agora</div>
+        <button id="btnComprarEvento" class="marketplaceBuy">🛒 Comprar Agora</button>
+      </div>
     </div>
+  </div>
 
-    <div class="areaComprar">
-
-        <button id="btnComprarEvento">
-            🛒 Comprar Agora
-        </button>
   <!-- JOGOS -->
   <div id="sec-jogos" class="card section">
-    <h2>Jogos</h2>
+    <h2 style="margin-top:0">Jogos</h2>
 
     <div id="countdownCard">
-      <div style="display:flex;align-items:center;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center">
         <strong>Contagem regressiva:</strong>
         <span id="countdownLabel">00:00:00</span>
       </div>
-      <div style="font-size:12px;color:#666"><button id="editCountdownBtn" class="small-ghost" title="Editar (senha A8)">📢  contador</button></div>
+      <div style="font-size:12px;color:#666">
+        <button type="button" id="editCountdownBtn" class="small-ghost" title="Editar (senha A8)">⚙️ Editar contador</button>
+      </div>
       <div class="smallNote">Tempo visível em tempo real para todos os utilizadores.</div>
     </div>
 
-    <div style="margin-top:10px" class="card">
-      <h3>IBAN da Playmates</h3>
-      <div style="display:flex;align-items:center;gap:8px">
-        <div id="ibanText" style="font-weight:800"> AO06005500007150984310146</div>
-        <button id="copyIban" class="ghost">Copiar</button>
+    <div class="jogosGrid">
+      <div class="card" style="margin-top:10px">
+        <h3 style="margin-top:0">IBAN da Playmates</h3>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <div id="ibanText" style="font-weight:800;word-break:break-all">AO06005500007150984310146</div>
+          <button type="button" id="copyIban" class="ghost">Copiar</button>
+        </div>
+        <div style="font-size:12px;color:#666;margin-top:6px">IBAN fixo para apoio à plataforma.</div>
       </div>
-      <div style="font-size:12px;color:#666;margin-top:6px">IBAN fixo (opção A). Desejando apoiar um ato inovador.</div>
+
+      <div class="card" style="margin-top:10px">
+        <h3 style="margin-top:0">Concorrentes</h3>
+        <div id="competitorsList" class="competitorsGrid"></div>
+      </div>
     </div>
 
-    <div id="competitorsList"></div>
-
-    <!-- pedido panel (novo) -->
-    <div class="card" style="margin-top:10px">
-      <h3>Painel de pedidos — Packs de votos</h3>
+    <div class="card" style="margin-top:12px">
+      <h3 style="margin-top:0">Painel de pedidos — Packs de votos</h3>
       <div style="display:grid;gap:8px">
         <input id="req_name" placeholder="Nome"/>
         <input id="req_school" placeholder="Escola"/>
         <input id="req_whatsapp" placeholder="Número WhatsApp (ex: 2449...)"/>
         <select id="req_pack">
-          <option value="30 votos">Grátis — ganha 400kz</option>
-          <option value="50 Votos">Pack ouro— ganha 1000kz</option>
+          <option value="30 votos">Grátis — ganha 400 Kz</option>
+          <option value="50 Votos">Pack ouro — ganha 1000 Kz</option>
         </select>
-        <div style="display:flex;gap:8px">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
           <button id="reqSubmit">Enviar pedido</button>
           <button id="simPlus" class="ghost">+1 (Simulador)</button>
-          <div style="margin-left:auto" class="pill">Pedidos: <span id="reqCount">0</span></div>
+          <div class="pill">Pedidos: <span id="reqCount">0</span></div>
         </div>
         <div id="requestsList" class="requestsList"></div>
       </div>
     </div>
 
-    <!-- hidden file inputs -->
+    <!-- hidden file inputs: 6 concorrentes -->
     <input type="file" id="compPhoto_1" accept="image/*" style="display:none"/>
     <input type="file" id="compPhoto_2" accept="image/*" style="display:none"/>
     <input type="file" id="compPhoto_3" accept="image/*" style="display:none"/>
-
-  
-    
+    <input type="file" id="compPhoto_4" accept="image/*" style="display:none"/>
+    <input type="file" id="compPhoto_5" accept="image/*" style="display:none"/>
+    <input type="file" id="compPhoto_6" accept="image/*" style="display:none"/>
   </div>
 
   <!-- SOBRE -->
@@ -397,10 +416,10 @@ background:#1ea952;
 </div> 
 
 <nav>
-  <button data-tab="sms" class="active"><small class="navIcon"></small><span>Início</span></button>
-  <button data-tab="eventos"><small class="navIcon"></small><span>Marketplace</span></button>
-  <button data-tab="jogos"><small class="navIcon"></small><span>Jogos</span></button>
-  <button data-tab="historia"><small class="navIcon"></small><span>Sobre</span></button>
+  <button type="button" data-tab="sms" class="active"><small class="navIcon">⌂</small><span>Início</span></button>
+  <button type="button" data-tab="eventos"><small class="navIcon">🛍️</small><span>Marketplace</span></button>
+  <button type="button" data-tab="jogos"><small class="navIcon">🏆</small><span>Jogos</span></button>
+  <button type="button" data-tab="historia"><small class="navIcon">ⓘ</small><span>Sobre</span></button>
 </nav>
 
 <!-- modal container -->
@@ -437,17 +456,23 @@ const showNotification = (txt, timeout=4000) => {
 };
 
 /* NAV behaviour */
-document.querySelectorAll('nav button').forEach(btn=>{
+document.querySelectorAll('nav button[data-tab]').forEach(btn=>{
   btn.addEventListener('click', ev=>{
     const tab = ev.currentTarget.dataset.tab;
-    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-    document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
     const sec = document.getElementById('sec-'+tab);
-    if(sec) sec.classList.add('active');
+    if(!sec) return;
+
+    // Troca visual da aba primeiro.
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('nav button[data-tab]').forEach(b=>b.classList.remove('active'));
+    sec.classList.add('active');
     ev.currentTarget.classList.add('active');
-    // require login for eventos/jogos
+    window.scrollTo({top:0, behavior:'smooth'});
+
+    // Marketplace e Jogos exigem login, mas a navegação continua funcional.
     if((tab==='eventos' || tab==='jogos') && !currentUser){
-      alert('Faça login para acessar esta aba');
+      alert('Faça login para acessar esta aba.');
+      document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
       document.getElementById('sec-sms').classList.add('active');
       document.querySelector('nav button[data-tab="sms"]').classList.add('active');
     }
@@ -464,7 +489,7 @@ const btnEditProfile = $('btnEditProfile');
 
 const editCountdownBtn = $('editCountdownBtn'), countdownLabel = $('countdownLabel');
 const competitorsList = $('competitorsList');
-const fileInputs = {1: $('compPhoto_1'), 2: $('compPhoto_2'), 3: $('compPhoto_3')};
+const fileInputs = {1: $('compPhoto_1'), 2: $('compPhoto_2'), 3: $('compPhoto_3'), 4: $('compPhoto_4'), 5: $('compPhoto_5'), 6: $('compPhoto_6')};
 
 const postsList = $('postsList');
 const btnNewPost = $('btnNewPost');
@@ -880,6 +905,19 @@ window.open(
 );
 
 };
+
+/* Fallback visual para a imagem do Marketplace */
+const marketplaceImg = $('eventoBannerImg');
+if(marketplaceImg){
+  marketplaceImg.addEventListener('error', ()=>{
+    marketplaceImg.removeAttribute('src');
+    marketplaceImg.alt = 'E-book de Importação Playmates';
+    marketplaceImg.style.objectFit = 'contain';
+    marketplaceImg.style.padding = '30px';
+    marketplaceImg.style.background = 'linear-gradient(145deg,#eef2ff,#e2e8f0)';
+  }, {once:true});
+}
+
 /* JOGOS - countdown */
 function formatHMS(ms){
   if(ms < 0) ms = 0;
@@ -913,21 +951,28 @@ editCountdownBtn.onclick = async ()=>{
 /* Competitors */
 async function ensureDefaultCompetitors(){
   const snap = await get(competitorsRef);
-  if(!snap.exists()){
-    const defaults = {
-      1:{ name:'Concorrente 1', school:'Escola A', votes:0, photo:'' },
-      2:{ name:'Concorrente 2', school:'Escola B', votes:0, photo:'' },
-      3:{ name:'Concorrente 3', school:'Escola C', votes:0, photo:'' }
-
-    };
-    await set(competitorsRef, defaults);
+  const current = snap.exists() ? (snap.val() || {}) : {};
+  const defaults = {
+    1:{ name:'Concorrente 1', school:'Escola A', votes:0, photo:'' },
+    2:{ name:'Concorrente 2', school:'Escola B', votes:0, photo:'' },
+    3:{ name:'Concorrente 3', school:'Escola C', votes:0, photo:'' },
+    4:{ name:'Concorrente 4', school:'Escola D', votes:0, photo:'' },
+    5:{ name:'Concorrente 5', school:'Escola E', votes:0, photo:'' },
+    6:{ name:'Concorrente 6', school:'Escola F', votes:0, photo:'' }
+  };
+  const updates = {};
+  for(let id=1; id<=6; id++){
+    if(!current[id]) updates[id] = defaults[id];
+  }
+  if(Object.keys(updates).length){
+    await update(competitorsRef, updates);
   }
 }
 ensureDefaultCompetitors();
 
 function renderCompetitors(listObj){
   competitorsList.innerHTML = '';
-  [1,2,3].forEach(id=>{
+  [1,2,3,4,5,6].forEach(id=>{
     const c = listObj && listObj[id] ? listObj[id] : { name:`Concorrente ${id}`, school:'', votes:0, photo:'' };
     const card = document.createElement('div'); card.className='compCard';
     const img = document.createElement('img'); img.src = c.photo || 'https://via.placeholder.com/80';
