@@ -5,12 +5,12 @@
 <title>Playmates — Protótipo (WhatsApp style)</title>
 <style>
 :root{
-  --bg:#f4f7fb; --card:#ffffff; --muted:#667085; --accent-3:#2563eb; --accent-2:#0f172a; --gold:#d4af37;
+  --bg:#fffaf5; --card:#ffffff; --muted:#667085; --accent-3:#f97316; --accent-2:#ea580c; --gold:#f59e0b;
   --shadow: 0 6px 18px rgba(16,24,40,0.06);
 }
 *{box-sizing:border-box}
 body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:var(--bg);color:#0b1222;min-height:100vh;padding-bottom:100px}
-header{display:flex;align-items:center;gap:12px;padding:13px 16px;background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;font-weight:700;border-radius:0 0 14px 14px;position:sticky;top:0;z-index:40}
+header{display:flex;align-items:center;gap:12px;padding:13px 16px;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;font-weight:700;border-radius:0 0 14px 14px;position:sticky;top:0;z-index:40}
 header h1{margin:0;font-size:18px}
 main{padding:12px;max-width:980px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:12px}
 .card{background:var(--card);border-radius:12px;padding:12px;box-shadow:var(--shadow)}
@@ -18,7 +18,7 @@ main{padding:12px;max-width:980px;margin:0 auto;display:grid;grid-template-colum
 .section.active{display:block}
 nav{display:flex;justify-content:space-around;align-items:center;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);position:fixed;bottom:0;left:0;right:0;border-top:1px solid #dbe2ea;padding:8px 4px;z-index:50;box-shadow:0 -8px 24px rgba(15,23,42,.08)}
 nav button{background:none;color:#64748b;border:none;font-size:12px;padding:7px 4px;width:25%;display:flex;flex-direction:column;align-items:center;gap:4px;transition:.2s}
-nav button.active{color:#2563eb;font-weight:800;transform:translateY(-1px)}
+nav button.active{color:#f97316;font-weight:800;transform:translateY(-1px)}
 small.navIcon{font-size:18px;line-height:1}
 
 /* common */
@@ -227,10 +227,35 @@ background:#1ea952;
 .walletTitulo{color:#2563eb}
 #userCount.user-count{color:#2563eb}
 
+
+/* PLAYMATES FINAL ORANGE/WHITE THEME */
+body{background:#fffaf5}
+header h1{letter-spacing:.4px}
+.card{border:1px solid #f1f1f1}
+.marketGrid{display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px}
+.marketCard{overflow:hidden;background:#fff;border:1px solid #eee;border-radius:16px;box-shadow:0 8px 24px rgba(23,32,51,.07)}
+.marketCard img{width:100%;aspect-ratio:1/1;object-fit:contain;background:#fff7ed;display:block;padding:8px}
+.marketBody{padding:13px}.marketBody h3{margin:8px 0 5px}.marketPrice{font-size:21px;font-weight:900;margin:8px 0 12px;color:#172033}
+.marketBadge{display:inline-block;background:#fff1e8;color:#c2410c;border-radius:99px;padding:5px 8px;font-size:10px;font-weight:900}
+.marketBtn{width:100%;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;font-weight:900}
+.v2Modal{position:relative;max-width:720px;width:96%;max-height:90vh;overflow:auto}
+.modalCloseV2{position:absolute;right:10px;top:10px;width:38px;height:38px;border-radius:50%;background:#f8fafc;color:#334155;font-size:22px;padding:0}
+.copyRowV2{display:flex;gap:7px;align-items:center}.copyRowV2 input{margin:0;flex:1}
+.commissionV2{padding:13px;background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;margin:12px 0;display:grid;gap:3px}
+.commissionV2 strong{color:#c2410c}
+.affRowV2{padding:11px;border:1px solid #e5e7eb;border-radius:11px;margin:7px 0}
+.platformMenuV2{display:grid;gap:8px;margin-top:12px}
+.platformMenuV2 button{width:100%;display:flex;align-items:center;gap:12px;text-align:left;background:#fff;color:#172033;border:1px solid #e5e7eb;padding:13px}
+.platformMenuV2 button span{display:grid;gap:2px;flex:1}.platformMenuV2 small{color:#667085;font-weight:500}
+.mariaChatV2{height:270px;overflow:auto;background:#f8fafc;border-radius:12px;padding:8px;margin:10px 0}
+.mariaMsgV2{max-width:88%;padding:9px 11px;border-radius:12px;margin:6px 0}.mariaMsgV2.bot{background:#fff;border:1px solid #e5e7eb}.mariaMsgV2.user{background:#ffedd5;margin-left:auto}
+.sponsorPlansV2{display:grid;grid-template-columns:1fr;gap:8px}.sponsorPlansV2 div{padding:12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;display:flex;justify-content:space-between}
+@media(min-width:700px){.marketGrid{grid-template-columns:1fr 1fr}.sponsorPlansV2{grid-template-columns:1fr 1fr 1fr}}
+
 </style>
 </head>
 <body>
-<header><div style="font-size:22px">◈</div><h1>PLAYMATES</h1><div style="margin-left:auto;font-size:11px;opacity:.8">PLATFORM</div></header>
+<header><div style="font-size:22px">◈</div><h1>PLAYMATES</h1><button type="button" id="platformMenuBtn" style="margin-left:auto;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff">PLATFORM ▾</button></header>
 
 <main>
   <div id="notification" class="card" style="display:none"></div>
@@ -278,7 +303,7 @@ background:#1ea952;
 
 <div id="walletSaldo">
 
-0,00 Kz
+9.000.00 Kz
 
 </div>
 
@@ -306,25 +331,33 @@ background:#1ea952;
   </div>
 
   <!-- MARKETPLACE -->
-  <div id="sec-eventos" class="card section">
-    <div class="marketplaceProduct">
-      <img id="eventoBannerImg"
-           class="marketplaceProductImage"
-           src="https://diogopaixao-67.github.io/importação.png"
-           alt="E-book de Importação Playmates">
-      <div class="marketplaceBody">
-        <span class="marketplaceBadge">MARKETPLACE • PRODUTO DIGITAL</span>
-        <h2 id="eventoTitulo" style="margin:10px 0 6px">E-book de Importação</h2>
-        <p id="eventoDescricao" style="color:#667085;line-height:1.55;margin:0">
-          Guia digital para quem deseja aprender estratégias de importação e encontrar fornecedores.
-        </p>
-        <div class="marketplacePrice">Disponível agora</div>
-        <button id="btnComprarEvento" class="marketplaceBuy">🛒 Comprar Agora</button>
-      </div>
+  
+<div id="sec-eventos" class="card section">
+  <div class="marketplaceProduct">
+    <img id="eventoBannerImg" class="marketplaceProductImage"
+      src="https://diogopaixao-67.github.io/importação.png"
+      alt="E-book de Importação Playmates"
+      onerror="this.src='https://via.placeholder.com/800x800/f97316/ffffff?text=PLAYMATES'">
+    <div class="marketplaceBody">
+      <span class="marketplaceBadge">MARKETPLACE • PRODUTO DIGITAL</span>
+      <h2 style="margin:10px 0 6px">Marketplace PLAYMATES</h2>
+      <p style="color:#667085;line-height:1.55;margin:0">Escolha um produto e clique em AFILIAR-SE para consultar descrição, comissão de 50% e link de divulgação.</p>
     </div>
   </div>
 
-  <!-- JOGOS -->
+  <div id="marketplaceProductsV2" class="marketGrid"></div>
+
+  <div class="card" style="margin-top:14px;text-align:center">
+    <h3>Administração de Afiliados</h3>
+    <p class="smallNote">Área reservada ao administrador.</p>
+    <button type="button" id="affiliateAdminBtnV2">ADMIN — AFILIADOS</button>
+  </div>
+
+  <!-- Mantido para o JavaScript original do Marketplace -->
+  <button id="btnComprarEvento" style="display:none" type="button">Comprar</button>
+</div>
+
+<!-- JOGOS -->
   <div id="sec-jogos" class="card section">
     <h2 style="margin-top:0">Jogos</h2>
 
@@ -1296,6 +1329,178 @@ alert("Bloco 3");
 
 }
 
+
+
+/* ================= PLAYMATES FINAL FEATURES ================= */
+const productsV2 = [
+  {id:'1',name:'E-book de Importação',price:'3.000 Kz',image:'https://diogopaixao-67.github.io/importação.png',desc:'Guia digital para aprender fundamentos de importação, fornecedores e organização de compras.'},
+  {id:'2',name:'Curso de Vendas Online',price:'5.000 Kz',image:'https://via.placeholder.com/800x800/f97316/ffffff?text=VENDAS+ONLINE',desc:'Material prático para divulgação, atendimento e melhoria de conversões.'},
+  {id:'3',name:'Curso de Marketing Digital',price:'7.500 Kz',image:'https://via.placeholder.com/800x800/f97316/ffffff?text=MARKETING+DIGITAL',desc:'Conteúdo introdutório para campanhas, conteúdo e presença digital.'},
+  {id:'4',name:'E-book Finanças Pessoais',price:'2.500 Kz',image:'https://via.placeholder.com/800x800/f97316/ffffff?text=FINANCAS',desc:'Guia para organizar receitas, despesas, metas e hábitos financeiros.'},
+  {id:'5',name:'Pack de Templates',price:'4.000 Kz',image:'https://via.placeholder.com/800x800/f97316/ffffff?text=TEMPLATES',desc:'Modelos digitais para publicações e divulgação de produtos e serviços.'},
+  {id:'6',name:'Curso de Atendimento',price:'4.500 Kz',image:'https://via.placeholder.com/800x800/f97316/ffffff?text=ATENDIMENTO',desc:'Estratégias para atendimento profissional, relacionamento e retenção.'},
+  {id:'7',name:'Pack Empreendedor',price:'10.000 Kz',image:'https://via.placeholder.com/800x800/f97316/ffffff?text=EMPREENDEDOR',desc:'Conjunto de materiais digitais para quem está a iniciar um pequeno negócio.'}
+];
+const affiliatesRefV2 = ref(db,'marketplace/affiliates');
+const escV2 = v => escapeHtml(String(v ?? ''));
+
+function closeModalV2(){
+  const r=$('modalRoot');
+  if(r){r.style.display='none';r.innerHTML='';}
+}
+function openModalV2(html){
+  const r=$('modalRoot');
+  r.innerHTML=`<div class="modal-back"><div class="modal v2Modal">${html}</div></div>`;
+  r.style.display='block';
+  return r;
+}
+function renderMarketplaceV2(){
+  const box=$('marketplaceProductsV2');
+  if(!box)return;
+  box.innerHTML=productsV2.map(p=>`
+    <article class="marketCard">
+      <img src="${p.image}" alt="${escV2(p.name)}" onerror="this.src='https://via.placeholder.com/800x800/f97316/ffffff?text=PLAYMATES'">
+      <div class="marketBody">
+        <span class="marketBadge">PRODUTO DIGITAL</span>
+        <h3>${escV2(p.name)}</h3>
+        <div class="marketPrice">${escV2(p.price)}</div>
+        <button type="button" class="marketBtn affiliateProductV2" data-id="${p.id}">AFILIAR-SE</button>
+      </div>
+    </article>`).join('');
+  box.querySelectorAll('.affiliateProductV2').forEach(b=>b.onclick=()=>openAffiliateV2(b.dataset.id));
+}
+function openAffiliateV2(id){
+  const p=productsV2.find(x=>x.id===id);
+  if(!p)return;
+  const link=location.href.split('#')[0]+'?produto='+encodeURIComponent(p.id);
+  const r=openModalV2(`
+    <button type="button" class="modalCloseV2" id="affiliateCloseV2">×</button>
+    <img src="${p.image}" alt="${escV2(p.name)}" style="width:100%;max-height:260px;object-fit:contain;background:#fff7ed;border-radius:14px">
+    <span class="marketBadge">PROGRAMA DE AFILIADOS</span>
+    <h2>${escV2(p.name)}</h2>
+    <p style="color:#667085;line-height:1.55">${escV2(p.desc)}</p>
+    <div class="commissionV2"><strong>COMISSÃO: 50%</strong><span>Por cada venda elegível.</span></div>
+    <label>Link do produto</label>
+    <div class="copyRowV2"><input id="affiliateLinkV2" value="${escV2(link)}" readonly><button type="button" id="copyAffiliateV2">COPIAR</button></div>
+    <p id="copyStatusV2" class="smallNote">O link será copiado para a área de transferência.</p>
+    <button type="button" id="beAffiliateV2" style="width:100%;margin-top:10px">SER AFILIADO</button>
+  `);
+  $('affiliateCloseV2').onclick=closeModalV2;
+  $('copyAffiliateV2').onclick=async()=>{
+    try{await navigator.clipboard.writeText(link);$('copyStatusV2').textContent='✓ Link copiado automaticamente.'}
+    catch(e){$('affiliateLinkV2').select();document.execCommand('copy');$('copyStatusV2').textContent='✓ Link copiado.'}
+  };
+  $('beAffiliateV2').onclick=async()=>{
+    if(!currentUser)return alert('Faça login antes de se tornar afiliado.');
+    await push(affiliatesRefV2,{
+      productId:p.id,productName:p.name,productLink:link,
+      name:currentUserObj?.name||currentUser,phone:currentUser,
+      commission:'50%',ts:Date.now()
+    });
+    alert('Afiliado registrado com sucesso.');
+    closeModalV2();
+  };
+}
+function openAffiliateAdminV2(){
+  if(prompt('Senha do administrador:')!=='2')return alert('Senha incorreta.');
+  const r=openModalV2(`
+    <button type="button" class="modalCloseV2" id="adminCloseV2">×</button>
+    <h2>Admin — Afiliados</h2>
+    <p style="color:#667085">Registos em tempo real.</p>
+    <div id="affiliateListV2">A carregar...</div>
+  `);
+  $('adminCloseV2').onclick=closeModalV2;
+  onValue(affiliatesRefV2,snap=>{
+    if(!$('affiliateListV2'))return;
+    const arr=[];
+    if(snap.exists())snap.forEach(x=>arr.push({id:x.key,...x.val()}));
+    arr.sort((a,b)=>(b.ts||0)-(a.ts||0));
+    $('affiliateListV2').innerHTML=arr.length?arr.map(a=>`
+      <div class="affRowV2">
+        <b>${escV2(a.name||'Sem nome')}</b>
+        <div>📱 ${escV2(a.phone||'')}</div>
+        <div>Produto: ${escV2(a.productName||'')}</div>
+        <div>Comissão: <b>50%</b></div>
+        <small>${a.ts?new Date(a.ts).toLocaleString('pt-AO'):''}</small>
+      </div>`).join(''):'<div style="padding:18px;text-align:center;color:#667085">Nenhum afiliado registrado.</div>';
+  });
+}
+
+/* PLATFORM menu */
+function openPlatformMenuV2(){
+  const r=openModalV2(`
+    <button type="button" class="modalCloseV2" id="platformCloseV2">×</button>
+    <h2>Menu PLAYMATES</h2>
+    <div class="platformMenuV2">
+      <button type="button" id="contestMenuV2">🏆 <span><b>Concurso Internacional PLAYMATES</b><small>Inscrição no concurso</small></span>›</button>
+      <button type="button" id="dollarMenuV2">💵 <span><b>Ganhar em dólar</b><small>Informações sobre oportunidades</small></span>›</button>
+      <button type="button" id="mariaMenuV2">🤖 <span><b>IA Maria</b><small>FAQ da Playmates</small></span>›</button>
+      <button type="button" id="sponsorMenuV2">📣 <span><b>Patrocinar</b><small>Divulgação de produto</small></span>›</button>
+    </div>`);
+  $('platformCloseV2').onclick=closeModalV2;
+  $('contestMenuV2').onclick=()=>{closeModalV2();openContestV2()};
+  $('dollarMenuV2').onclick=()=>{closeModalV2();openDollarV2()};
+  $('mariaMenuV2').onclick=()=>{closeModalV2();openMariaV2()};
+  $('sponsorMenuV2').onclick=()=>{closeModalV2();openSponsorV2()};
+}
+function openContestV2(){
+  const r=openModalV2(`
+    <button type="button" class="modalCloseV2" id="contestCloseV2">×</button>
+    <h2>Concurso Internacional PLAYMATES</h2>
+    <p style="color:#667085">Preencha os dados e encaminhe a inscrição para o WhatsApp.</p>
+    <input id="contestNameV2" placeholder="Nome completo">
+    <input id="contestPhoneV2" type="tel" placeholder="Número de telefone">
+    <input id="contestAgeV2" type="number" min="1" placeholder="Idade">
+    <label>Fazer upload de BI</label>
+    <input id="contestBIV2" type="file" accept="image/*,.pdf">
+    <button type="button" id="contestSendV2" style="width:100%">ENVIAR</button>`);
+  $('contestCloseV2').onclick=closeModalV2;
+  $('contestSendV2').onclick=()=>{
+    if(!$('contestNameV2').value.trim()||!$('contestPhoneV2').value.trim()||!$('contestAgeV2').value||!$('contestBIV2').files[0])
+      return alert('Preencha todos os campos e faça upload do BI.');
+    const msg=`Olá! Quero inscrever-me no Concurso Internacional PLAYMATES.%0ANome: ${encodeURIComponent($('contestNameV2').value)}%0ATelefone: ${encodeURIComponent($('contestPhoneV2').value)}%0AIdade: ${encodeURIComponent($('contestAgeV2').value)}%0AO BI foi selecionado no formulário.`;
+    window.open('https://wa.me/244941530467?text='+msg,'_blank');
+    alert('No WhatsApp, anexe o BI selecionado antes de enviar.');
+  };
+}
+function openDollarV2(){
+  const r=openModalV2(`<button type="button" class="modalCloseV2" id="dollarCloseV2">×</button><h2>Ganhar em dólar</h2><div class="commissionV2">Explore oportunidades de divulgação, afiliação e campanhas disponibilizadas pela Playmates.<br><br>Crie a sua conta, escolha uma oportunidade elegível, divulgue e acompanhe os resultados.</div><p class="smallNote">Os resultados dependem das vendas e das condições de cada campanha. Não há garantia de rendimento.</p>`);
+  $('dollarCloseV2').onclick=closeModalV2;
+}
+function openMariaV2(){
+  const r=openModalV2(`
+    <button type="button" class="modalCloseV2" id="mariaCloseV2">×</button>
+    <h2>IA Maria</h2><p style="color:#667085">Assistente de FAQ da PLAYMATES.</p>
+    <div id="mariaChatV2" class="mariaChatV2"><div class="mariaMsgV2 bot">Olá! Pergunte sobre cadastro, Marketplace, afiliados, concurso ou patrocínio.</div></div>
+    <div class="copyRowV2"><input id="mariaQuestionV2" placeholder="Escreva a sua pergunta"><button type="button" id="mariaAskV2">ENVIAR</button></div>`);
+  $('mariaCloseV2').onclick=closeModalV2;
+  const faq=[[/cadastro|conta/i,'Para criar conta, vá à aba Início e selecione Criar conta.'],[/marketplace|produto/i,'No Marketplace escolha um produto e clique em AFILIAR-SE.'],[/afiliad/i,'O programa de afiliados apresentado oferece comissão de 50%.'],[/concurso/i,'A inscrição do Concurso Internacional PLAYMATES é feita pelo formulário e encaminhada para o WhatsApp indicado.'],[/patrocin/i,'Patrocinar permite solicitar divulgação de um produto pelos planos apresentados.'],[/d[oó]lar|ganhar/i,'Consulte Ganhar em dólar no menu para ver as informações sobre oportunidades.']];
+  const answer=q=>{for(const [rx,a] of faq)if(rx.test(q))return a;return'Posso responder apenas perguntas frequentes da Playmates sobre cadastro, Marketplace, afiliados, concurso, patrocínio ou ganhar em dólar.'};
+  $('mariaAskV2').onclick=()=>{const q=$('mariaQuestionV2').value.trim();if(!q)return;$('mariaChatV2').insertAdjacentHTML('beforeend',`<div class="mariaMsgV2 user">${escV2(q)}</div><div class="mariaMsgV2 bot">${answer(q)}</div>`);$('mariaQuestionV2').value='';};
+  $('mariaQuestionV2').onkeydown=e=>{if(e.key==='Enter')$('mariaAskV2').click()};
+}
+function openSponsorV2(){
+  const r=openModalV2(`
+    <button type="button" class="modalCloseV2" id="sponsorCloseV2">×</button>
+    <h2>Patrocinar</h2>
+    <div class="sponsorPlansV2"><div><b>1 DIA</b><strong>5.000 Kz</strong></div><div><b>1 SEMANA</b><strong>15.000 Kz</strong></div><div><b>1 MÊS</b><strong>26.000 Kz</strong></div></div>
+    <input id="sponsorNameV2" placeholder="Nome / empresa">
+    <input id="sponsorPhoneV2" placeholder="Número de telefone">
+    <input id="sponsorProductV2" placeholder="Nome do produto">
+    <select id="sponsorPlanV2"><option>1 DIA — 5.000 Kz</option><option>1 SEMANA — 15.000 Kz</option><option>1 MÊS — 26.000 Kz</option></select>
+    <textarea id="sponsorInfoV2" placeholder="Informação do produto"></textarea>
+    <button type="button" id="sponsorSendV2" style="width:100%">ENVIAR PEDIDO</button>`);
+  $('sponsorCloseV2').onclick=closeModalV2;
+  $('sponsorSendV2').onclick=()=>{
+    if(!$('sponsorNameV2').value.trim()||!$('sponsorPhoneV2').value.trim()||!$('sponsorProductV2').value.trim())return alert('Preencha nome, telefone e produto.');
+    const msg=`Olá! Quero patrocinar um produto na PLAYMATES.%0ANome: ${encodeURIComponent($('sponsorNameV2').value)}%0ATelefone: ${encodeURIComponent($('sponsorPhoneV2').value)}%0AProduto: ${encodeURIComponent($('sponsorProductV2').value)}%0APlano: ${encodeURIComponent($('sponsorPlanV2').value)}%0ADescrição: ${encodeURIComponent($('sponsorInfoV2').value)}`;
+    window.open('https://wa.me/244941530467?text='+msg,'_blank');
+  };
+}
+
+renderMarketplaceV2();
+$('affiliateAdminBtnV2').onclick=openAffiliateAdminV2;
+$('platformMenuBtn').onclick=openPlatformMenuV2;
 
 </script>
 
