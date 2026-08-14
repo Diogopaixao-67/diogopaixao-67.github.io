@@ -459,9 +459,9 @@ header h1{letter-spacing:.4px}
 
 <nav>
   <button type="button" data-tab="sms" class="active"><small class="navIcon">⌂</small><span>Início</span></button>
-  <button type="button" data-tab="eventos"><small class="navIcon">🛍️</small><span>Marketplace</span></button>
-  <button type="button" data-tab="jogos"><small class="navIcon">🏆</small><span>Jogos</span></button>
-  <button type="button" data-tab="historia"><small class="navIcon">ⓘ</small><span>Sobre</span></button>
+  <button type="button" data-tab="eventos"><small class="navIcon"></small><span>Marketplace</span></button>
+  <button type="button" data-tab="jogos"><small class="navIcon"></small><span>Jogos</span></button>
+  <button type="button" data-tab="historia"><small class="navIcon"></small><span>Sobre</span></button>
 </nav>
 
 <!-- modal container -->
