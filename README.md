@@ -255,7 +255,7 @@ header h1{letter-spacing:.4px}
 </style>
 </head>
 <body>
-<header><div style="font-size:22px">◈</div><h1>PLAYMATES</h1><button type="button" id="platformMenuBtn" style="margin-left:auto;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff">PLATFORM ▾</button></header>
+<header><div style="font-size:22px">◈</div><h1>PLAYMATES</h1><button type="button" id="platformMenuBtn" style="margin-left:auto;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff">Menu▾</button></header>
 
 <main>
   <div id="notification" class="card" style="display:none"></div>
@@ -418,35 +418,44 @@ header h1{letter-spacing:.4px}
 
   <!-- SOBRE -->
  
-  
   <div id="sec-historia" class="card section">
-    <!-- Seção Sobre -->
-<div style="text-align:center; margin:20px 0;">
-  <div style="
-    width:150px; 
-    height:150px; 
-    margin:0 auto; 
-    border-radius:50%; 
-    overflow:hidden; 
-    border:3px solid #FFA500;"> <!-- borda laranja -->
-    <img src="https://diogopaixao-67.github.io/Imagens/IMG-20251022-WA0007.jpg" 
-         alt="Minha Foto" 
-         style="width:100%; height:100%; object-fit:cover;">
-  </div>
-  <p style="margin-top:10px; font-size:16px; color:#333;">Meu story aqui</p>
-</div>
-</div>
+
+    <div style="text-align:center;">
+        <div style="width:150px;height:150px;margin:auto;border-radius:50%;overflow:hidden;">
+            <img src="https://diogopaixao-67.github.io/Imagens/IMG-20251022-WA0007.jpg"
+                 alt="Minha Foto"
+                 style="width:100%;height:100%;object-fit:cover;">
+        </div>
+
+        <p style="margin-top:10px;font-size:16px;color:#333;">
+            Meu story aqui
+        </p>
+    </div>
+
     <h2>Sobre</h2>
-    <p><strong>Diogo Paixão</strong> — Fundador &amp; CEO.</p>
-  <p>
-    O Playmates foi criado por <strong>Diogo Paixão</strong> aos 17 anos e lançado em 2025.  
-    É uma plataforma pioneira em Angola que transforma votos em oportunidades financeiras.  
-    Já alcançou mais de 20 escolas do ensino médio, permitindo que estudantes ganhem recompensas de forma confiável e segura.  
-    É mais que uma disputa, é um caminho de empreendedorismo para jovens angolanos. Estimula liderança, comunicação e captação de apoios nas comunidades escolares.
-  </p>
-  </div>
-</main>
-</div> 
+
+    <p>
+        <strong>Diogo Paixão</strong> — Fundador &amp; CEO.
+    </p>
+
+    <p>
+        O Playmates foi criado por <strong>Diogo Paixão</strong> aos 17 anos
+        e lançado em 2025.
+        
+        É uma plataforma pioneira em Angola que transforma votos em
+        oportunidades financeiras.
+
+        Já alcançou mais de 20 escolas do ensino médio, permitindo que
+        estudantes ganhem recompensas de forma confiável e segura.
+
+        É mais que uma disputa, é um caminho de empreendedorismo para
+        jovens angolanos.
+
+        Estimula liderança, comunicação e captação de apoios nas
+        comunidades escolares.
+    </p>
+
+</div>
 
 <nav>
   <button type="button" data-tab="sms" class="active"><small class="navIcon">⌂</small><span>Início</span></button>
