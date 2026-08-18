@@ -252,10 +252,45 @@ header h1{letter-spacing:.4px}
 .sponsorPlansV2{display:grid;grid-template-columns:1fr;gap:8px}.sponsorPlansV2 div{padding:12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;display:flex;justify-content:space-between}
 @media(min-width:700px){.marketGrid{grid-template-columns:1fr 1fr}.sponsorPlansV2{grid-template-columns:1fr 1fr 1fr}}
 
+
+/* ===== FINAL ORANGE / WHITE THEME ===== */
+:root{--accent-3:#f97316!important;--accent-2:#ea580c!important;--bg:#fffaf5!important}
+body{background:#fffaf5!important;color:#172033!important}
+header{background:linear-gradient(135deg,#f97316,#ea580c)!important}
+button{background:#f97316;color:#fff}
+button:hover{background:#ea580c}
+nav button{background:transparent!important;color:#667085!important}
+nav button.active{color:#f97316!important}
+.marketplaceBadge,.marketBadge{background:#fff1e8!important;color:#c2410c!important}
+.marketplaceProductImage,.marketCard img{background:#fff7ed!important}
+.marketplaceBuy,.marketBtn{background:linear-gradient(135deg,#f97316,#ea580c)!important}
+.vote-green{background:#25D366!important}
+.edit-orange{background:#f97316!important}
+.walletTitulo{color:#f97316!important}
+#userCount.user-count{color:#f97316!important}
+.v5PlatformModal{display:grid;gap:8px;margin-top:12px}
+.v5PlatformModal button{width:100%;display:flex;align-items:center;gap:12px;text-align:left;background:#fff!important;color:#172033!important;border:1px solid #fed7aa!important;padding:14px}
+.v5PlatformModal small{display:block;color:#667085;margin-top:2px}
+.v5Close{position:absolute;right:10px;top:10px;width:38px!important;height:38px!important;border-radius:50%!important;padding:0!important}
+.v5Reel{background:#111;color:#fff;border-radius:16px;overflow:hidden;margin:12px 0}
+.v5ReelVideo{width:100%;height:min(78vh,720px);object-fit:cover;display:block}
+.v5ReelMeta{padding:12px;background:linear-gradient(180deg,#111,#222)}
+.v5CommentBox{background:#fff;color:#172033;padding:10px}
+.v5Comment{padding:7px 0;border-bottom:1px solid #eee}
+.v5Chat{height:420px;overflow:auto;background:#f8fafc;border-radius:12px;padding:10px;margin:10px 0}
+.v5Bubble{padding:9px 11px;background:#fff;border:1px solid #eee;border-radius:12px;margin:7px 0;max-width:86%}
+.v5Bubble.me{margin-left:auto;background:#fff7ed;border-color:#fed7aa}
+.v5Rank{display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;padding:11px 2px;border-bottom:1px solid #eee}
+.v5Rank img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:3px solid #f97316}
+.v5RankNo{font-weight:900;color:#f97316}.v5RankName{font-weight:900}.v5RankSchool{font-size:12px;color:#667085}.v5RankScore{font-weight:900;text-align:right}.v5RankPrize{font-size:12px;color:#15803d}
+.v5AdminRow{border:1px solid #eee;border-radius:12px;padding:10px;margin:8px 0}
+.v5AdminRow input{margin:4px 0}
+@media(max-width:600px){.v5ReelVideo{height:70vh}.v5Rank{grid-template-columns:50px 1fr}.v5RankScore{grid-column:2;text-align:left}}
+
 </style>
 </head>
 <body>
-<header><div style="font-size:22px">◈</div><h1>PLAYMATES</h1><button type="button" id="platformMenuBtn" style="margin-left:auto;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff">Menu▾</button></header>
+<header><div style="font-size:22px">◈</div><h1>PLAYMATES</h1><button type="button" id="platformMenuBtn" style="margin-left:auto;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff">PLATFORM ▾</button></header>
 
 <main>
   <div id="notification" class="card" style="display:none"></div>
@@ -303,7 +338,7 @@ header h1{letter-spacing:.4px}
 
 <div id="walletSaldo">
 
-9.000.00 Kz
+0,00 Kz
 
 </div>
 
@@ -418,50 +453,70 @@ header h1{letter-spacing:.4px}
 
   <!-- SOBRE -->
  
+  
   <div id="sec-historia" class="card section">
-
-    <div style="text-align:center;">
-        <div style="width:150px;height:150px;margin:auto;border-radius:50%;overflow:hidden;">
-            <img src="https://diogopaixao-67.github.io/Imagens/IMG-20251022-WA0007.jpg"
-                 alt="Minha Foto"
-                 style="width:100%;height:100%;object-fit:cover;">
-        </div>
-
-        <p style="margin-top:10px;font-size:16px;color:#333;">
-            Meu story aqui
-        </p>
-    </div>
-
-    <h2>Sobre</h2>
-
-    <p>
-        <strong>Diogo Paixão</strong> — Fundador &amp; CEO.
-    </p>
-
-    <p>
-        O Playmates foi criado por <strong>Diogo Paixão</strong> aos 17 anos
-        e lançado em 2025.
-        
-        É uma plataforma pioneira em Angola que transforma votos em
-        oportunidades financeiras.
-
-        Já alcançou mais de 20 escolas do ensino médio, permitindo que
-        estudantes ganhem recompensas de forma confiável e segura.
-
-        É mais que uma disputa, é um caminho de empreendedorismo para
-        jovens angolanos.
-
-        Estimula liderança, comunicação e captação de apoios nas
-        comunidades escolares.
-    </p>
-
+    <!-- Seção Sobre -->
+<div style="text-align:center; margin:20px 0;">
+  <div style="
+    width:150px; 
+    height:150px; 
+    margin:0 auto; 
+    border-radius:50%; 
+    overflow:hidden; 
+    border:3px solid #FFA500;"> <!-- borda laranja -->
+    <img src="https://diogopaixao-67.github.io/Imagens/IMG-20251022-WA0007.jpg" 
+         alt="Minha Foto" 
+         style="width:100%; height:100%; object-fit:cover;">
+  </div>
+  <p style="margin-top:10px; font-size:16px; color:#333;">Meu story aqui</p>
 </div>
+</div>
+    <h2>Sobre</h2>
+    <p><strong>Diogo Paixão</strong> — Fundador &amp; CEO.</p>
+  <p>
+    O Playmates foi criado por <strong>Diogo Paixão</strong> aos 17 anos e lançado em 2025.  
+    É uma plataforma pioneira em Angola que transforma votos em oportunidades financeiras.  
+    Já alcançou mais de 20 escolas do ensino médio, permitindo que estudantes ganhem recompensas de forma confiável e segura.  
+    É mais que uma disputa, é um caminho de empreendedorismo para jovens angolanos. Estimula liderança, comunicação e captação de apoios nas comunidades escolares.
+  </p>
+  </div>
+
+<!-- FINAL: REELS / DEBATE / RANKING -->
+<div id="sec-reels" class="card section">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+    <div><h2 style="margin:0">🎬 Reels</h2><p class="smallNote">Vídeos curtos, até 5 minutos.</p></div>
+    <button id="v5ReelsAdmin" type="button" title="Publicar Reel">＋</button>
+  </div>
+  <div id="v5ReelsCount" class="smallNote" style="margin:10px 0">A carregar...</div>
+  <div id="v5ReelsList"></div>
+</div>
+
+<div id="sec-chat" class="card section">
+  <h2 style="margin-top:0">💬 Sala de Debate</h2>
+  <div class="smallNote"><b id="v5Online">0</b> pessoas online</div>
+  <div id="v5ChatList" class="v5Chat"></div>
+  <div style="display:flex;gap:7px">
+    <input id="v5ChatInput" maxlength="500" placeholder="Escreva uma mensagem..." style="margin:0">
+    <button id="v5ChatSend" type="button">ENVIAR</button>
+  </div>
+  <button id="v5ChatHistory" type="button" class="ghost" style="margin-top:8px">VER HISTÓRICO</button>
+</div>
+
+<div id="sec-ranking" class="card section">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+    <div><h2 style="margin:0">🏆 Ranking</h2><p class="smallNote">Top 10 estudantes por pontuação.</p></div>
+    <button id="v5RankAdmin" type="button" title="Administrar ranking">⚙</button>
+  </div>
+  <div id="v5RankList" style="margin-top:10px"></div>
+</div>
+</main>
+</div> 
 
 <nav>
   <button type="button" data-tab="sms" class="active"><small class="navIcon">⌂</small><span>Início</span></button>
-  <button type="button" data-tab="eventos"><small class="navIcon"></small><span>Marketplace</span></button>
-  <button type="button" data-tab="jogos"><small class="navIcon"></small><span>Jogos</span></button>
-  <button type="button" data-tab="historia"><small class="navIcon"></small><span>Sobre</span></button>
+  <button type="button" data-tab="eventos"><small class="navIcon">🛍️</small><span>Marketplace</span></button>
+  <button type="button" data-tab="jogos"><small class="navIcon">🏆</small><span>Jogos</span></button>
+  <button type="button" data-tab="historia"><small class="navIcon">ⓘ</small><span>Sobre</span></button>
 </nav>
 
 <!-- modal container -->
@@ -1067,7 +1122,7 @@ function renderCompetitors(listObj){
 onValue(competitorsRef, snap=>{
   const v = snap.val() || {};
   renderCompetitors(v);
-  [1,2,3].forEach(id=>{
+  [1,2,3,4,5,6].forEach(id=>{
     const el = document.getElementById(`votes_${id}`);
     if(el) el.innerText = (v[id] && v[id].votes) ? v[id].votes : 0;
   });
@@ -1108,7 +1163,7 @@ reqSubmit.onclick = async ()=>{
   const p = await push(requestsRef, payload);
   await runTransaction(requestsCountRef, cur => (cur||0)+1);
   showNotification('Pedido enviado',2000);
-  reqName.value=''; reqSchool.value=''; reqWhats.value=''; reqPack.value='free_400';
+  reqName.value=''; reqSchool.value=''; reqWhats.value=''; reqPack.value='30 votos';
 };
 
 onValue(requestsCountRef, snap=>{
@@ -1438,15 +1493,21 @@ function openAffiliateAdminV2(){
 /* PLATFORM menu */
 function openPlatformMenuV2(){
   const r=openModalV2(`
-    <button type="button" class="modalCloseV2" id="platformCloseV2">×</button>
+    <button type="button" class="modalCloseV2 v5Close" id="v5PlatformClose">×</button>
     <h2>Menu PLAYMATES</h2>
-    <div class="platformMenuV2">
-      <button type="button" id="contestMenuV2">🏆 <span><b>Concurso Internacional PLAYMATES</b><small>Inscrição no concurso</small></span>›</button>
+    <div class="v5PlatformModal">
+      <button type="button" id="v5GoReels">🎬 <span><b>Reels</b><small>Vídeos curtos até 5 minutos</small></span>›</button>
+      <button type="button" id="v5GoChat">💬 <span><b>Debate</b><small>Sala de bate-papo em tempo real</small></span>›</button>
+      <button type="button" id="v5GoRank">🏆 <span><b>Ranking</b><small>Top 10 estudantes</small></span>›</button>
+      <button type="button" id="contestMenuV2">🌍 <span><b>Concurso Internacional PLAYMATES</b><small>Inscrição no concurso</small></span>›</button>
       <button type="button" id="dollarMenuV2">💵 <span><b>Ganhar em dólar</b><small>Informações sobre oportunidades</small></span>›</button>
       <button type="button" id="mariaMenuV2">🤖 <span><b>IA Maria</b><small>FAQ da Playmates</small></span>›</button>
-      <button type="button" id="sponsorMenuV2">📣 <span><b>Patrocinar</b><small>Divulgação de produto</small></span>›</button>
+      <button type="button" id="sponsorMenuV2">📣 <span><b>Patrocinar</b><small>Planos de divulgação</small></span>›</button>
     </div>`);
-  $('platformCloseV2').onclick=closeModalV2;
+  $('v5PlatformClose').onclick=closeModalV2;
+  $('v5GoReels').onclick=()=>{closeModalV2();v5Show('reels')};
+  $('v5GoChat').onclick=()=>{closeModalV2();v5Show('chat')};
+  $('v5GoRank').onclick=()=>{closeModalV2();v5Show('ranking')};
   $('contestMenuV2').onclick=()=>{closeModalV2();openContestV2()};
   $('dollarMenuV2').onclick=()=>{closeModalV2();openDollarV2()};
   $('mariaMenuV2').onclick=()=>{closeModalV2();openMariaV2()};
@@ -1511,6 +1572,198 @@ renderMarketplaceV2();
 $('affiliateAdminBtnV2').onclick=openAffiliateAdminV2;
 $('platformMenuBtn').onclick=openPlatformMenuV2;
 
+
+/* ================= FINAL V5: REELS + DEBATE + RANKING ================= */
+const v5Show = tab => {
+  document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('nav button[data-tab]').forEach(x=>x.classList.remove('active'));
+  const sec=document.getElementById('sec-'+tab);
+  if(sec)sec.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(tab==='reels')v5LoadReels();
+  if(tab==='chat')v5LoadChat();
+  if(tab==='ranking')v5LoadRanking();
+};
+
+const v5Esc = x => String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const v5ReelsRef=ref(db,'reels/');
+const v5CommentsRef=id=>ref(db,'reelsComments/'+id);
+let v5ReelsStarted=false;
+
+function v5LoadReels(){
+  if(v5ReelsStarted)return;
+  v5ReelsStarted=true;
+  onValue(v5ReelsRef,snap=>{
+    const a=[]; if(snap.exists())snap.forEach(x=>a.push({id:x.key,...x.val()}));
+    a.sort((x,y)=>(y.ts||0)-(x.ts||0));
+    $('v5ReelsCount').textContent=a.length+' vídeos disponíveis';
+    $('v5ReelsList').innerHTML=a.map(x=>`
+      <article class="v5Reel" data-reel="${v5Esc(x.id)}">
+        <video class="v5ReelVideo" src="${v5Esc(x.url||'')}" controls playsinline preload="metadata"></video>
+        <div class="v5ReelMeta">
+          <h3 style="margin:0 0 5px">${v5Esc(x.title||'Reel PLAYMATES')}</h3>
+          <p style="margin:0 0 8px">${v5Esc(x.description||'')}</p>
+          <button type="button" class="v5Share" data-url="${v5Esc(x.url||'')}">↗ REENCAMINHAR</button>
+        </div>
+        <div class="v5CommentBox">
+          <div id="v5Comments-${v5Esc(x.id)}">A carregar comentários...</div>
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <input id="v5CommentInput-${v5Esc(x.id)}" placeholder="Escreva um comentário..." maxlength="300" style="margin:0">
+            <button type="button" class="v5CommentSend" data-id="${v5Esc(x.id)}">ENVIAR</button>
+          </div>
+        </div>
+      </article>`).join('') || '<div class="smallNote">Nenhum Reel publicado ainda.</div>';
+
+    a.forEach(x=>v5WatchComments(x.id));
+    document.querySelectorAll('.v5Share').forEach(b=>b.onclick=async()=>{
+      try{
+        if(navigator.share) await navigator.share({title:'PLAYMATES Reel',url:b.dataset.url});
+        else {await navigator.clipboard.writeText(b.dataset.url);alert('Link copiado.')}
+      }catch(e){}
+    });
+    document.querySelectorAll('.v5CommentSend').forEach(b=>b.onclick=()=>v5SendComment(b.dataset.id));
+  });
+}
+function v5WatchComments(id){
+  onValue(v5CommentsRef(id),snap=>{
+    const box=$('v5Comments-'+id);if(!box)return;
+    const a=[];if(snap.exists())snap.forEach(x=>a.push(x.val()));
+    a.sort((x,y)=>(x.ts||0)-(y.ts||0));
+    box.innerHTML=a.map(c=>`<div class="v5Comment"><b>${v5Esc(c.name||c.user||'Utilizador')}</b>: ${v5Esc(c.text||'')}<div class="smallNote">${c.ts?new Date(c.ts).toLocaleString('pt-AO'):''}</div></div>`).join('')||'<div class="smallNote">Ainda sem comentários.</div>';
+  });
+}
+async function v5SendComment(id){
+  if(!currentUser)return alert('Faça login para comentar.');
+  const i=$('v5CommentInput-'+id),text=i?.value.trim();if(!text)return;
+  await push(v5CommentsRef(id),{user:currentUser,name:currentUserObj?.name||currentUser,text,ts:Date.now()});
+  i.value='';
+}
+
+$('v5ReelsAdmin').onclick=async()=>{
+  if(prompt('Senha para publicar Reels:')!=='4')return alert('Senha incorreta.');
+  const r=openModalV2(`
+    <button type="button" class="modalCloseV2 v5Close" id="v5ReelClose">×</button>
+    <h2>Publicar Reel</h2>
+    <input id="v5ReelTitle" placeholder="Título">
+    <textarea id="v5ReelDesc" placeholder="Descrição"></textarea>
+    <input id="v5ReelUrl" type="url" placeholder="URL direta do vídeo (MP4)">
+    <p class="smallNote">O vídeo deve ter no máximo 5 minutos e ser acessível pelo navegador.</p>
+    <button id="v5ReelPublish" type="button" style="width:100%">PUBLICAR</button>`);
+  $('v5ReelClose').onclick=closeModalV2;
+  $('v5ReelPublish').onclick=async()=>{
+    const title=$('v5ReelTitle').value.trim(),desc=$('v5ReelDesc').value.trim(),url=$('v5ReelUrl').value.trim();
+    if(!title||!url)return alert('Preencha título e URL.');
+    const v=document.createElement('video');v.preload='metadata';v.src=url;
+    v.onloadedmetadata=async()=>{
+      if(v.duration>300)return alert('O vídeo ultrapassa 5 minutos.');
+      await push(v5ReelsRef,{title,description:desc,url,ts:Date.now(),author:currentUser||'admin'});
+      alert('Reel publicado com sucesso.');closeModalV2();
+    };
+    v.onerror=()=>alert('Não foi possível validar a URL do vídeo.');
+  };
+};
+
+/* DEBATE */
+const v5ChatRef=ref(db,'debate/messages');
+const v5PresenceRef=ref(db,'debate/presence');
+let v5ChatStarted=false;
+function v5LoadChat(){
+  if(v5ChatStarted)return;v5ChatStarted=true;
+  onValue(v5ChatRef,snap=>{
+    const a=[];if(snap.exists())snap.forEach(x=>a.push({id:x.key,...x.val()}));
+    a.sort((x,y)=>(x.ts||0)-(y.ts||0));
+    $('v5ChatList').innerHTML=a.map(m=>`
+      <div class="v5Bubble ${m.user===currentUser?'me':''}">
+        <div><b>${v5Esc(m.name||m.user||'Utilizador')}</b></div>
+        <div>${v5Esc(m.text||'')}</div>
+        <div class="smallNote">${m.ts?new Date(m.ts).toLocaleString('pt-AO'):''}</div>
+        <button type="button" class="ghost v5Reply" data-name="${v5Esc(m.name||m.user||'Utilizador')}">RESPONDER</button>
+      </div>`).join('')||'<div class="smallNote">Ainda não há mensagens.</div>';
+    $('v5ChatList').scrollTop=$('v5ChatList').scrollHeight;
+    document.querySelectorAll('.v5Reply').forEach(b=>b.onclick=()=>{$('v5ChatInput').value='@'+b.dataset.name+' ';$('v5ChatInput').focus()});
+  });
+  onValue(v5PresenceRef,snap=>{
+    let n=0,now=Date.now();if(snap.exists())snap.forEach(x=>{if(now-(x.val()?.ts||0)<90000)n++});
+    $('v5Online').textContent=n;
+  });
+}
+$('v5ChatSend').onclick=async()=>{
+  if(!currentUser)return alert('Faça login para participar no Debate.');
+  const i=$('v5ChatInput'),text=i.value.trim();if(!text)return;
+  await push(v5ChatRef,{user:currentUser,name:currentUserObj?.name||currentUser,text,ts:Date.now()});i.value='';
+};
+$('v5ChatInput').onkeydown=e=>{if(e.key==='Enter')$('v5ChatSend').click()};
+$('v5ChatHistory').onclick=()=>{v5LoadChat();alert('O histórico disponível está apresentado na sala de Debate.')};
+
+/* RANKING */
+const v5RankRef=ref(db,'ranking/students');
+const v5RankDefaults=[
+ ['Estudante 1','Escola PLAYMATES 1',9850,'100.000 Kz',12],
+ ['Estudante 2','Escola PLAYMATES 2',9200,'75.000 Kz',32],
+ ['Estudante 3','Escola PLAYMATES 3',8750,'50.000 Kz',5],
+ ['Estudante 4','Escola PLAYMATES 4',8300,'40.000 Kz',44],
+ ['Estudante 5','Escola PLAYMATES 5',7900,'30.000 Kz',47],
+ ['Estudante 6','Escola PLAYMATES 6',7400,'25.000 Kz',13],
+ ['Estudante 7','Escola PLAYMATES 7',6900,'20.000 Kz',49],
+ ['Estudante 8','Escola PLAYMATES 8',6400,'15.000 Kz',56],
+ ['Estudante 9','Escola PLAYMATES 9',5900,'10.000 Kz',8],
+ ['Estudante 10','Escola PLAYMATES 10',5400,'5.000 Kz',15]
+];
+async function v5SeedRank(){
+  const snap=await get(v5RankRef);if(snap.exists())return;
+  for(const x of v5RankDefaults)await push(v5RankRef,{name:x[0],school:x[1],score:x[2],prize:x[3],photo:'https://i.pravatar.cc/150?img='+x[4]});
+}
+let v5RankStarted=false;
+function v5LoadRanking(){
+  if(v5RankStarted)return;v5RankStarted=true;
+  onValue(v5RankRef,snap=>{
+    const a=[];if(snap.exists())snap.forEach(x=>a.push({id:x.key,...x.val()}));
+    a.sort((x,y)=>Number(y.score||0)-Number(x.score||0));
+    $('v5RankList').innerHTML=a.slice(0,10).map((x,i)=>`
+      <div class="v5Rank">
+        <img src="${v5Esc(x.photo||'https://via.placeholder.com/100/f97316/ffffff?text=PLAY')}" onerror="this.src='https://via.placeholder.com/100/f97316/ffffff?text=PLAY'">
+        <div><span class="v5RankNo">#${i+1}</span> <span class="v5RankName">${v5Esc(x.name||'')}</span>
+          <div class="v5RankSchool">${v5Esc(x.school||'')}</div>
+          <div class="v5RankScore">${Number(x.score||0).toLocaleString('pt-AO')} pontos</div>
+        </div>
+        <div class="v5RankPrize">${v5Esc(x.prize||'')}</div>
+      </div>`).join('')||'<div class="smallNote">Nenhum estudante.</div>';
+  });
+}
+$('v5RankAdmin').onclick=async()=>{
+  if(prompt('Senha do administrador do Ranking:')!=='7')return alert('Senha incorreta.');
+  const snap=await get(v5RankRef),a=[];if(snap.exists())snap.forEach(x=>a.push({id:x.key,...x.val()}));
+  const r=openModalV2(`
+    <button type="button" class="modalCloseV2 v5Close" id="v5RankClose">×</button>
+    <h2>Administração do Ranking</h2>
+    <p class="smallNote">Edite nome, escola, pontuação, prémio e URL da fotografia.</p>
+    <div id="v5RankAdminList"></div>
+    <button id="v5RankAdd" type="button" style="width:100%">+ ADICIONAR ESTUDANTE</button>`);
+  $('v5RankClose').onclick=closeModalV2;
+  $('v5RankAdminList').innerHTML=a.map(x=>`
+    <div class="v5AdminRow">
+      <input data-k="name" data-id="${x.id}" value="${v5Esc(x.name||'')}" placeholder="Nome">
+      <input data-k="school" data-id="${x.id}" value="${v5Esc(x.school||'')}" placeholder="Escola">
+      <input data-k="score" data-id="${x.id}" type="number" value="${Number(x.score||0)}" placeholder="Pontuação">
+      <input data-k="prize" data-id="${x.id}" value="${v5Esc(x.prize||'')}" placeholder="Prémio">
+      <input data-k="photo" data-id="${x.id}" value="${v5Esc(x.photo||'')}" placeholder="URL da foto">
+      <button type="button" class="v5RankSave" data-id="${x.id}" style="width:100%">GUARDAR</button>
+    </div>`).join('');
+  document.querySelectorAll('.v5RankSave').forEach(b=>b.onclick=async()=>{
+    const d={};document.querySelectorAll(`[data-id="${b.dataset.id}"][data-k]`).forEach(i=>d[i.dataset.k]=i.value);
+    d.score=Number(d.score||0);
+    await update(ref(db,'ranking/students/'+b.dataset.id),d);alert('Estudante atualizado.');
+  });
+  $('v5RankAdd').onclick=async()=>{
+    await push(v5RankRef,{name:'Novo estudante',school:'Nova escola',score:0,prize:'0 Kz',photo:'https://via.placeholder.com/100/f97316/ffffff?text=PLAY'});
+    alert('Estudante adicionado.');
+  };
+};
+
+/* Inicialização segura. Não altera o menu original nem o Marketplace existente. */
+v5SeedRank().catch(console.error);
+
 </script>
 
 <footer style="width:100%; text-align:center; padding:15px; margin-top:20px;
@@ -1518,6 +1771,6 @@ background:#f2f2f2; color:#333; font-size:14px; border-top:1px solid #ddd;">
   © 2023–2026 Playmates • Todos os direitos reservados  
   | <a href="#" style="color:#333; text-decoration:underline;">Termos de Uso</a>
 </footer>
-</main>
+
 </body>
 </html>
