@@ -287,7 +287,21 @@ nav button.active{color:#f97316!important}
 .v5AdminRow input{margin:4px 0}
 @media(max-width:600px){.v5ReelVideo{height:70vh}.v5Rank{grid-template-columns:50px 1fr}.v5RankScore{grid-column:2;text-align:left}}
 
-</style>
+<style id="pm-v6-css">
+:root{--pm:#f97316;--pm2:#ea580c}
+button,.btn,.button{background:#f97316!important;border-color:#f97316!important;color:#fff!important}
+button:hover,.btn:hover,.button:hover{background:#f97316!important;border-color:#f97316!important;color:#fff!important;filter:none!important;transform:none!important}
+.v6Verified{display:inline-flex;width:17px;height:17px;border-radius:50%;background:#1683ff;color:#fff;align-items:center;justify-content:center;font-size:11px;font-weight:900;margin-left:4px}
+.v6Buy{display:block!important;width:100%;margin-top:7px!important;background:#16a34a!important;border-color:#16a34a!important}
+.v6Cat{display:inline-block;padding:3px 8px;border-radius:20px;background:#fff7ed;color:#c2410c;font-size:11px;font-weight:800}
+.v6Trash{background:#fff!important;color:#dc2626!important;border:1px solid #fecaca!important}
+.v6Store{border:1px solid #fed7aa;border-radius:14px;padding:12px;margin:10px 0;background:#fff}
+.v6Store img{width:100%;max-height:220px;object-fit:cover;border-radius:10px}
+.v6Premium{background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:12px}
+.v6Inject{animation:pmzoom 1.5s ease-in-out infinite}
+@keyframes pmzoom{50%{transform:scale(1.035)}}
+.v6Dollar{display:grid;grid-template-columns:1fr auto;padding:9px;border-bottom:1px solid #eee}
+</style></style>
 </head>
 <body>
 <header><div style="font-size:22px">◈</div><h1>PLAYMATES</h1><button type="button" id="platformMenuBtn" style="margin-left:auto;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff">PLATFORM ▾</button></header>
@@ -496,7 +510,7 @@ nav button.active{color:#f97316!important}
   <div class="smallNote"><b id="v5Online">0</b> pessoas online</div>
   <div id="v5ChatList" class="v5Chat"></div>
   <div style="display:flex;gap:7px">
-    <input id="v5ChatInput" maxlength="500" placeholder="Escreva uma mensagem..." style="margin:0">
+    <select id="v6ChatCategory"><option>Programação</option><option>Saúde e bem estar</option><option>Política</option></select><input id="v5ChatInput" maxlength="500" placeholder="Escreva uma mensagem..." style="margin:0">
     <button id="v5ChatSend" type="button">ENVIAR</button>
   </div>
   <button id="v5ChatHistory" type="button" class="ghost" style="margin-top:8px">VER HISTÓRICO</button>
@@ -509,7 +523,7 @@ nav button.active{color:#f97316!important}
   </div>
   <div id="v5RankList" style="margin-top:10px"></div>
 </div>
-</main>
+<div id="v6StoresSection" class="card section"><h2>🏪 Lojas Virtuais</h2><p class="smallNote">Lojas criadas pela comunidade.</p><div id="v6StoreList"></div></div></main>
 </div> 
 
 <nav>
@@ -1495,7 +1509,7 @@ function openPlatformMenuV2(){
   const r=openModalV2(`
     <button type="button" class="modalCloseV2 v5Close" id="v5PlatformClose">×</button>
     <h2>Menu PLAYMATES</h2>
-    <div class="v5PlatformModal">
+    <div class="v5PlatformModal"><button type="button" id="v6GoStore">🏪 <span><b>Criar LOJA VIRTUAL</b><small>Crie a sua loja</small></span>›</button>
       <button type="button" id="v5GoReels">🎬 <span><b>Reels</b><small>Vídeos curtos até 5 minutos</small></span>›</button>
       <button type="button" id="v5GoChat">💬 <span><b>Debate</b><small>Sala de bate-papo em tempo real</small></span>›</button>
       <button type="button" id="v5GoRank">🏆 <span><b>Ranking</b><small>Top 10 estudantes</small></span>›</button>
@@ -1678,10 +1692,10 @@ function v5LoadChat(){
         <div><b>${v5Esc(m.name||m.user||'Utilizador')}</b></div>
         <div>${v5Esc(m.text||'')}</div>
         <div class="smallNote">${m.ts?new Date(m.ts).toLocaleString('pt-AO'):''}</div>
-        <button type="button" class="ghost v5Reply" data-name="${v5Esc(m.name||m.user||'Utilizador')}">RESPONDER</button>
+        <button type="button" class="ghost v5Reply" data-name="${v5Esc(m.name||m.user||'Utilizador')}">RESPONDER</button>${m.user===currentUser?` <button class="v6Trash v6DeleteMsg" data-id="${m.id||''}">🗑</button>`:''}
       </div>`).join('')||'<div class="smallNote">Ainda não há mensagens.</div>';
     $('v5ChatList').scrollTop=$('v5ChatList').scrollHeight;
-    document.querySelectorAll('.v5Reply').forEach(b=>b.onclick=()=>{$('v5ChatInput').value='@'+b.dataset.name+' ';$('v5ChatInput').focus()});
+    document.querySelectorAll('.v5Reply').forEach(b=>b.onclick=()=>{$('v5ChatInput').value='@'+b.dataset.name+' ';$('v5ChatInput').focus()}); document.querySelectorAll('.v6DeleteMsg').forEach(b=>b.onclick=async()=>{if(confirm('Eliminar mensagem?'))await remove(ref(db,'debate/messages/'+b.dataset.id))});
   });
   onValue(v5PresenceRef,snap=>{
     let n=0,now=Date.now();if(snap.exists())snap.forEach(x=>{if(now-(x.val()?.ts||0)<90000)n++});
@@ -1691,7 +1705,7 @@ function v5LoadChat(){
 $('v5ChatSend').onclick=async()=>{
   if(!currentUser)return alert('Faça login para participar no Debate.');
   const i=$('v5ChatInput'),text=i.value.trim();if(!text)return;
-  await push(v5ChatRef,{user:currentUser,name:currentUserObj?.name||currentUser,text,ts:Date.now()});i.value='';
+  await push(v5ChatRef,{user:currentUser,name:currentUserObj?.name||currentUser,text,category:$('v6ChatCategory')?.value||'Geral',ts:Date.now()});i.value='';
 };
 $('v5ChatInput').onkeydown=e=>{if(e.key==='Enter')$('v5ChatSend').click()};
 $('v5ChatHistory').onclick=()=>{v5LoadChat();alert('O histórico disponível está apresentado na sala de Debate.')};
@@ -1755,10 +1769,17 @@ $('v5RankAdmin').onclick=async()=>{
     d.score=Number(d.score||0);
     await update(ref(db,'ranking/students/'+b.dataset.id),d);alert('Estudante atualizado.');
   });
-  $('v5RankAdd').onclick=async()=>{
-    await push(v5RankRef,{name:'Novo estudante',school:'Nova escola',score:0,prize:'0 Kz',photo:'https://via.placeholder.com/100/f97316/ffffff?text=PLAY'});
-    alert('Estudante adicionado.');
-  };
+  $('v5RankAdd').onclick=()=>{
+ const box=$('v5RankAdminList'),row=document.createElement('div');row.className='v5AdminRow';
+ row.innerHTML='<input placeholder="Nome"><input placeholder="Escola"><input type="number" placeholder="Pontuação"><input placeholder="Prémio"><input placeholder="URL da foto"><button type="button">CRIAR ESTUDANTE</button>';
+ box.appendChild(row);
+ row.querySelector('button').onclick=async()=>{
+  const q=row.querySelectorAll('input');
+  if(!q[0].value||!q[1].value)return alert('Preencha nome e escola.');
+  await push(v5RankRef,{name:q[0].value,school:q[1].value,score:Number(q[2].value||0),prize:q[3].value||'0 Kz',photo:q[4].value||'https://via.placeholder.com/100/f97316/ffffff?text=PLAY'});
+  row.remove();alert('Estudante adicionado ao Ranking.');
+ };
+};
 };
 
 /* Inicialização segura. Não altera o menu original nem o Marketplace existente. */
@@ -1772,5 +1793,63 @@ background:#f2f2f2; color:#333; font-size:14px; border-top:1px solid #ddd;">
   | <a href="#" style="color:#333; text-decoration:underline;">Termos de Uso</a>
 </footer>
 
-</body>
+<script id="pm-v6-market">
+(function(){
+function buy(n){window.open('https://wa.me/244941530467?text='+encodeURIComponent('Olá, quero comprar o produto: '+n),'_blank')}
+function scan(){
+ const root=document.querySelector('#sec-marketplace')||document.getElementById('marketplaceList')||document.getElementById('marketplaceProducts');
+ if(!root)return;
+ root.querySelectorAll('button').forEach(b=>{
+  if(!/afilia/i.test(b.textContent||'')||b.parentElement.querySelector('.v6Buy'))return;
+  const card=b.closest('.card,.product-card,.market-card,article')||b.parentElement;
+  const h=card.querySelector('h2,h3,h4,.product-title,.market-title');
+  const name=h?h.textContent.trim():'produto selecionado';
+  const x=document.createElement('button');x.className='v6Buy';x.textContent='COMPRAR';x.onclick=()=>buy(name);
+  b.insertAdjacentElement('afterend',x);
+ })
+}
+window.addEventListener('load',()=>{setTimeout(scan,800);setTimeout(scan,2500);});
+window.pmScanMarket=scan;
+})();
+</script><script>
+document.addEventListener('click',e=>{
+ const b=e.target.closest('#v6GoStore');if(b){e.preventDefault();if(typeof closeModalV2==='function')closeModalV2();v6OpenStoreCreate()}
+});
+</script><script id="pm-v6-store-wallet">
+function v6OpenStoreCreate(){
+ const r=openModalV2(`<button class="modalCloseV2" id="v6sc">×</button><h2>Criar LOJA VIRTUAL</h2>
+ <input id="v6sn" placeholder="Nome da loja"><textarea id="v6sd" placeholder="Descrição"></textarea>
+ <input id="v6si" type="url" placeholder="URL da imagem"><input id="v6sib" placeholder="IBAN"><input id="v6sp" type="number" placeholder="Preço do produto/serviço">
+ <button id="v6create" style="width:100%">CRIAR LOJA</button>`);
+ $('v6sc').onclick=closeModalV2;
+ $('v6create').onclick=async()=>{
+  if(!currentUser)return alert('Faça login.');
+  const d={owner:currentUser,name:$('v6sn').value.trim(),description:$('v6sd').value.trim(),pendingImage:$('v6si').value.trim(),iban:$('v6sib').value.trim(),price:Number($('v6sp').value||0),image:'',premium:false,ts:Date.now()};
+  if(!d.name||!d.description||!d.iban||!d.price)return alert('Preencha todos os campos.');
+  await push(ref(db,'stores'),d);alert('Loja criada. A imagem fica bloqueada até Premium.');closeModalV2();v6LoadStores();
+ };
+}
+function v6LoadStores(){
+ const box=$('v6StoreList');if(!box||typeof onValue==='undefined')return;
+ onValue(ref(db,'stores'),snap=>{
+  const a=[];if(snap.exists())snap.forEach(x=>a.push({id:x.key,...x.val()}));
+  box.innerHTML=a.map(x=>`<div class="v6Store">${x.image?`<img src="${v5Esc(x.image)}">`:`<div class="v6Premium"><b>Imagem bloqueada</b><p>Premium: 1.000 Kz por 5 meses.</p><button class="v6Inject" data-id="${x.id}">INJETAR</button></div>`}<h3>${v5Esc(x.name)}</h3><p>${v5Esc(x.description)}</p><b>${Number(x.price||0).toLocaleString('pt-AO')} Kz</b></div>`).join('');
+  box.querySelectorAll('.v6Inject').forEach(b=>b.onclick=()=>v6Premium(b.dataset.id));
+ });
+}
+function v6Premium(id){
+ const r=openModalV2(`<button class="modalCloseV2" id="v6pc">×</button><h2>Premium — 1.000 Kz / 5 meses</h2><div class="v6Premium"><p>IBAN: <b>AO06005500007150984310146</b></p><p>EXPRESS: <b>941530467</b></p><p>Envie o comprovativo para WhatsApp 941530467.</p></div><button id="v6pwa" style="width:100%">ENVIAR COMPROVATIVO</button>`);
+ $('v6pc').onclick=closeModalV2;$('v6pwa').onclick=()=>window.open('https://wa.me/244941530467?text='+encodeURIComponent('Olá, quero desbloquear Premium da minha Loja Virtual. ID: '+id),'_blank');
+}
+function v6Dollar(){
+ const rows=Array.from({length:10},(_,i)=>`<div class="v6Dollar"><span>${i+1}$</span><b>${(i+1)*950} Kz</b></div>`).join('');
+ const r=openModalV2('<button class="modalCloseV2" id="v6dc">×</button><h2>Comprar Dólar</h2>'+rows);$('v6dc').onclick=closeModalV2;
+}
+function v6Deposit(){
+ const r=openModalV2('<button class="modalCloseV2" id="v6dep">×</button><h2>Depositar</h2><p>Envie dinheiro para o EXPRESS <b>941530467</b>.</p><button id="v6dwa">ENVIAR COMPROVATIVO</button>');
+ $('v6dep').onclick=closeModalV2;$('v6dwa').onclick=()=>window.open('https://wa.me/244941530467?text='+encodeURIComponent('Olá, quero depositar na carteira PLAYMATES.'),'_blank');
+}
+document.addEventListener('click',e=>{const t=(e.target.textContent||'').trim().toLowerCase();if(t.includes('comprar dólar')){e.preventDefault();v6Dollar()}else if(t==='depositar'){e.preventDefault();v6Deposit()}});
+window.addEventListener('load',()=>v6LoadStores());
+</script></body>
 </html>
